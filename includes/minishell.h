@@ -2,6 +2,7 @@
 # define MINISHELL_H
 
 # include "../libft/libft.h"
+# include "token.h"
 # include <fcntl.h>
 # include <signal.h>
 # include <stdlib.h>
@@ -11,9 +12,15 @@
 
 typedef struct s_tree
 {
+	int				signal;
 	void			*node;
 	struct s_tree	*left;
 	struct s_tree	*right;
 }	t_tree;
+
+//t_tree	*tree_node_create(t_tree *left, void *token, t_tree *right);
+void	tree_print(t_tree *tree, int level);
+t_tree	*tree_create(t_token *list, t_check *flags);
+t_token	*token_create(char **tokens, t_tokens_type *signal);
 
 #endif
