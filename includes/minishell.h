@@ -23,4 +23,10 @@ void	tree_print(t_tree *tree, int level);
 t_tree	*tree_create(t_token *list, t_check *flags);
 t_token	*token_create(char **tokens, t_tokens_type *signal);
 
+void	tree_print_extense(t_tree *tree); 
+
+// Free functions
+void	token_list_free(t_token *head);
+void	tree_free(t_tree *tree);
+
 #endif
