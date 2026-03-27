@@ -1,16 +1,16 @@
 NAME	= minishell
 CC		= cc
-CFLAGS	= -Wall -Werror -Wextra -g3
+CFLAGS	= -Wall -Werror -Wextra -g3 -I includes
 
-SRCS_FILES = \
-			tree_print.c	\
-			tree_node_create.c	\
-			tree_build.c	\
-			main.c
+SRCS	= src/tree/tree_print.c		\
+		src/tree/token_cmd_create.c	\
+		src/tree/tree_build.c		\
+		src/free/tree_free.c		\
+		src/free/token_list_free.c	\
+		src/tree/main.c
 
-SRCS		= $(addprefix src/, $(SRCS_FILES))
 OBJS_DIR	= obj
-OBJS		= $(addprefix $(OBJS_DIR)/, $(SRCS_FILES:.c=.o))
+OBJS		= $(addprefix $(OBJS_DIR)/, $(notdir $(SRCS:.c=.o)))
 
 DIR_LIBFT	= libft
 LIBFT		= $(DIR_LIBFT)/libft.a
@@ -19,25 +19,41 @@ LIBFT		= $(DIR_LIBFT)/libft.a
 
 all: $(NAME)
 
-$(NAME): $(LIBFT) $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -L$(DIR_LIBFT) -lft -o $@
+val:
+	valgrind \
+		--leak-check=full \
+		--show-leak-kinds=all \
+		--track-origins=yes \
+		--suppressions=readline.supp \
+		./$(NAME)
 
-$(OBJS_DIR)/%.o: src/%.c
-	mkdir -p $(OBJS_DIR)
+$(NAME): $(LIBFT) $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -L$(DIR_LIBFT) -lft -lreadline -o $@
+
+$(OBJS_DIR)/%.o: src/tree/%.c | $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJS_DIR)/%.o: src/free/%.c | $(OBJS_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJS_DIR)/%.o: %.c | $(OBJS_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJS_DIR):
+	mkdir -p $(OBJS_DIR)
 
 $(LIBFT):
 	$(MAKE) -sC $(DIR_LIBFT) all --no-print-directory
 
-
 #-----	Clean	-----
-clean :
+clean:
 	$(MAKE) -sC $(DIR_LIBFT) $@
 	rm -fr $(OBJS_DIR)
 
-fclean :
+fclean: clean
 	rm -f $(NAME)
-	$(MAKE) -sC $(DIR_LIBFT) $@
+	$(MAKE) -sC $(DIR_LIBFT) fclean
 
-re : fclean all
+re: fclean all
 
+.PHONY: all clean fclean re val
