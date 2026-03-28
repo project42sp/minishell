@@ -2,12 +2,12 @@ NAME	= minishell
 CC		= cc
 CFLAGS	= -Wall -Werror -Wextra -g3 -I includes
 
-SRCS	= src/tree/tree_print.c		\
+SRCS	= \
 		src/tree/token_cmd_create.c	\
 		src/tree/tree_build.c		\
 		src/free/tree_free.c		\
 		src/free/token_list_free.c	\
-		src/tree/main.c
+		src/main.c
 
 OBJS_DIR	= obj
 OBJS		= $(addprefix $(OBJS_DIR)/, $(notdir $(SRCS:.c=.o)))
@@ -29,6 +29,9 @@ val:
 
 $(NAME): $(LIBFT) $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -L$(DIR_LIBFT) -lft -lreadline -o $@
+
+$(OBJS_DIR)/%.o: src/%.c | $(OBJS_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJS_DIR)/%.o: src/tree/%.c | $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
