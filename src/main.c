@@ -37,7 +37,7 @@ int	main(void)
 		}
 		tree = tree_create(head, &flags);
 		ft_printf("You entered: %s\n", input);
-		tree_print(tree, 0);
+	//	tree_print(tree, 0);
 		tree_free(tree);
 		token_list_free(head);
 		free(input);
