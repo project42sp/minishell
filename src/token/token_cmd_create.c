@@ -8,7 +8,7 @@ static t_token	*token_node(char *token, t_tokens_type signal)
 	if (!node)
 		return (NULL);
 	node->signal = signal;
-	node->token = &token;
+	node->token = ft_strdup(token);
 	node->next = NULL;
 	return (node);
 }
