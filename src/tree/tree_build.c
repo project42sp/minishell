@@ -1,6 +1,6 @@
-# include "../includes/minishell.h"
+#include "../includes/minishell.h"
 
-static t_tree *tree_node_create(t_tree *left, t_token **token, t_tree *right)
+static t_tree	*tree_node_create(t_tree *left, t_token **token, t_tree *right)
 {
 	t_tree	*tree;
 
@@ -17,7 +17,8 @@ static t_tree *tree_node_create(t_tree *left, t_token **token, t_tree *right)
 	return (tree);
 }
 
-static t_token *tree_redir_helper(t_token **token, t_tree **cmd_node, t_tree **file_node)
+static t_token	*tree_redir_helper(t_token **token,
+						t_tree **cmd_node, t_tree **file_node)
 {
 	t_token	*token_redir;
 
@@ -33,7 +34,7 @@ static t_token *tree_redir_helper(t_token **token, t_tree **cmd_node, t_tree **f
 			*token = get_next_token(*token);
 		}
 	}
-	return token_redir;
+	return (token_redir);
 }
 
 static t_tree	*tree_redir(t_token **token)
@@ -74,7 +75,7 @@ static t_tree	*tree_pipe_create(t_token **token)
 	else
 		return (left_node);
 	pipe_node = tree_node_create(left_node, token, right_node);
-	return pipe_node;
+	return (pipe_node);
 }
 
 t_tree	*tree_create(t_token *token, t_check *flags)
@@ -92,5 +93,5 @@ t_tree	*tree_create(t_token *token, t_check *flags)
 		tree = tree_redir(&token);
 	else if (flags->word)
 		tree = tree_node_create(NULL, &token, NULL);
-	return tree;
+	return (tree);
 }

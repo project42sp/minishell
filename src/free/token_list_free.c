@@ -2,7 +2,7 @@
 
 void	token_list_free(t_token *head)
 {
-	t_token *next;
+	t_token	*next;
 
 	while (head)
 	{
