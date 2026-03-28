@@ -3,8 +3,9 @@ CC		= cc
 CFLAGS	= -Wall -Werror -Wextra -g3 -I includes
 
 SRCS	= \
-		src/tree/token_cmd_create.c	\
+		src/token/token_cmd_create.c	\
 		src/tree/tree_build.c		\
+		src/tree/tree_utils.c		\
 		src/free/tree_free.c		\
 		src/free/token_list_free.c	\
 		src/main.c
@@ -31,6 +32,9 @@ $(NAME): $(LIBFT) $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -L$(DIR_LIBFT) -lft -lreadline -o $@
 
 $(OBJS_DIR)/%.o: src/%.c | $(OBJS_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJS_DIR)/%.o: src/token/%.c | $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJS_DIR)/%.o: src/tree/%.c | $(OBJS_DIR)
