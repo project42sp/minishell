@@ -36,6 +36,7 @@ void	tree_print_extense(t_tree *tree);
 
 t_tree	*tree_create(t_token *list, t_check *flags);
 t_token	*token_create(char **tokens, t_tokens_type *signal);
+t_token	*get_next_token(t_token *token);
 
 void	tree_print_extense(t_tree *tree); 
 
