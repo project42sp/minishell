@@ -1,12 +1,15 @@
 #include "../includes/minishell.h"
 
-int	main(void)
+int	main(int argc, char **argv, char **envp)
 {
 	char *input;
 	t_token	*head;
 	t_tree	*tree;
 	t_check	flags;
 
+	if(argc > 1)
+		return (1);
+	(void *)argv;
 	while(1)
 	{
 		input = readline("minishell$ ");
