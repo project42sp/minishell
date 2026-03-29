@@ -1,5 +1,4 @@
 #include "../../includes/minishell.h"
-#include <readline/keymaps.h>
 
 static t_token	*token_node(char **token, t_tokens_type signal)
 {
