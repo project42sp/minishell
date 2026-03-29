@@ -1,4 +1,4 @@
-#include "../includes/minishell.h"
+#include "../../includes/minishell.h"
 
 static t_tree	*tree_node_create(t_tree *left, t_token **token, t_tree *right)
 {

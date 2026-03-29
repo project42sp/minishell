@@ -1,4 +1,4 @@
-#include "../includes/minishell.h"
+#include "../../includes/minishell.h"
 
 static t_token	*token_node(char *token, t_tokens_type signal)
 {
