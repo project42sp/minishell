@@ -1,5 +1,3 @@
-<<<<<<< Updated upstream
-=======
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -12,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
->>>>>>> Stashed changes
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -35,13 +32,11 @@ typedef struct s_tree
 
 //t_tree	*tree_node_create(t_tree *left, void *token, t_tree *right);
 void	tree_print(t_tree *tree, int level);
-<<<<<<< Updated upstream
-=======
 void	tree_print_extense(t_tree *tree);
 
->>>>>>> Stashed changes
 t_tree	*tree_create(t_token *list, t_check *flags);
 t_token	*token_create(char **tokens, t_tokens_type *signal);
+t_token	*get_next_token(t_token *token);
 
 void	tree_print_extense(t_tree *tree); 
 
