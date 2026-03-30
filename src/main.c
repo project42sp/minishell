@@ -9,7 +9,7 @@ int	main(int argc, char **argv, char **envp)
 
 	if(argc > 1)
 		return (1);
-	(void *)argv;
+	(void)*argv;
 	while(1)
 	{
 		input = readline("minishell$ ");
@@ -21,10 +21,10 @@ int	main(int argc, char **argv, char **envp)
 			free(input);
 			continue ;
 		}
-		// Adiciona ao histórico se a entrada não for vazia
 		//add_history(input);
+
 		// Hardcode - Lexer vai substituir isso depois
-		t_tokens_type	signal[] = {CMD, FILE_PATH, INPUT, OUTPUT, APPEND, HEREDOC, PIPE, AND, OR, EOFILE};
+		t_tokens_type	signal[] = {CMD, EOFILE};
 		char			*tokens[] = {input, NULL};
 		flags.word = 1;
 		flags.input = 0;
@@ -40,6 +40,8 @@ int	main(int argc, char **argv, char **envp)
 		}
 		tree = tree_create(head, &flags);
 		ft_printf("You entered: %s\n", input);
+
+		execution(tree, envp);
 	//	tree_print(tree, 0);
 		tree_free(tree);
 		token_list_free(head);
