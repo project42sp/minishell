@@ -9,7 +9,7 @@ int	main(int argc, char **argv, char **envp)
 
 	if(argc > 1)
 		return (1);
-	(void *)argv;
+	(void)*argv;
 	while(1)
 	{
 		input = readline("minishell$ ");
@@ -21,9 +21,10 @@ int	main(int argc, char **argv, char **envp)
 			free(input);
 			continue ;
 		}
-		// Adiciona ao histórico se a entrada não for vazia
 		//add_history(input);
+
 		// Hardcode - Lexer vai substituir isso depois
+<<<<<<< HEAD
 		t_tokens_type	signal[] = {CMD, FILE_PATH, INPUT, OUTPUT, APPEND, HEREDOC, PIPE, AND, OR, EOFILE};
 
 		char *tokens = ft_strdup(input);
@@ -32,6 +33,10 @@ int	main(int argc, char **argv, char **envp)
 		pointer_token = (char **)ft_calloc(2, sizeof(char *));
 		pointer_token[0] = tokens;
 		pointer_token[1] = NULL;
+=======
+		t_tokens_type	signal[] = {CMD, EOFILE};
+		char			*tokens[] = {input, NULL};
+>>>>>>> aaa6f6c (chore: add executor tests)
 		flags.word = 1;
 		flags.input = 0;
 		flags.output = 0;
@@ -46,9 +51,15 @@ int	main(int argc, char **argv, char **envp)
 		}
 		tree = tree_create(head, &flags);
 		ft_printf("You entered: %s\n", input);
+<<<<<<< HEAD
 		//tree_print(tree, 1);
 		free(tokens);
 		free(pointer_token);
+=======
+
+		execution(tree, envp);
+	//	tree_print(tree, 0);
+>>>>>>> aaa6f6c (chore: add executor tests)
 		tree_free(tree);
 		token_no_content_free(head);
 		free(input);
