@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/02/12 19:16:10 by buehara           #+#    #+#             */
-/*   Updated: 2026/03/21 21:13:44 by buehara          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -38,10 +26,13 @@ t_tree	*tree_create(t_token *list, t_check *flags);
 t_token	*token_create(char **tokens, t_tokens_type *signal);
 t_token	*get_next_token(t_token *token);
 
-void	tree_print_extense(t_tree *tree); 
+void	tree_print_extense(t_tree *tree);
 
 // Free functions
 void	token_list_free(t_token *head);
 void	tree_free(t_tree *tree);
+
+//Execution
+int execution(t_tree *tree, char **envp);
 
 #endif
