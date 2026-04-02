@@ -36,7 +36,7 @@ static char	*find_path(char **path_envp, t_tree *tree)
 		full_path = ft_strjoin(path_envp[index], path);
 		if (!full_path)
 			return (NULL);
-		if (access(full_path, X_OK | F_OK) != 0)
+		if (access(full_path, F_OK | X_OK) == 0)
 			return (full_path);
 		free(full_path);
 		full_path = NULL;
@@ -47,7 +47,7 @@ static char	*find_path(char **path_envp, t_tree *tree)
 
 static int	child_process(char **envp, t_tree *tree, char *path)
 {
-	execve(path, tree->node, envp);
+	execve(path, (char **)tree->node, envp);
 	free(path);
 	tree_free(tree);
 	// Funcao free path_envp (char **)
