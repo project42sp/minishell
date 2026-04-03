@@ -1,4 +1,4 @@
-#include "../includes/minishell.h"
+#include "../../includes/minishell.h"
 
 static t_tree	*tree_node_create(t_tree *left, t_token **token, t_tree *right)
 {
@@ -48,6 +48,7 @@ static t_tree	*tree_redir(t_token **token)
 		return (NULL);
 	cmd_node = NULL;
 	file_node = NULL;
+	token_redir = NULL;
 	if (!(*token)->next || (*token)->next->signal > HEREDOC)
 	{
 		cmd_node = tree_node_create(NULL, token, NULL);
