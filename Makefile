@@ -7,6 +7,7 @@ SRCS	= src/tree/tree_print.c		\
 		src/tree/tree_build.c		\
 		src/free/tree_free.c		\
 		src/free/token_list_free.c	\
+		src/lexer/lexer.c			\
 		src/tree/main.c
 
 OBJS_DIR	= obj
@@ -34,6 +35,9 @@ $(OBJS_DIR)/%.o: src/tree/%.c | $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJS_DIR)/%.o: src/free/%.c | $(OBJS_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJS_DIR)/%.o: src/lexer/%.c | $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJS_DIR)/%.o: %.c | $(OBJS_DIR)
