@@ -29,4 +29,8 @@ void	tree_print_extense(t_tree *tree);
 void	token_list_free(t_token *head);
 void	tree_free(t_tree *tree);
 
+// Lexer functions
+void		debug_lexer(t_token *list);
+t_token		*lexer(char *input, t_check *flags);
+
 #endif
