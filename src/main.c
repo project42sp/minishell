@@ -43,11 +43,12 @@ int	main(void)
 		}
 		tree = tree_create(head, &flags);
 		ft_printf("You entered: %s\n", input);
-	//	tree_print(tree, 0);
-	//	free(pointer_token);
+		//tree_print(tree, 1);
+		free(tokens);
+		free(pointer_token);
 		tree_free(tree);
-		//token_list_free(head);
-		//free(input);
+		token_no_content_free(head);
+		free(input);
 	}
 	return (0);
 }
