@@ -30,6 +30,11 @@ void	token_no_content_free(t_token *head)
 	while (head)
 	{
 		next = head->next;
+		if (head->token)
+		{
+			free(((char **)head->token)[0]);
+			free(head->token);
+		}
 		free(head);
 		head = next;
 	}
