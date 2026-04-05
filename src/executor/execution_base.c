@@ -1,20 +1,18 @@
 #include "../../includes/minishell.h"
 
-static char	**create_envp_table(char **envp)
+static char	**create_path_table(t_envp *envp)
 {
 	char	**table;
-	int		index;
 
 	table = NULL;
-	index = 0;
-	while(envp[index] != NULL)
+	while(envp != NULL)
 	{
-		if (ft_strncmp(envp[index], "PATH=", 5) == 0)
+		if (ft_strncmp(envp->key, "PATH", 4) == 0)
 		{
-			table = ft_split(envp[index] + 5, ':');
+			table = ft_split(envp->value, ':');
 			break;
 		}
-		index++;
+		envp = envp->next;
 	}
 	return (table);
 }
@@ -25,7 +23,7 @@ static char	*find_path(char **path_envp, t_tree *tree)
 	int		index;
 	char	*full_path;
 
-	path = ft_strjoin("/", (char *)tree->node);
+	path = (char *)tree->node;
 	if (!path)
 		return (NULL);
 	if (access(path, X_OK | F_OK) == 0)
@@ -37,7 +35,10 @@ static char	*find_path(char **path_envp, t_tree *tree)
 		if (!full_path)
 			return (NULL);
 		if (access(full_path, F_OK | X_OK) == 0)
+		{
+			free(path);
 			return (full_path);
+		}
 		free(full_path);
 		full_path = NULL;
 		index++;
@@ -81,12 +82,12 @@ static int	base_exec(char **envp, t_tree *tree)
 	}
 }
 
-int execution(t_tree *tree, char **envp)
+int execution(t_tree *tree, t_envp *envp)
 {
 	char	**envp_table;
 	int		status_error;
 
-	envp_table = create_envp_table(envp);
+	envp_table = create_path_table(envp);
 	if (!envp_table)
 		return (1);
 	if (tree->signal == CMD)
@@ -94,6 +95,7 @@ int execution(t_tree *tree, char **envp)
 		status_error = base_exec(envp_table, tree);
 		return (status_error); // Temp to make the function compile
 	}
+	envp_char_free(envp_table);
 	//TODO: Criar o export e adicionar o status_error dentro da variavel $?
 	return (0);
 }
