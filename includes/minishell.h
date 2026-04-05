@@ -42,6 +42,7 @@ void	tree_print_extense(t_tree *tree);
 
 // Free functions
 void	token_list_free(t_token *head);
+void	token_no_content_free(t_token *head);
 void	tree_free(t_tree *tree);
 
 #endif
