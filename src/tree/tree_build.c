@@ -11,7 +11,7 @@ static t_tree	*tree_node_create(t_tree *left, t_token **token, t_tree *right)
 		return (NULL);
 	tree->left = left;
 	tree->signal = (*token)->signal;
-	tree->node = (*token)->token;
+	tree->node = ft_strjoin("/", (*token)->token);
 	(*token)->token = NULL;
 	tree->right = right;
 	*token = (*token)->next;
@@ -23,6 +23,7 @@ static t_token	*tree_redir_helper(t_token **token,
 {
 	t_token	*token_redir;
 
+	token_redir = NULL;
 	while (*token && (*token)->signal <= HEREDOC)
 	{
 		if ((*token)->signal == CMD)
