@@ -12,6 +12,7 @@ static t_tree	*tree_node_create(t_tree *left, t_token **token, t_tree *right)
 	tree->left = left;
 	tree->signal = (*token)->signal;
 	tree->node = (*token)->token;
+	(*token)->token = NULL;
 	tree->right = right;
 	*token = (*token)->next;
 	return (tree);
