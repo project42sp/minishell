@@ -11,12 +11,19 @@ static int	count_tokens(char *input)
 	{
 		if (input[i] == ' ')
 			i++;
-		else if (input[i] == '|' || input[i] == '<' || input[i] == '>')
+		else if (input[i] == '<' || input[i] == '>')
 		{
 			count++;
 			i++;
-			if (input[i] == '|' || input[i] == '<' || input[i] == '>')
-				i++;	// operador duplo: || << >> 
+			if (input[i] == '<' || input[i] == '>')
+				i++;
+		}
+		else if (input[i] == '|')
+		{
+			count++;
+			i++;
+			if (input[i] == '|')
+				i++;
 		}
 		else if (input[i] == '&' && input[i + 1] == '&')
 		{
@@ -81,7 +88,7 @@ static char	*get_token(char *input, int *i)
 
 t_token	*lexer(char *input, t_check *flags)
 {
-	char			**tokens;
+	char			***tokens;
 	t_tokens_type	*signals;
 	t_token			*list;
 	int				count;
@@ -89,39 +96,108 @@ t_token	*lexer(char *input, t_check *flags)
 	int				j;
 
 	count = count_tokens(input);
-	tokens = (char **)ft_calloc(count + 1, sizeof(char *));
-	signals = (t_tokens_type *)ft_calloc(count + 1, sizeof(t_tokens_type));
+	tokens = (char ***)ft_calloc(count + 2, sizeof(char **));
+	signals = (t_tokens_type *)ft_calloc(count + 2, sizeof(t_tokens_type));
 	if (!tokens || !signals)
 		return (NULL);
 	i = 0;
 	j = 0;
 	while (j < count)
 	{
-		tokens[j] = get_token(input, &i);
+		tokens[j] = (char **)ft_calloc(2, sizeof(char *));
 		if (!tokens[j])
 		{
-			ft_free_array(tokens);
+			while (j > 0)
+			{
+				j--;
+				free(tokens[j][0]);
+				free(tokens[j]);
+			}
+			free(tokens);
 			free(signals);
 			return (NULL);
 		}
-		signals[j] = get_signal(tokens[j]);
+		tokens[j][0] = get_token(input, &i);
+		tokens[j][1] = NULL;
+		if (!tokens[j][0])
+		{
+			free(tokens[j]);
+			while (j > 0)
+			{
+				j--;
+				free(tokens[j][0]);
+				free(tokens[j]);
+			}
+			free(tokens);
+			free(signals);
+			return (NULL);
+		}
+		signals[j] = get_signal(tokens[j][0]);
 		if (signals[j] == INPUT || signals[j] == OUTPUT
 			|| signals[j] == HEREDOC || signals[j] == APPEND)
 		{
 			flags->input += (signals[j] == INPUT || signals[j] == HEREDOC);
 			flags->output += (signals[j] == OUTPUT || signals[j] == APPEND);
+			j++;
+			tokens[j] = (char **)ft_calloc(2, sizeof(char *));
+			if (!tokens[j])
+			{
+				while (j > 0)
+				{
+					j--;
+					free(tokens[j][0]);
+					free(tokens[j]);
+				}
+				free(tokens);
+				free(signals);
+				return (NULL);
+			}
+			tokens[j][0] = get_token(input, &i);
+			tokens[j][1] = NULL;
+			if (!tokens[j][0])
+			{
+				free(tokens[j]);
+				while (j > 0)
+				{
+					j--;
+					free(tokens[j][0]);
+					free(tokens[j]);
+				}
+				free(tokens);
+				free(signals);
+				return (NULL);
+			}
+			signals[j] = FILE_PATH;
+			j++;
 		}
-		else if (signals[j] == PIPE)
-			flags->pipe = 1;
-		else if (signals[j] == AND || signals[j] == OR)
-			flags->logical = 1;
 		else
-			flags->word = 1;
-		j++;
+		{
+			if (signals[j] == PIPE)
+				flags->pipe = 1;
+			else if (signals[j] == AND || signals[j] == OR)
+				flags->logical = 1;
+			else
+				flags->word = 1;
+			j++;
+		}
 	}
 	tokens[j] = NULL;
-	list = token_create(&tokens, signals);
-	ft_free_array(tokens);
+	signals[j] = EOFILE;
+	j = 0;
+	while (j < count)
+	{
+		if (signals[j] == PIPE || signals[j] == AND || signals[j] == OR
+			|| signals[j] == INPUT || signals[j] == OUTPUT
+			|| signals[j] == APPEND || signals[j] == HEREDOC)
+		{
+			free(tokens[j][0]);
+			free(tokens[j]);
+			tokens[j] = NULL;
+		}
+		j++;
+	}
+	list = token_create(tokens, signals);
+	free(tokens);
 	free(signals);
 	return (list);
 }
@@ -133,12 +209,20 @@ void	debug_lexer(t_token *list)
 		"CMD", "FILE_PATH", "INPUT", "OUTPUT",
 		"APPEND", "HEREDOC", "PIPE", "AND", "OR", "EOFILE"
 	};
+	char	*symbols[] = {
+		"", "", "<", ">", ">>", "<<", "|", "&&", "||", ""
+	};
 
 	ft_printf("\n=== LEXER DEBUG ===\n");
 	curr = list;
 	while (curr)
 	{
-		ft_printf("[%-2s] \"%s\"\n", types[curr->signal], (char *)curr->token);
+		if (curr->token)
+			ft_printf("[%-9s] \"%s\"\n", types[curr->signal],
+				((char **)curr->token)[0]);
+		else
+			ft_printf("[%-9s] \"%s\"\n", types[curr->signal],
+				symbols[curr->signal]);
 		curr = curr->next;
 	}
 	ft_printf("===================\n\n");
