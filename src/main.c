@@ -21,7 +21,11 @@ int	main(void)
 		//add_history(input);
 		// Hardcode - Lexer vai substituir isso depois
 		t_tokens_type	signal[] = {CMD, FILE_PATH, INPUT, OUTPUT, APPEND, HEREDOC, PIPE, AND, OR, EOFILE};
-		char			*tokens[] = {input, NULL};
+		char *tokens = ft_strdup(input);
+		char **pointer_token;
+		pointer_token = (char **)ft_calloc(2, sizeof(char *));
+		pointer_token[0] = tokens;
+		pointer_token[1] = NULL;
 		flags.word = 1;
 		flags.input = 0;
 		flags.output = 0;

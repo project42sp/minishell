@@ -120,7 +120,7 @@ t_token	*lexer(char *input, t_check *flags)
 		j++;
 	}
 	tokens[j] = NULL;
-	list = token_create(tokens, signals);
+	list = token_create(&tokens, signals);
 	ft_free_array(tokens);
 	free(signals);
 	return (list);
