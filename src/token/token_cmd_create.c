@@ -1,6 +1,7 @@
-#include "../includes/minishell.h"
+#include "../../includes/minishell.h"
+#include <readline/keymaps.h>
 
-static t_token	*token_node(char *token, t_tokens_type signal)
+static t_token	*token_node(char **token, t_tokens_type signal)
 {
 	t_token	*node;
 
@@ -8,12 +9,12 @@ static t_token	*token_node(char *token, t_tokens_type signal)
 	if (!node)
 		return (NULL);
 	node->signal = signal;
-	node->token = ft_strdup(token);
+	node->token = token;
 	node->next = NULL;
 	return (node);
 }
 
-t_token	*token_create(char **tokens, t_tokens_type *signal)
+t_token	*token_create(char ***tokens, t_tokens_type *signal)
 {
 	t_token	*head;
 	t_token	*current;
@@ -24,8 +25,8 @@ t_token	*token_create(char **tokens, t_tokens_type *signal)
 		return (NULL);
 	head = NULL;
 	prev = NULL;
-	index = -1;
-	while (tokens[++index] != NULL)
+	index = 0;
+	while (tokens[index] && tokens[index][0] != NULL)
 	{
 		current = token_node(tokens[index], signal[index]);
 		if (!current)
@@ -38,6 +39,7 @@ t_token	*token_create(char **tokens, t_tokens_type *signal)
 		else
 			prev->next = current;
 		prev = current;
+		index++;
 	}
 	return (head);
 }

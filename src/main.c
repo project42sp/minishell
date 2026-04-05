@@ -22,13 +22,19 @@ int	main(void)
 		//add_history(input);
 		// Hardcode - Lexer vai substituir isso depois
 		t_tokens_type	signal[] = {CMD, FILE_PATH, INPUT, OUTPUT, APPEND, HEREDOC, PIPE, AND, OR, EOFILE};
-		char			*tokens[] = {input, NULL};
+
+		char *tokens = ft_strdup(input);
+		char **pointer_token;
+
+		pointer_token = (char **)ft_calloc(2, sizeof(char *));
+		pointer_token[0] = tokens;
+		pointer_token[1] = NULL;
 		flags.word = 1;
 		flags.input = 0;
 		flags.output = 0;
 		flags.pipe = 0;
 		flags.logical = 0;
-		head = token_create(tokens, signal);
+		head = token_create(&pointer_token, signal);
 		if (!head)
 		{
 			ft_printf("Failed to create token list\n");
@@ -37,9 +43,11 @@ int	main(void)
 		}
 		tree = tree_create(head, &flags);
 		ft_printf("You entered: %s\n", input);
-	//	tree_print(tree, 0);
+		//tree_print(tree, 1);
+		free(tokens);
+		free(pointer_token);
 		tree_free(tree);
-		token_list_free(head);
+		token_no_content_free(head);
 		free(input);
 	}
 	return (0);

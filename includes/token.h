@@ -1,8 +1,6 @@
 #ifndef TOKEN_H
 # define TOKEN_H
 
-#include "minishell.h"
-
 typedef enum e_tokens_type
 {
 	CMD,
