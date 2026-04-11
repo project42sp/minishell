@@ -1,28 +1,53 @@
 #include "../../includes/minishell.h"
+#include <stddef.h>
 
-void	envp_free(t_envp *envp)
+void	envp_free(t_envp **envp)
 {
 	t_envp	*tmp;
+	t_envp	*current;
 
-	while (envp)
+	if (!envp ||!*envp)
+		return ;
+	current = *envp;
+	while (current)
 	{
-		tmp = envp;
-		envp = envp->next;
-		free(tmp->key);
-		free(tmp->value);
-		free(tmp);
+		tmp = current->next;
+		free(current->key);
+		free(current->value);
+		free(current);
+		current = tmp;
 	}
+	*envp = NULL;
 }
 
-void	envp_char_free(char **envp)
+void	envp_char_free(char ***envp)
 {
 	size_t	index;
 
+	if (!envp || !*envp)
+		return ;
 	index = 0;
-	while(envp[index])
+	while((*envp)[index])
 	{
-		free(envp[index]);
+		free((*envp)[index]);
 		index++;
 	}
-	free(envp);
+	free(*envp);
+	envp = NULL;
+}
+
+void	split_free(char **split)
+{
+	size_t	index;
+
+	if (!split)
+		return ;
+	index = 0;
+	while (split[index])
+	{
+		free(split[index]);
+		index++;
+	}
+	free(split);
+	split = NULL;
 }
