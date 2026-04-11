@@ -38,8 +38,9 @@ t_token	*get_next_token(t_token *token);
 void	token_list_free(t_token *head);
 void	token_no_content_free(t_token *head);
 void	tree_free(t_tree *tree);
-void	envp_free(t_envp *envp);
-void	envp_char_free(char **envp);
+void	envp_free(t_envp **envp);
+void	envp_char_free(char ***envp);
+void	split_free(char **split);
 
 // envp function
 t_envp	*create_envp_table(char **envp);
