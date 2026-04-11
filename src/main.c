@@ -28,7 +28,7 @@ int	main(int argc, char **argv, char **envp)
 		// It's here to test free
 		envp_list = create_envp_table(envp);
 		// Hardcode - Lexer vai substituir isso depois
-		char *tokens = ft_strdup(input);
+		char *tokens = ft_strjoin("/", input);
 		t_tokens_type	signal[] = {CMD, EOFILE};
 		char **pointer_token;
 
