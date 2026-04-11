@@ -45,11 +45,11 @@ static char	*find_path(char **path_envp, char **cmd)
 
 static int	child_process(char **envp, char **cmd, char *path)
 {
+	close(0);
 	execve(path, cmd, envp);
-	ft_printf("__Error__");
 	free(path);
 	// free cmd
-	envp_char_free(envp);
+	envp_char_free(&envp);
 	perror("Error");
 	exit(127);
 }
@@ -64,6 +64,7 @@ static int	base_exec(char **envp, t_tree *tree)
 	//if (builtin)
 		//Run builtin
 		// Return status code
+	err = 0;
 	path = NULL;
 	node = (char **)tree->node;
 	path = find_path(envp, node);
@@ -73,14 +74,10 @@ static int	base_exec(char **envp, t_tree *tree)
 	if (pid == 0)
 	{
 		err = child_process(envp, node, path);
-		return err;
 	}
-	else
-	{
-		perror("Error");
-		//Return error for fork function
-		return (127);
-	}
+	waitpid(pid, &err, 0);
+	free(path);
+	return (err);
 }
 
 int execution(t_tree *tree, t_envp *envp)
@@ -94,9 +91,9 @@ int execution(t_tree *tree, t_envp *envp)
 	if (tree->signal == CMD)
 	{
 		status_error = base_exec(path_table, tree);
+		envp_char_free(&path_table);
 		return (status_error); // Temp to make the function compile
 	}
-	envp_char_free(path_table);
 	//TODO: Criar o export e adicionar o status_error dentro da variavel $?
 	return (0);
 }
