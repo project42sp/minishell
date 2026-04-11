@@ -54,7 +54,7 @@ char	**envp_rebuilt(t_envp *head)
 		temp = envp_rebuilt_util(head);
 		if (!temp)
 		{
-			envp_char_free(envp);
+			envp_char_free(&envp);
 			return (NULL);
 		}
 		envp[index] = temp;
