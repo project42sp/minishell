@@ -23,23 +23,26 @@ int	main(int argc, char **argv, char **envp)
 			continue ;
 		}
 		//add_history(input);
-		// ENVP create
-		// TODO: Move envp_list out of the loop.
-		// It's here to test free
-		envp_list = create_envp_table(envp);
 		// Hardcode - Lexer vai substituir isso depois
 		char *tokens = ft_strjoin("/", input);
 		t_tokens_type	signal[] = {CMD, EOFILE};
 		char **pointer_token;
 
+		//Create ENVP
+		// TODO: Move envp_list out of the loop.
+		// It's here to test free
+		envp_list = create_envp_table(envp);
+
 		pointer_token = (char **)ft_calloc(2, sizeof(char *));
 		pointer_token[0] = tokens;
 		pointer_token[1] = NULL;
+
 		flags.word = 1;
 		flags.input = 0;
 		flags.output = 0;
 		flags.pipe = 0;
 		flags.logical = 0;
+
 		head = token_create(&pointer_token, signal);
 		if (!head)
 		{
@@ -47,16 +50,16 @@ int	main(int argc, char **argv, char **envp)
 			free(input);
 			return (1);
 		}
+
 		tree = tree_create(head, &flags);
-		ft_printf("You entered: %s\n", input);
+		//ft_printf("You entered: %s\n", input);
 		//tree_print(tree, 1);
-		free(tokens);
-		free(pointer_token);
 
 		//Rebuilt ENVP function
 		execution(tree, envp_list);
-		envp_free(envp_list);
-	//	tree_print(tree, 0);
+
+		envp_free(&envp_list);
+		free(tokens);
 		tree_free(tree);
 		token_no_content_free(head);
 		free(input);
