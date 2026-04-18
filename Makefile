@@ -8,6 +8,10 @@ SRCS	= \
 		src/tree/tree_utils.c		\
 		src/free/tree_free.c		\
 		src/free/token_list_free.c	\
+		src/free/envp_free.c	\
+		src/executor/execution_base.c	\
+		src/utils/envp.c		\
+		src/utils/envp_rebuilt.c	\
 		src/main.c
 
 OBJS_DIR	= obj
@@ -41,6 +45,12 @@ $(OBJS_DIR)/%.o: src/tree/%.c | $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJS_DIR)/%.o: src/free/%.c | $(OBJS_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJS_DIR)/%.o: src/utils/%.c | $(OBJS_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJS_DIR)/%.o: src/executor/%.c | $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJS_DIR)/%.o: %.c | $(OBJS_DIR)

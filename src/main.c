@@ -1,12 +1,16 @@
 #include "../includes/minishell.h"
 
-int	main(void)
+int	main(int argc, char **argv, char **envp)
 {
 	char *input;
 	t_token	*head;
 	t_tree	*tree;
 	t_check	flags;
+	t_envp	*envp_list;
 
+	if(argc > 1)
+		return (1);
+	(void)*argv;
 	while(1)
 	{
 		input = readline("minishell$ ");
@@ -18,22 +22,27 @@ int	main(void)
 			free(input);
 			continue ;
 		}
-		// Adiciona ao histórico se a entrada não for vazia
 		//add_history(input);
 		// Hardcode - Lexer vai substituir isso depois
-		t_tokens_type	signal[] = {CMD, FILE_PATH, INPUT, OUTPUT, APPEND, HEREDOC, PIPE, AND, OR, EOFILE};
-
-		char *tokens = ft_strdup(input);
+		char *tokens = ft_strjoin("/", input);
+		t_tokens_type	signal[] = {CMD, EOFILE};
 		char **pointer_token;
+
+		//Create ENVP
+		// TODO: Move envp_list out of the loop.
+		// It's here to test free
+		envp_list = create_envp_table(envp);
 
 		pointer_token = (char **)ft_calloc(2, sizeof(char *));
 		pointer_token[0] = tokens;
 		pointer_token[1] = NULL;
+
 		flags.word = 1;
 		flags.input = 0;
 		flags.output = 0;
 		flags.pipe = 0;
 		flags.logical = 0;
+
 		head = token_create(&pointer_token, signal);
 		if (!head)
 		{
@@ -41,11 +50,16 @@ int	main(void)
 			free(input);
 			return (1);
 		}
+
 		tree = tree_create(head, &flags);
-		ft_printf("You entered: %s\n", input);
+		//ft_printf("You entered: %s\n", input);
 		//tree_print(tree, 1);
+
+		//Rebuilt ENVP function
+		execution(tree, envp_list);
+
+		envp_free(&envp_list);
 		free(tokens);
-		free(pointer_token);
 		tree_free(tree);
 		token_no_content_free(head);
 		free(input);

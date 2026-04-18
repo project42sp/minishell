@@ -23,6 +23,7 @@ static t_token	*tree_redir_helper(t_token **token,
 {
 	t_token	*token_redir;
 
+	token_redir = NULL;
 	while (*token && (*token)->signal <= HEREDOC)
 	{
 		if ((*token)->signal == CMD)
