@@ -7,6 +7,7 @@ int	main(int argc, char **argv, char **envp)
 	t_tree	*tree;
 	t_check	flags;
 	t_envp	*envp_list;
+	int		fd[2];
 
 	if(argc > 1)
 		return (1);
@@ -44,6 +45,15 @@ int	main(int argc, char **argv, char **envp)
 		ft_printf("flags: word=%d input=%d output=%d pipe=%d logical=%d\n",
 			flags.word, flags.input, flags.output, flags.pipe, flags.logical);
 		token_list_free(head);
+
+		tree = tree_create(head, &flags);
+		//ft_printf("You entered: %s\n", input);
+		//tree_print(tree, 1);
+
+		//Rebuilt ENVP function
+		execution(tree, envp_list, fd);
+
+		envp_free(&envp_list);
 		free(tokens);
 		free(signals);
 		free(input);
