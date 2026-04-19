@@ -38,6 +38,7 @@ t_token	*get_next_token(t_token *token);
 void	token_list_free(t_token *head);
 void	token_no_content_free(t_token *head);
 void	tree_free(t_tree *tree);
+void	tree_node_free(char **node);
 void	envp_free(t_envp **envp);
 void	envp_char_free(char ***envp);
 void	split_free(char **split);
@@ -46,6 +47,7 @@ void	split_free(char **split);
 t_envp	*create_envp_table(char **envp);
 
 //Execution
-int execution(t_tree *tree, t_envp *envp);
+int execution(t_tree *tree, t_envp *envp, int *fd);
+int	redirect(t_tree *tree, int *fd);
 
 #endif
