@@ -1,228 +1,212 @@
 #include "../includes/minishell.h"
 
-static int	count_tokens(char *input)
+static int	operator_len(t_tokens_type type)
 {
-	int	count;
-	int	i;
-
-	count = 0;
-	i = 0;
-	while (input[i])
-	{
-		if (input[i] == ' ')
-			i++;
-		else if (input[i] == '<' || input[i] == '>')
-		{
-			count++;
-			i++;
-			if (input[i] == '<' || input[i] == '>')
-				i++;
-		}
-		else if (input[i] == '|')
-		{
-			count++;
-			i++;
-			if (input[i] == '|')
-				i++;
-		}
-		else if (input[i] == '&' && input[i + 1] == '&')
-		{
-			count++;
-			i += 2;
-		}
-		else
-		{
-			count++;
-			while (input[i] && input[i] != ' '
-				&& input[i] != '|' && input[i] != '<'
-				&& input[i] != '>' && input[i] != '&')
-				i++;
-		}
-	}
-	return (count);
+	if (type == HEREDOC || type == APPEND || type == OR || type == AND)
+		return (2);
+	if (type == PIPE || type == INPUT || type == OUTPUT)
+		return (1);
+	return (0);
 }
 
-static t_tokens_type	get_signal(char *token)
+static t_tokens_type	get_operator_type(char *str)
 {
-	if (ft_strncmp(token, "<<", 2) == 0)
+	if (ft_strncmp(str, "<<", 2) == 0)
 		return (HEREDOC);
-	if (ft_strncmp(token, ">>", 2) == 0)
+	if (ft_strncmp(str, ">>", 2) == 0)
 		return (APPEND);
-	if (ft_strncmp(token, "||", 2) == 0)
+	if (ft_strncmp(str, "||", 2) == 0)
 		return (OR);
-	if (ft_strncmp(token, "&&", 2) == 0)
+	if (ft_strncmp(str, "&&", 2) == 0)
 		return (AND);
-	if (ft_strncmp(token, "|", 1) == 0)
+	if (*str == '|')
 		return (PIPE);
-	if (ft_strncmp(token, "<", 1) == 0)
+	if (*str == '<')
 		return (INPUT);
-	if (ft_strncmp(token, ">", 1) == 0)
+	if (*str == '>')
 		return (OUTPUT);
 	return (CMD);
 }
 
-static char	*get_token(char *input, int *i)
+static char	*extract_token(char *input, int *i, t_tokens_type *type)
 {
-	int		start;
+	int				start;
+	char			quote;
+	t_tokens_type	op_type;
 
-	while (input[*i] == ' ')
-		(*i)++;
+	ft_skip_spaces(input, i);
+	if (!input[*i])
+		return (NULL);
+	op_type = get_operator_type(input + *i);
+	if (op_type != CMD)
+	{
+		if (type)
+			*type = op_type;
+		*i += operator_len(op_type);
+		return(NULL);
+	}
 	start = *i;
-	if (input[*i] == '|' || input[*i] == '<' || input[*i] == '>')
+	quote = 0;
+	while (input[*i])
 	{
+		if (quote == 0 && (input[*i] == '"' || input[*i] == '\''))
+		{
+			quote = input[*i];
+			(*i)++;
+			continue ;
+		}
+		if (quote != 0 && input[*i] == quote)
+		{
+			quote = 0;
+			(*i)++;
+			continue ;
+		}
+		if (quote != 0)
+		{
+			(*i)++;
+			continue ;
+		}
+		if (ft_isspace(input[*i]))
+			break ;
+		if (get_operator_type(input + *i) != CMD)
+			break ;
 		(*i)++;
-		if (input[*i] == '|' || input[*i] == '<' || input[*i] == '>')
-			(*i)++;
 	}
-	else if (input[*i] == '&' && input[*i + 1] == '&')
-		(*i) += 2;
-	else
+	if (quote != 0)
 	{
-		while (input[*i] && input[*i] != ' '
-			&& input[*i] != '|' && input[*i] != '<'
-			&& input[*i] != '>' && input[*i] != '&')
-			(*i)++;
+		ft_putstr_fd("syntax error: unclosed quote\n", 2);
+		return (NULL);
 	}
+	if (type)
+		*type = CMD;
 	return (ft_substr(input, start, *i - start));
 }
 
-t_token	*lexer(char *input, t_check *flags)
+static int	count_tokens(char *input)
+{
+	int		i;
+	int		count;
+	char	*temp;
+
+	i = 0;
+	count = 0;
+	while (1)
+	{
+		temp = extract_token(input, &i, NULL);
+		if (!temp && !input[i])
+			break ;
+		if (temp)
+			free(temp);
+		count++;
+	}
+	return (count);
+}
+
+char ***lexer(char *input, t_tokens_type **signals_ptr, t_check *flags)
 {
 	char			***tokens;
-	t_tokens_type	*signals;
-	t_token			*list;
+	t_tokens_type 	*signals;
 	int				count;
 	int				i;
 	int				j;
+	t_tokens_type	last_type;
+	char			*token_str;
+	t_tokens_type	token_type;
 
+	if (!input || !flags)
+		return (NULL);
+	ft_bzero(flags, sizeof(t_check));
 	count = count_tokens(input);
-	tokens = (char ***)ft_calloc(count + 2, sizeof(char **));
-	signals = (t_tokens_type *)ft_calloc(count + 2, sizeof(t_tokens_type));
+	tokens = ft_calloc(count + 2, sizeof(char **));
+	signals = ft_calloc(count + 2, sizeof(t_tokens_type));
 	if (!tokens || !signals)
 		return (NULL);
 	i = 0;
 	j = 0;
+	last_type = EOFILE;
 	while (j < count)
 	{
-		tokens[j] = (char **)ft_calloc(2, sizeof(char *));
+		tokens[j] = ft_calloc(2, sizeof(char *));
 		if (!tokens[j])
 		{
 			while (j > 0)
 			{
+				free(tokens[j - 1][0]);
+				free(tokens[j - 1]);
 				j--;
-				free(tokens[j][0]);
-				free(tokens[j]);
 			}
 			free(tokens);
 			free(signals);
 			return (NULL);
 		}
-		tokens[j][0] = get_token(input, &i);
+		token_str = extract_token(input, &i, &token_type);
+		tokens[j][0] = token_str;
 		tokens[j][1] = NULL;
-		if (!tokens[j][0])
-		{
-			free(tokens[j]);
-			while (j > 0)
-			{
-				j--;
-				free(tokens[j][0]);
-				free(tokens[j]);
-			}
-			free(tokens);
-			free(signals);
-			return (NULL);
-		}
-		signals[j] = get_signal(tokens[j][0]);
-		if (signals[j] == INPUT || signals[j] == OUTPUT
-			|| signals[j] == HEREDOC || signals[j] == APPEND)
-		{
-			flags->input += (signals[j] == INPUT || signals[j] == HEREDOC);
-			flags->output += (signals[j] == OUTPUT || signals[j] == APPEND);
-			j++;
-			tokens[j] = (char **)ft_calloc(2, sizeof(char *));
-			if (!tokens[j])
-			{
-				while (j > 0)
-				{
-					j--;
-					free(tokens[j][0]);
-					free(tokens[j]);
-				}
-				free(tokens);
-				free(signals);
-				return (NULL);
-			}
-			tokens[j][0] = get_token(input, &i);
-			tokens[j][1] = NULL;
-			if (!tokens[j][0])
-			{
-				free(tokens[j]);
-				while (j > 0)
-				{
-					j--;
-					free(tokens[j][0]);
-					free(tokens[j]);
-				}
-				free(tokens);
-				free(signals);
-				return (NULL);
-			}
-			signals[j] = FILE_PATH;
-			j++;
-		}
+		if (token_str == NULL)
+			signals[j] = token_type;
 		else
 		{
-			if (signals[j] == PIPE)
-				flags->pipe = 1;
-			else if (signals[j] == AND || signals[j] == OR)
-				flags->logical = 1;
+			if (last_type >= INPUT && last_type <= HEREDOC)
+				signals[j] = FILE_PATH;
 			else
-				flags->word = 1;
-			j++;
+				signals[j] = CMD;
 		}
+		if (signals[j] == PIPE)
+			flags->pipe = 1;
+		else if (signals[j] == AND || signals[j] == OR)
+			flags->logical = 1;
+		else if (signals[j] == INPUT || signals[j] == HEREDOC)
+			flags->input = 1;
+		else if (signals[j] == OUTPUT || signals[j] == APPEND)
+			flags->output = 1;
+		else if (signals[j] == CMD || signals[j] == FILE_PATH)
+			flags->word = 1;
+		last_type = signals[j];
+		j++;
 	}
 	tokens[j] = NULL;
 	signals[j] = EOFILE;
-	j = 0;
-	while (j < count)
-	{
-		if (signals[j] == PIPE || signals[j] == AND || signals[j] == OR
-			|| signals[j] == INPUT || signals[j] == OUTPUT
-			|| signals[j] == APPEND || signals[j] == HEREDOC)
-		{
-			free(tokens[j][0]);
-			free(tokens[j]);
-			tokens[j] = NULL;
-		}
-		j++;
-	}
-	list = token_create(tokens, signals);
-	free(tokens);
-	free(signals);
-	return (list);
+	*signals_ptr = signals;
+	return (tokens);
 }
 
-void	debug_lexer(t_token *list)
+static const char *get_operator_symbol(t_tokens_type type)
 {
-	t_token	*curr;
-	char	*types[] = {
+	if (type == INPUT)
+		return ("<");
+	if (type == OUTPUT)
+		return (">");
+	if (type == APPEND)
+		return (">>");
+	if (type == HEREDOC)
+		return ("<<");
+	if (type == PIPE)
+		return ("|");
+	if (type == AND)
+		return ("&&");
+	if (type == OR)
+		return ("||");
+	return ("");
+}
+
+void debug_lexer(t_token *list)
+{
+	t_token		*curr;
+	const char	*types[] = {
 		"CMD", "FILE_PATH", "INPUT", "OUTPUT",
 		"APPEND", "HEREDOC", "PIPE", "AND", "OR", "EOFILE"
-	};
-	char	*symbols[] = {
-		"", "", "<", ">", ">>", "<<", "|", "&&", "||", ""
 	};
 
 	ft_printf("\n=== LEXER DEBUG ===\n");
 	curr = list;
 	while (curr)
 	{
-		if (curr->token)
-			ft_printf("[%-9s] \"%s\"\n", types[curr->signal],
-				((char **)curr->token)[0]);
+		ft_printf("[%-9s] ", types[curr->signal]);
+		// Verifica se há uma string válida
+		if (curr->token && ((char **)curr->token)[0] != NULL)
+			ft_printf("\"%s\"\n", ((char **)curr->token)[0]);
 		else
-			ft_printf("[%-9s] \"%s\"\n", types[curr->signal],
-				symbols[curr->signal]);
+			ft_printf("symbol=\"%s\"\n", get_operator_symbol(curr->signal));
 		curr = curr->next;
 	}
 	ft_printf("===================\n\n");
