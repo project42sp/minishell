@@ -10,6 +10,7 @@ SRCS	= \
 		src/free/token_list_free.c	\
 		src/free/envp_free.c	\
 		src/executor/execution_base.c	\
+		src/executor/execution_redir.c	\
 		src/utils/envp.c		\
 		src/utils/envp_rebuilt.c	\
 		src/main.c
