@@ -43,9 +43,9 @@ static char	*find_path(char **path_envp, char **cmd)
 	return (NULL);
 }
 
+
 static int	child_process(char **envp, char **cmd, char *path)
 {
-	close(0);
 	execve(path, cmd, envp);
 	free(path);
 	// free cmd
@@ -54,7 +54,7 @@ static int	child_process(char **envp, char **cmd, char *path)
 	exit(127);
 }
 
-static int	base_exec(char **envp, t_tree *tree)
+static int	base_exec(char **envp, t_tree *tree, int *fd)
 {
 	char	*path;
 	pid_t	pid;
@@ -73,6 +73,13 @@ static int	base_exec(char **envp, t_tree *tree)
 	pid = fork();
 	if (pid == 0)
 	{
+		if (redirect(tree, fd))
+		{
+			free(path);
+			return (1);
+		}
+		close(fd[0]);
+		close(fd[1]);
 		err = child_process(envp, node, path);
 	}
 	waitpid(pid, &err, 0);
@@ -80,7 +87,7 @@ static int	base_exec(char **envp, t_tree *tree)
 	return (err);
 }
 
-int execution(t_tree *tree, t_envp *envp)
+int execution(t_tree *tree, t_envp *envp, int *fd)
 {
 	char	**path_table;
 	int		status_error;
@@ -88,9 +95,14 @@ int execution(t_tree *tree, t_envp *envp)
 	path_table = create_path_table(envp);
 	if (!path_table)
 		return (1);
+	if (pipe(fd) == -1)
+	{
+		envp_char_free(&path_table);
+		return (1);
+	}
 	if (tree->signal == CMD)
 	{
-		status_error = base_exec(path_table, tree);
+		status_error = base_exec(path_table, tree, fd);
 		envp_char_free(&path_table);
 		return (status_error); // Temp to make the function compile
 	}
