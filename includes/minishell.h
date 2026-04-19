@@ -8,6 +8,7 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <readline/readline.h>
+# include <readline/history.h>
 # include <sys/wait.h>
 
 typedef struct s_tree
@@ -34,7 +35,9 @@ void	token_no_content_free(t_token *head);
 void	tree_free(t_tree *tree);
 
 // Lexer functions
-void		debug_lexer(t_token *list);
-t_token		*lexer(char *input, t_check *flags);
+void	debug_lexer(t_token *list);
+char	***lexer(char *input, t_tokens_type **signals_ptr, t_check *flags);
+void	ft_skip_spaces(char *input, int *index);
+int		ft_isspace(char c);
 
 #endif

@@ -9,6 +9,7 @@ SRCS	= \
 		src/free/tree_free.c		\
 		src/free/token_list_free.c	\
 		src/lexer/lexer.c			\
+		src/lexer/lexer_utils.c	\
 		src/main.c
 
 OBJS_DIR	= obj

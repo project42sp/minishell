@@ -3,20 +3,17 @@
 void	token_list_free(t_token *head)
 {
 	t_token	*next;
-	int		index;
 	char	**temp;
 
 	while (head)
 	{
 		next = head->next;
-		if (head->token){
+		if (head->token)
+		{
 			temp = (char **)head->token;
-			index = 0;
-			while (temp && temp[index] != NULL)
-			{
-				free(temp[index]);
-				index++;
-			}
+			if (temp[0])
+				free(temp[0]);
+			free(temp);
 		}
 		free(head);
 		head = next;
