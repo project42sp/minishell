@@ -49,7 +49,7 @@ t_envp	*create_envp_table(char **envp);
 
 //Execution
 int execution(t_tree *tree, t_envp *envp, int *fd);
-int	redirect(t_tree *tree, int *fd);
+int	redirect(t_tree **tree, int *fd);
 
 // Lexer functions
 void	debug_lexer(t_token *list);
