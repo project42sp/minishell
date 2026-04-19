@@ -19,9 +19,13 @@ void	tree_free(t_tree *tree)
 {
 	if (!tree)
 		return ;
-	tree_free(tree->left);
+	if (tree->left)
+		tree_free(tree->left);
+//	if (tree->node)
+//		tree_node_free((char **)tree->node);
 	if (tree->node)
-		tree_node_free((char **)tree->node);
-	tree_free(tree->right);
+		free(tree->node);
+	if (tree->right)
+		tree_free(tree->right);
 	free(tree);
 }
