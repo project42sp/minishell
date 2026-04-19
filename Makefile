@@ -3,6 +3,7 @@ CC		= cc
 CFLAGS	= -Wall -Werror -Wextra -g3 -I includes
 
 SRCS	= \
+		src/tree/tree_print.c		\
 		src/token/token_cmd_create.c	\
 		src/tree/tree_build.c		\
 		src/tree/tree_utils.c		\
