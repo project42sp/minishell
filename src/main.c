@@ -47,8 +47,15 @@ int	main(int argc, char **argv, char **envp)
 		token_list_free(head);
 
 		tree = tree_create(head, &flags);
+		tree_print(tree, 0);
+		tree_print_extense(tree);
 		//ft_printf("You entered: %s\n", input);
 		//tree_print(tree, 1);
+
+		//Create ENVP
+		// TODO: Move envp_list out of the loop.
+		// It's here to test free
+		envp_list = create_envp_table(envp);
 
 		//Rebuilt ENVP function
 		execution(tree, envp_list, fd);

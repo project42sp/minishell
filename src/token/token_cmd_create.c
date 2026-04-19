@@ -25,11 +25,7 @@ t_token	*token_create(char ***tokens, t_tokens_type *signal)
 	head = NULL;
 	prev = NULL;
 	index = 0;
-<<<<<<< HEAD
 	while (signal[index] != EOFILE)
-=======
-	while (tokens[index] != NULL)
->>>>>>> 43c784d (fix: correction to datatype char***)
 	{
 		current = token_node(tokens[index], signal[index]);
 		if (!current)
