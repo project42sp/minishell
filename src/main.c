@@ -7,6 +7,7 @@ int	main(int argc, char **argv, char **envp)
 	t_tree	*tree;
 	t_check	flags;
 	t_envp	*envp_list;
+	int		fd[2];
 
 	if(argc > 1)
 		return (1);
@@ -24,18 +25,23 @@ int	main(int argc, char **argv, char **envp)
 		}
 		//add_history(input);
 		// Hardcode - Lexer vai substituir isso depois
-		char *tokens = ft_strjoin("/", input);
-		t_tokens_type	signal[] = {CMD, EOFILE};
-		char **pointer_token;
+		char **tokens = ft_split(input, ' ');
+		char *cmd = tokens[2];
+		tokens[2] = ft_strjoin("/", cmd);
+		free(cmd);
+		t_tokens_type	signal[] = {INPUT, FILE_PATH, CMD, EOFILE};
+		//char **pointer_token;
 
+//
 		//Create ENVP
 		// TODO: Move envp_list out of the loop.
 		// It's here to test free
 		envp_list = create_envp_table(envp);
 
-		pointer_token = (char **)ft_calloc(2, sizeof(char *));
-		pointer_token[0] = tokens;
-		pointer_token[1] = NULL;
+
+	//	pointer_token = (char **)ft_calloc(2, sizeof(char *));
+	//	pointer_token[0] = tokens;
+	//	pointer_token[1] = NULL;
 
 		flags.word = 1;
 		flags.input = 0;
@@ -43,7 +49,7 @@ int	main(int argc, char **argv, char **envp)
 		flags.pipe = 0;
 		flags.logical = 0;
 
-		head = token_create(&pointer_token, signal);
+		head = token_create(&tokens, signal);
 		if (!head)
 		{
 			ft_printf("Failed to create token list\n");
@@ -56,7 +62,7 @@ int	main(int argc, char **argv, char **envp)
 		//tree_print(tree, 1);
 
 		//Rebuilt ENVP function
-		execution(tree, envp_list);
+		execution(tree, envp_list, fd);
 
 		envp_free(&envp_list);
 		free(tokens);
