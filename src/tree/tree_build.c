@@ -87,8 +87,6 @@ t_tree	*tree_create(t_token *token, t_check *flags)
 
 	if (!token || !flags)
 		return (NULL);
-	// Precedense of logical operators over pipe operator.
-	// Will need to add an if and change the pipe's if to else if
 	tree = NULL;
 	if (flags->pipe)
 		tree = tree_pipe_create(&token);
