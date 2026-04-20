@@ -50,11 +50,14 @@ t_envp	*create_envp_table(char **envp);
 //Execution
 int execution(t_tree *tree, t_envp *envp, int *fd);
 int	redirect(t_tree **tree, int *fd);
+<<<<<<< HEAD
 
 // Lexer functions
 void	debug_lexer(t_token *list);
 char	***lexer(char *input, t_tokens_type **signals_ptr, t_check *flags);
 void	ft_skip_spaces(char *input, int *index);
 int		ft_isspace(char c);
+=======
+>>>>>>> a76e4aea5fd1080f9663ce9d49c28cc9e40b9b33
 
 #endif

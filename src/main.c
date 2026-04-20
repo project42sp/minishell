@@ -52,10 +52,9 @@ int	main(int argc, char **argv, char **envp)
 		//ft_printf("You entered: %s\n", input);
 		//tree_print(tree, 1);
 
-		//Create ENVP
-		// TODO: Move envp_list out of the loop.
-		// It's here to test free
-		envp_list = create_envp_table(envp);
+		char **token_1 = (char **)ft_calloc(2, sizeof(char *));
+		char **token_2 = (char **)ft_calloc(2, sizeof(char *));
+		char **token_3 = (char **)ft_calloc(2, sizeof(char *));
 
 		//Rebuilt ENVP function
 		execution(tree, envp_list, fd);
