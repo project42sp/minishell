@@ -50,7 +50,7 @@ $(OBJS_DIR)/%.o: src/free/%.c | $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJS_DIR)/%.o: src/lexer/%.c | $(OBJS_DIR)
-  $(CC) $(CFLAGS) -c $< -o $@
+ 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJS_DIR)/%.o: src/utils/%.c | $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
