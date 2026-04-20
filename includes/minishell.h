@@ -19,20 +19,35 @@ typedef struct s_tree
 	struct s_tree	*right;
 }	t_tree;
 
-//t_tree	*tree_node_create(t_tree *left, void *token, t_tree *right);
+typedef struct s_envp
+{
+	char			*key;
+	char			*value;
+	struct s_envp	*next;
+}	t_envp;
+
+//Test Functions
 void	tree_print(t_tree *tree, int level);
 void	tree_print_extense(t_tree *tree);
 
+// Token Create Functions
 t_tree	*tree_create(t_token *list, t_check *flags);
 t_token	*token_create(char ***tokens, t_tokens_type *signal);
 t_token	*get_next_token(t_token *token);
-
-void	tree_print_extense(t_tree *tree);
 
 // Free functions
 void	token_list_free(t_token *head);
 void	token_no_content_free(t_token *head);
 void	tree_free(t_tree *tree);
+void	envp_free(t_envp **envp);
+void	envp_char_free(char ***envp);
+void	split_free(char **split);
+
+// envp function
+t_envp	*create_envp_table(char **envp);
+
+//Execution
+int execution(t_tree *tree, t_envp *envp);
 
 // Lexer functions
 void	debug_lexer(t_token *list);
