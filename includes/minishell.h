@@ -8,6 +8,7 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <readline/readline.h>
+# include <readline/history.h>
 # include <sys/wait.h>
 
 typedef struct s_tree
@@ -47,5 +48,11 @@ t_envp	*create_envp_table(char **envp);
 
 //Execution
 int execution(t_tree *tree, t_envp *envp);
+
+// Lexer functions
+void	debug_lexer(t_token *list);
+char	***lexer(char *input, t_tokens_type **signals_ptr, t_check *flags);
+void	ft_skip_spaces(char *input, int *index);
+int		ft_isspace(char c);
 
 #endif

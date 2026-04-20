@@ -8,6 +8,8 @@ SRCS	= \
 		src/tree/tree_utils.c		\
 		src/free/tree_free.c		\
 		src/free/token_list_free.c	\
+		src/lexer/lexer.c			\
+		src/lexer/lexer_utils.c	\
 		src/free/envp_free.c	\
 		src/executor/execution_base.c	\
 		src/utils/envp.c		\
@@ -46,6 +48,9 @@ $(OBJS_DIR)/%.o: src/tree/%.c | $(OBJS_DIR)
 
 $(OBJS_DIR)/%.o: src/free/%.c | $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJS_DIR)/%.o: src/lexer/%.c | $(OBJS_DIR)
+  $(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJS_DIR)/%.o: src/utils/%.c | $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@

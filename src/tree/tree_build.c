@@ -22,12 +22,27 @@ static t_token	*tree_redir_helper(t_token **token,
 						t_tree **cmd_node, t_tree **file_node)
 {
 	t_token	*token_redir;
+	t_tree	*last_cmd;
+	t_tree	*new_cmd;
 
 	token_redir = NULL;
+	last_cmd = NULL;
 	while (*token && (*token)->signal <= HEREDOC)
 	{
 		if ((*token)->signal == CMD)
-			*cmd_node = tree_node_create(NULL, token, NULL);
+		{
+			new_cmd = tree_node_create(NULL, token, NULL);
+			if (!*cmd_node)
+			{
+				*cmd_node = new_cmd;
+				last_cmd = new_cmd;
+			}
+			else
+			{
+				last_cmd->right = new_cmd;
+				last_cmd = new_cmd;
+			}
+		}
 		else if ((*token)->signal == FILE_PATH)
 			*file_node = tree_node_create(NULL, token, NULL);
 		else if ((*token)->signal >= INPUT && (*token)->signal <= HEREDOC)
@@ -57,6 +72,8 @@ static t_tree	*tree_redir(t_token **token)
 		return (cmd_node);
 	}
 	token_redir = tree_redir_helper(token, &cmd_node, &file_node);
+	if (!token_redir)
+		return (cmd_node);
 	redir_node = tree_node_create(file_node, &token_redir, cmd_node);
 	return (redir_node);
 }
@@ -66,18 +83,19 @@ static t_tree	*tree_pipe_create(t_token **token)
 	t_tree	*pipe_node;
 	t_tree	*right_node;
 	t_tree	*left_node;
+	t_token	*pipe_token;
 
 	if (!*token)
 		return (NULL);
 	right_node = NULL;
 	left_node = NULL;
-	if (*token)
-		left_node = tree_redir(token);
-	if (*token && (*token)->signal == PIPE)
-		right_node = tree_pipe_create(&(*token)->next);
-	else
+	left_node = tree_redir(token);
+	if (!*token || (*token)->signal != PIPE)
 		return (left_node);
-	pipe_node = tree_node_create(left_node, token, right_node);
+	pipe_token = *token;
+	*token = (*token)->next;
+	right_node = tree_pipe_create(token);
+	pipe_node = tree_node_create(left_node, &pipe_token, right_node);
 	return (pipe_node);
 }
 
@@ -92,9 +110,7 @@ t_tree	*tree_create(t_token *token, t_check *flags)
 	tree = NULL;
 	if (flags->pipe)
 		tree = tree_pipe_create(&token);
-	else if (flags->input || flags->output)
+	else if (flags->input || flags->output || flags->word)
 		tree = tree_redir(&token);
-	else if (flags->word)
-		tree = tree_node_create(NULL, &token, NULL);
 	return (tree);
 }
