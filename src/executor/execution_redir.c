@@ -8,8 +8,6 @@ int	base_redir(t_tree *tree, int *fd)
 		return (1);
 	if (dup2(fd[1], STDOUT_FILENO) == -1)
 		return (1);
-	close(fd[0]);
-	close(fd[1]);
 	return (0);
 }
 
@@ -85,5 +83,7 @@ int	redirect(t_tree **tree, int *fd)
 	}
 	else
 		base_redir(*tree, fd);
+	close(fd[0]);
+	close(fd[1]);
 	return (0);
 }
