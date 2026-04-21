@@ -14,6 +14,6 @@ void	tree_print_extense(t_tree *tree)
 	if (!tree)
 		return ;
 	tree_print_extense(tree->left);
-	ft_printf("%s ", ((char **)tree->node)[0]);
+	ft_printf("%s \n", ((char **)tree->node)[0]);
 	tree_print_extense(tree->right);
 }
