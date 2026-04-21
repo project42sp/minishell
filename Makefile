@@ -3,17 +3,18 @@ CC		= cc
 CFLAGS	= -Wall -Werror -Wextra -g3 -I includes
 
 SRCS	= \
-		src/tree/tree_print.c		\
-		src/token/token_cmd_create.c	\
-		src/tree/tree_build.c		\
-		src/tree/tree_utils.c		\
-		src/free/tree_free.c		\
-		src/free/token_list_free.c	\
 		src/lexer/lexer.c			\
 		src/lexer/lexer_utils.c	\
-		src/free/envp_free.c	\
+		src/token/token_cmd_create.c	\
+		src/parser/parser.c			\
+		src/tree/tree_print.c		\
+		src/tree/tree_build.c		\
+		src/tree/tree_utils.c		\
 		src/executor/execution_base.c	\
 		src/executor/execution_redir.c	\
+		src/free/tree_free.c		\
+		src/free/token_list_free.c	\
+		src/free/envp_free.c	\
 		src/utils/envp.c		\
 		src/utils/envp_rebuilt.c	\
 		src/main.c
@@ -33,6 +34,7 @@ val:
 		--leak-check=full \
 		--show-leak-kinds=all \
 		--track-origins=yes \
+		--track-fds=yes		\
 		--suppressions=readline.supp \
 		./$(NAME)
 
@@ -52,7 +54,10 @@ $(OBJS_DIR)/%.o: src/free/%.c | $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJS_DIR)/%.o: src/lexer/%.c | $(OBJS_DIR)
-  $(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJS_DIR)/%.o: src/parser/%.c | $(OBJS_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJS_DIR)/%.o: src/utils/%.c | $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
