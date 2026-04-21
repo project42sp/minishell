@@ -3,17 +3,14 @@
 void	token_list_free(t_token *head)
 {
 	t_token	*next;
-	char	**temp;
 
 	while (head)
 	{
 		next = head->next;
 		if (head->token)
 		{
-			temp = (char **)head->token;
-			if (temp[0])
-				free(temp[0]);
-			free(temp);
+			split_free((char **)head->token);
+			free(head->token);
 		}
 		free(head);
 		head = next;
