@@ -54,10 +54,9 @@ static int	child_process(char **envp, char **cmd, char *path)
 	exit(127);
 }
 
-static int	base_exec(char **envp, t_tree *tree, int *fd)
+static int	base_exec(char **envp, t_tree *tree)
 {
 	char	*path;
-	pid_t	pid;
 	int		err;
 	char	**node;
 
@@ -66,43 +65,44 @@ static int	base_exec(char **envp, t_tree *tree, int *fd)
 		// Return status code
 	err = 0;
 	path = NULL;
-	pid = fork();
-	if (pid == 0)
-	{
-		if (redirect(&tree, fd))
-		{
-			free(path);
-			return (1);
-		}
-		node = (char **)tree->node;
-		path = find_path(envp, node);
-		if (!path)
-			return (1);
-		close(fd[0]);
-		close(fd[1]);
-		err = child_process(envp, node, path);
-	}
-	waitpid(pid, &err, 0);
+	node = (char **)tree->node;
+	path = find_path(envp, node);
+	if (!path)
+		return (1);
+	err = child_process(envp, node, path);
 	free(path);
 	return (err);
 }
 
-int execution(t_tree *tree, t_envp *envp, int *fd)
+int execution(t_tree *tree, t_envp *envp)
 {
 	char	**path_table;
 	int		status_code;
+	pid_t	pid;
+	int		fd[2];
 
-	//Initialize status code as ok
 	status_code = 0;
 	path_table = create_path_table(envp);
 	if (!path_table)
 		return (1);
-	if (pipe(fd) == -1)
+	if (tree->signal != CMD && pipe(fd) == -1)
 	{
 		envp_char_free(&path_table);
 		return (1);
 	}
-	status_code = base_exec(path_table, tree, fd);
+	pid = fork();
+	if (pid == 0)
+	{
+		if (tree->signal != CMD && redirect(&tree, fd))
+			return (1);
+		status_code = base_exec(path_table, tree);
+	}
+	if (tree->signal != CMD)
+	{
+		close(fd[0]);
+		close(fd[1]);
+	}
+	waitpid(pid, &status_code, 0);
 	envp_char_free(&path_table);
 	return (status_code); // Temp to make the function compile
 	//TODO: Criar o export e adicionar o status_code dentro da variavel $?
