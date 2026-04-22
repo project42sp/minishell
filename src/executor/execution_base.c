@@ -103,7 +103,7 @@ int execution(t_tree *tree, t_envp *envp)
 		close(fd[1]);
 	}
 	waitpid(pid, &status_code, 0);
-	envp_char_free(&path_table);
+	split_free(path_table);
 	return (status_code); // Temp to make the function compile
 	//TODO: Criar o export e adicionar o status_code dentro da variavel $?
 }
