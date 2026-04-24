@@ -44,17 +44,16 @@ static char	*find_path(char **path_envp, char **cmd)
 }
 
 
-static int	child_process(char **envp, char **cmd, char *path)
+static int	child_process(char **cmd, char *path, char **envp)
 {
 	execve(path, cmd, envp);
 	free(path);
-	// free cmd
 	envp_char_free(&envp);
 	perror("Error");
 	exit(127);
 }
 
-static int	base_exec(char **envp, t_tree *tree)
+static int	base_exec(char **path_table, t_tree *tree, char **envp)
 {
 	char	*path;
 	int		err;
@@ -66,26 +65,20 @@ static int	base_exec(char **envp, t_tree *tree)
 	err = 0;
 	path = NULL;
 	node = (char **)tree->node;
-	path = find_path(envp, node);
+	path = find_path(path_table, node);
 	if (!path)
 		return (1);
-	err = child_process(envp, node, path);
+	err = child_process(node, path, envp);
 	free(path);
 	return (err);
 }
 
-int execution(t_tree *tree, t_envp *envp)
+int exec_pipe(t_tree *tree, char **path_table, int fd[2], char **envp)
 {
-	char	**path_table;
 	int		status_code;
 	pid_t	pid;
-	int		fd[2];
 
-	status_code = 0;
-	path_table = create_path_table(envp);
-	if (!path_table)
-		return (1);
-	if (tree->signal != CMD && pipe(fd) == -1)
+	if (tree->signal == PIPE && pipe(fd) == -1)
 	{
 		envp_char_free(&path_table);
 		return (1);
@@ -93,9 +86,9 @@ int execution(t_tree *tree, t_envp *envp)
 	pid = fork();
 	if (pid == 0)
 	{
-		if (tree->signal != CMD && redirect(&tree, fd))
+		if (tree->signal != CMD && redirect(&tree, fd) == 0)
 			return (1);
-		status_code = base_exec(path_table, tree);
+		status_code = base_exec(path_table, tree, envp);
 	}
 	if (tree->signal != CMD)
 	{
@@ -103,6 +96,33 @@ int execution(t_tree *tree, t_envp *envp)
 		close(fd[1]);
 	}
 	waitpid(pid, &status_code, 0);
+	return (status_code);
+}
+
+int execution(t_tree *tree, t_envp *envp_table)
+{
+	char	**path_table;
+	int		status_code;
+	int		fd[2];
+	char	**rebuilt_envp;
+
+	status_code = 0;
+	path_table = create_path_table(envp_table);
+	if (!path_table)
+		return (1);
+	rebuilt_envp = envp_rebuilt(envp_table);
+	if (!rebuilt_envp)
+	{
+		split_free(path_table);
+		return (1);
+	}
+	if (tree->signal == CMD)
+	{
+        status_code = base_exec(path_table, tree, rebuilt_envp);
+    	return (status_code);
+	}
+	else if (tree->signal == PIPE)
+		status_code = exec_pipe(tree, path_table, fd, rebuilt_envp);
 	split_free(path_table);
 	return (status_code); // Temp to make the function compile
 	//TODO: Criar o export e adicionar o status_code dentro da variavel $?
