@@ -42,10 +42,10 @@ void	envp_char_free(char ***envp)
 	if (!envp || !*envp)
 		return ;
 	index = 0;
-	while((*envp)[index])
+	while(envp[index])
 	{
-		split_free(&(*envp)[index]);
-		(*envp)[index] = NULL;
+		split_free(envp[index]);
+		envp[index] = NULL;
 		index++;
 	}
 	free(envp);
