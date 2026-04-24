@@ -46,9 +46,10 @@ void	split_free(char **split);
 
 // envp function
 t_envp	*create_envp_table(char **envp);
+char	**envp_rebuilt(t_envp *envp_table);
 
 //Execution
-int execution(t_tree *tree, t_envp *envp);
+int execution(t_tree *tree, t_envp *envp_table);
 int	redirect(t_tree **tree, int *fd);
 
 // Lexer functions
