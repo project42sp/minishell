@@ -49,7 +49,7 @@ char	**envp_rebuilt(t_envp *head)
 	if (!envp)
 		return (NULL);
 	index = 0;
-	while (head)
+	while (index < len)
 	{
 		temp = envp_rebuilt_util(head);
 		if (!temp)
