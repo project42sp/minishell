@@ -1,67 +1,58 @@
 #include "../includes/minishell.h"
 
+static char	*get_input(void)
+{
+	char *input;
+
+	input = readline("minishell$ ");
+	if (!input)
+		return (NULL);
+	if (!*input)
+	{
+	    free(input);
+    	return (NULL);
+	}
+	else
+    	add_history(input);
+	return (input);
+}
+
+static void	execute_input(char *input, t_envp *envp_list)
+{
+	t_tree	*tree;
+
+	tree = parser(input);
+	if (!tree)
+	{
+		perror("Error");
+		free(input);
+		return ;
+	}
+	execution(tree, envp_list);
+	free(input);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	char *input;
-//	t_token	*head;
-	t_tree	*tree;
-//	t_check	flags;
 	t_envp	*envp_list;
-//	t_tokens_type	*signals;
-//	char ***tokens;
 
 	if(argc > 1)
 		return (1);
 	(void)*argv;
+	envp_list = create_envp_table(envp);
+	if (!envp_list)
+	{
+		perror("Error");
+		return (1);
+	}
 	while(1)
 	{
-		input = readline("minishell$ ");
+		input = get_input();
 		if (!input)
 			break ;
-		if (!*input)
-		{
-			free(input);
-			continue ;
-		}
-		add_history(input);
-
-//		tokens = lexer(input, &signals, &flags);
-//		if (!tokens)
-//		{
-//			ft_printf("Lexer error: invalid syntax\n");
-//			free(input);
-//			continue ;
-//		}
-//
-//		head = token_create(tokens, signals);
-//		if (!head)
-//		{
-//			ft_printf("Failed to create token list\n");
-//			free(tokens);
-//			free(signals);
-//			free(input);
-//			continue ;
-//		}
-//
-//		tree = tree_create(head, &flags);
-
-		tree = parser(input);
-		if (!tree)
-		{
-			perror("Error");
-			free(input);
-			continue ;
-		}
-		envp_list = create_envp_table(envp);
-
-		//Rebuilt ENVP function
-		execution(tree, envp_list);
-
-//		token_list_free(head);
-		envp_free(&envp_list);
-//		free(tokens);
-//		free(signals);
-//		free(input);
+		execute_input(input, envp_list);
 	}
+	envp_free(&envp_list);
 	return (0);
 }
