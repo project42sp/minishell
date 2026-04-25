@@ -17,3 +17,11 @@ void	tree_print_extense(t_tree *tree)
 	ft_printf("%s \n", ((char **)tree->node)[0]);
 	tree_print_extense(tree->right);
 }
+
+void	tokens_print(t_token *token)
+{
+	if (!token)
+		return ;
+	ft_printf("%s \n", ((char **)token->token)[0]);
+	tokens_print(token->next);
+}
