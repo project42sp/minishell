@@ -29,6 +29,7 @@ typedef struct s_envp
 //Test Functions
 void	tree_print(t_tree *tree, int level);
 void	tree_print_extense(t_tree *tree);
+void	tokens_print(t_token *token);
 
 // Token Create Functions
 t_tree	*tree_create(t_token *list, t_check *flags);
@@ -38,7 +39,7 @@ t_token	*get_next_token(t_token *token);
 // Free functions
 void	token_list_free(t_token *head);
 void	token_no_content_free(t_token *head);
-void	tree_free(t_tree *tree);
+void	tree_free(t_tree **tree);
 void	tree_node_free(char **node);
 void	envp_free(t_envp **envp);
 void	envp_char_free(char ***envp);
