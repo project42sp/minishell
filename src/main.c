@@ -9,17 +9,18 @@ static char	*get_input(void)
 		return (NULL);
 	if (!*input)
 	{
-	    free(input);
-    	return (NULL);
+		free(input);
+		return (NULL);
 	}
 	else
-    	add_history(input);
+		add_history(input);
 	return (input);
 }
 
 static void	execute_input(char *input, t_envp *envp_list)
 {
 	t_tree	*tree;
+	int		status_error;
 
 	tree = parser(input);
 	if (!tree)
@@ -28,8 +29,11 @@ static void	execute_input(char *input, t_envp *envp_list)
 		free(input);
 		return ;
 	}
-	execution(tree, envp_list);
+	tree_print(tree, 0);
+	status_error = execution(tree, envp_list);
+	tree_free(&tree);
 	free(input);
+	input = NULL;
 }
 
 int	main(int argc, char **argv, char **envp)
