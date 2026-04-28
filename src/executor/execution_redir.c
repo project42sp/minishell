@@ -1,4 +1,5 @@
 #include "../../includes/minishell.h"
+#include <unistd.h>
 
 int	base_redir(t_tree *tree, int *fd)
 {
@@ -81,6 +82,8 @@ int	redirect(t_tree **tree, int *fd)
 		return (1);
 	if (define_stdout((*tree), fd, permission))
 		return (1);
+	close(fd[0]);
+	close(fd[1]);
 	*tree = (*tree)->right;
 	return (0);
 }

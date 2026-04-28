@@ -1,4 +1,5 @@
 #include "../../includes/minishell.h"
+#include <readline/readline.h>
 
 static char	**create_path_table(t_envp *envp)
 {
@@ -63,7 +64,7 @@ static int	child_process(char **cmd, char *path, char **envp)
 	exit(127);
 }
 
-static int	base_exec(char **path_table, t_tree *tree, char **envp)
+static int	base_exec(char **path_table, t_tree *tree, char **envp, int fd[2])
 {
 	char	*path;
 	int		err;
@@ -76,21 +77,27 @@ static int	base_exec(char **path_table, t_tree *tree, char **envp)
 	err = 0;
 	path = NULL;
 	node = (char **)tree->node;
-
 	path = find_path(path_table, node);
 	if (!path)
 		return (1);
 	pid = fork();
 	if (pid == 0)
 	{
+    	if (tree->signal != CMD && redirect(&tree, fd) == 0)
+    		return (1);
 		err = child_process(node, path, envp);
 	}
 	free(path);
+	if (tree->signal != CMD)
+	{
+		close(fd[0]);
+		close(fd[1]);
+	}
 	waitpid(pid, &err, 0);
 	return (err);
 }
 
-int exec_pipe(t_tree *tree, char **path_table, int fd[2], char **envp)
+int exec_pipe(t_tree *tree, char **path_table, char **envp, int fd[2])
 {
 	int		status_code;
 
@@ -99,14 +106,7 @@ int exec_pipe(t_tree *tree, char **path_table, int fd[2], char **envp)
 		envp_char_free(&path_table);
 		return (1);
 	}
-	if (tree->signal != CMD && redirect(&tree, fd) == 0)
-		return (1);
-	status_code = base_exec(path_table, tree, envp);
-	if (tree->signal != CMD)
-	{
-		close(fd[0]);
-		close(fd[1]);
-	}
+	status_code = base_exec(path_table, tree, envp, fd);
 	return (status_code);
 }
 
@@ -127,16 +127,10 @@ int execution(t_tree *tree, t_envp *envp_table)
 		split_free(path_table);
 		return (1);
 	}
-	if (tree->signal >= INPUT && tree->signal <= HEREDOC)
-		if (redirect(&tree, fd))
-		{
-			split_free(path_table);
-			return (1);
-		}
 	if (tree->signal == CMD)
-		status_code = base_exec(path_table, tree, rebuilt_envp);
+		status_code = base_exec(path_table, tree, rebuilt_envp, fd);
 	else
-		status_code = exec_pipe(tree, path_table, fd, rebuilt_envp);
+		status_code = exec_pipe(tree, path_table, rebuilt_envp, fd);
 	split_free(rebuilt_envp);
 	split_free(path_table);
 	return (status_code); // Temp to make the function compile
