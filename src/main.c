@@ -1,23 +1,6 @@
 #include "../includes/minishell.h"
 
-static char	*get_input(void)
-{
-	char *input;
-
-	input = readline("minishell$ ");
-	if (!input)
-		return (NULL);
-	if (!*input)
-	{
-		free(input);
-		return (NULL);
-	}
-	else
-		add_history(input);
-	return (input);
-}
-
-static void	execute_input(char *input, t_envp *envp_list)
+static int	execute_input(char *input, t_envp *envp_list)
 {
 	t_tree	*tree;
 	int		status_error;
@@ -27,13 +10,12 @@ static void	execute_input(char *input, t_envp *envp_list)
 	{
 		perror("Error");
 		free(input);
-		return ;
+		return (1);
 	}
-	tree_print(tree, 0);
 	status_error = execution(tree, envp_list);
 	tree_free(&tree);
 	free(input);
-	input = NULL;
+	return (status_error);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -52,9 +34,16 @@ int	main(int argc, char **argv, char **envp)
 	}
 	while(1)
 	{
-		input = get_input();
-		if (!input)
-			break ;
+    	input = readline("minishell$ ");
+    	if (!input)
+    		break ;
+    	if (!*input)
+    	{
+    		free(input);
+    		continue ;
+    	}
+    	else
+    		add_history(input);
 		execute_input(input, envp_list);
 	}
 	envp_free(&envp_list);
