@@ -1,6 +1,6 @@
 NAME	= minishell
 CC		= cc
-CFLAGS	= -Wall -Werror -Wextra -g3 -I includes
+CFLAGS	= -Wall -Werror -Wextra -g3 -fsanitize=address -I includes
 
 SRCS	= \
 		src/lexer/lexer.c			\
