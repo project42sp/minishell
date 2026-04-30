@@ -22,7 +22,7 @@ void	tree_free(t_tree **tree)
 	if ((*tree)->left != NULL)
 		tree_free(&((*tree)->left));
 	if ((*tree)->node)
-		tree_node_free((char **)(*tree)->node);
+		split_free((char **)(*tree)->node);
 	if ((*tree)->right != NULL)
 		tree_free(&((*tree)->right));
 	free(*tree);
