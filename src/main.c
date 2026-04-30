@@ -18,10 +18,34 @@ static int	execute_input(char *input, t_envp *envp_list)
 	return (status_error);
 }
 
+static int  minishell(t_envp *envp)
+{
+    char    *input;
+    int     err;
+
+    while(1)
+	{
+       	input = readline("minishell$ ");
+       	if (!input)
+       		break ;
+       	if (!*input)
+       	{
+       		free(input);
+       		continue ;
+       	}
+       	else
+        {
+      		add_history(input);
+        }
+		err = execute_input(input, envp);
+	}
+    return (err);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
-	char *input;
 	t_envp	*envp_list;
+	int     err;
 
 	if(argc > 1)
 		return (1);
@@ -32,20 +56,7 @@ int	main(int argc, char **argv, char **envp)
 		perror("Error");
 		return (1);
 	}
-	while(1)
-	{
-    	input = readline("minishell$ ");
-    	if (!input)
-    		break ;
-    	if (!*input)
-    	{
-    		free(input);
-    		continue ;
-    	}
-    	else
-    		add_history(input);
-		execute_input(input, envp_list);
-	}
+	err = minishell(envp_list);
 	envp_free(&envp_list);
-	return (0);
+	return (err);
 }
