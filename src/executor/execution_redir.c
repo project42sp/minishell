@@ -1,18 +1,4 @@
 #include "../../includes/minishell.h"
-#include <unistd.h>
-
-int	base_redir(t_tree *tree, int *fd)
-{
-	if (!tree)
-		return(1);
-	if (dup2(fd[0], STDIN_FILENO) == -1)
-		return (1);
-	if (dup2(fd[1], STDOUT_FILENO) == -1)
-		return (1);
-	close(fd[0]);
-	close(fd[1]);
-	return (0);
-}
 
 static int	define_stdin(t_tree *tree, int *fd, int permission)
 {
@@ -30,7 +16,10 @@ static int	define_stdin(t_tree *tree, int *fd, int permission)
 		close(in_fd);
 	}
 	else if (tree->signal == PIPE)
-		base_redir(tree, fd);
+	{
+		if (dup2(fd[0], STDIN_FILENO) == -1)
+			return (1);
+	}
 	return (0);
 }
 
@@ -50,7 +39,10 @@ static int	define_stdout(t_tree *tree, int *fd, int permission)
 		close(out_fd);
 	}
 	else if (tree->signal == PIPE)
-		base_redir(tree, fd);
+	{
+		if (dup2(fd[1], STDOUT_FILENO) == -1)
+			return (1);
+	}
 	return (0);
 }
 
@@ -61,11 +53,11 @@ static int	check_permission(t_tree *tree)
 	if (!tree)
 		return (-1);
 	if (tree->signal == OUTPUT)
-		permission = O_WRONLY | O_CREAT;
+		permission = O_WRONLY | O_CREAT | O_TRUNC;
 	else if (tree->signal == INPUT || tree->signal == HEREDOC)
 		permission = O_RDONLY;
 	else
-		permission = O_WRONLY | O_APPEND;
+		permission = O_WRONLY | O_APPEND | O_CREAT;
 	return (permission);
 }
 
