@@ -23,7 +23,7 @@ t_tree	*parser(char *input)
 	}
 	tree = tree_create(head, &flags);
 	token_list_free(head);
-	envp_char_free(tokens);
+	free(tokens);
 	free(signals);
 	return (tree);
 }
