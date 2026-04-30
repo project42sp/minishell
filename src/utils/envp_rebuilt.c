@@ -61,5 +61,6 @@ char	**envp_rebuilt(t_envp *head)
 		temp = NULL;
 		index++;
 	}
+	envp[index] = NULL;
 	return (envp);
 }
