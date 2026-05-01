@@ -52,6 +52,8 @@ char	**envp_rebuilt(t_envp *envp_table);
 //Execution
 int execution(t_tree *tree, t_envp *envp_table);
 int	redirect(t_tree **tree, int *fd);
+char	**create_path_table(t_envp *envp);
+char	*find_path(char **path_envp, char **cmd);
 
 // Lexer functions
 void	debug_lexer(t_token *list);
