@@ -56,16 +56,16 @@ static char	*find_path(char **path_envp, char **cmd)
 
 static int	child_process(t_tree *tree, char **envp, int fd[2], char **path)
 {
-    char    *full_path;
-    char    **node;
+	char	*full_path;
+	char	**node;
 
-    if (tree->signal != CMD)
-    {
-        if (redirect(&tree, fd))
-          		return (1);
-    }
-    node = (char **)tree->node;
-   	full_path = find_path(path, node);
+	if (tree->signal != CMD)
+	{
+		if (redirect(&tree, fd))
+			return (1);
+	}
+	node = (char **)tree->node;
+	full_path = find_path(path, node);
 	execve(full_path, node, envp);
 	free(full_path);
 	envp_char_free(&envp);
@@ -77,15 +77,15 @@ static int	base_exec(char **path_table, t_tree *tree, char **envp)
 {
 	int		err;
 	pid_t	pid;
-	int     fd[2];
+	int		fd[2];
 
 	//if (builtin)
 		//Run builtin
 		// Return status code
 	err = 0;
 	if (tree->signal != CMD)
-	    if (pipe(fd) == -1)
-    		return (1);
+		if (pipe(fd) == -1)
+			return (1);
 	pid = fork();
 	if (pid == 0)
 		err = child_process(tree, envp, fd, path_table);
@@ -96,14 +96,6 @@ static int	base_exec(char **path_table, t_tree *tree, char **envp)
 	}
 	waitpid(pid, &err, 0);
 	return (err);
-}
-
-int exec_pipe(t_tree *tree, char **path_table, char **envp)
-{
-	int		status_code;
-
-	status_code = base_exec(path_table, tree, envp);
-	return (status_code);
 }
 
 int execution(t_tree *tree, t_envp *envp_table)
@@ -122,10 +114,7 @@ int execution(t_tree *tree, t_envp *envp_table)
 		split_free(path_table);
 		return (1);
 	}
-	if (tree->signal == CMD)
-		status_code = base_exec(path_table, tree, rebuilt_envp);
-	else
-		status_code = exec_pipe(tree, path_table, rebuilt_envp);
+	status_code = base_exec(path_table, tree, rebuilt_envp);
 	split_free(rebuilt_envp);
 	split_free(path_table);
 	return (status_code);
