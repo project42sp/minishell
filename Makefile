@@ -5,11 +5,11 @@ CFLAGS	= -Wall -Werror -Wextra -g3 -I includes
 SRCS	= \
 		src/lexer/lexer.c			\
 		src/lexer/lexer_utils.c	\
-		src/token/token_cmd_create.c	\
+		src/lexer/token_cmd_create.c	\
 		src/parser/parser.c			\
-		src/tree/tree_print.c		\
-		src/tree/tree_build.c		\
-		src/tree/tree_utils.c		\
+		src/parser/tree_print.c		\
+		src/parser/tree_build.c		\
+		src/parser/tree_utils.c		\
 		src/executor/execution_base.c	\
 		src/executor/execution_redir.c	\
 		src/executor/execution_utils.c	\
@@ -44,12 +44,6 @@ $(NAME): $(LIBFT) $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -L$(DIR_LIBFT) -lft -lreadline -o $@
 
 $(OBJS_DIR)/%.o: src/%.c | $(OBJS_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(OBJS_DIR)/%.o: src/token/%.c | $(OBJS_DIR)
-	$(CC) $(CFLAGS) -c $< -o $@
-
-$(OBJS_DIR)/%.o: src/tree/%.c | $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJS_DIR)/%.o: src/free/%.c | $(OBJS_DIR)
