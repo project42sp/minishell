@@ -27,7 +27,7 @@ t_token	*token_create(char ***tokens, t_tokens_type *signal)
 	index = 0;
 	while (signal[index] != EOFILE)
 	{
-		current = token_node(&(*tokens)[index], signal[index]);
+		current = token_node(tokens[index], signal[index]);
 		if (!current)
 		{
 			token_list_free(head);
@@ -38,6 +38,7 @@ t_token	*token_create(char ***tokens, t_tokens_type *signal)
 		else
 			prev->next = current;
 		prev = current;
+		tokens[index] = NULL;
 		index++;
 	}
 	return (head);

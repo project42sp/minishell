@@ -1,16 +1,28 @@
 #include "../includes/minishell.h"
 
-int	main(int argc, char **argv, char **envp)
+static int	execute_input(char *input, t_envp *envp_list)
 {
-	char *input;
-	t_token	*head;
 	t_tree	*tree;
-	t_check	flags;
-	t_envp	*envp_list;
+	int		status_error;
 
-	if(argc > 1)
+	tree = parser(input);
+	if (!tree)
+	{
+		perror("Error");
+		free(input);
 		return (1);
-	(void)*argv;
+	}
+	status_error = execution(tree, envp_list);
+	tree_free(&tree);
+	free(input);
+	return (status_error);
+}
+
+static int	minishell(t_envp *envp)
+{
+	char	*input;
+	int		err;
+
 	while(1)
 	{
 		input = readline("minishell$ ");
@@ -21,32 +33,30 @@ int	main(int argc, char **argv, char **envp)
 			free(input);
 			continue ;
 		}
-		add_history(input);
-
-		ft_bzero(&flags, sizeof(t_check));
-		tokens = lexer(input, &signals, &flags);
-		if (!tokens)
+		else
 		{
-			ft_printf("Lexer error: invalid syntax\n");
-			free(input);
-			continue ;
+			add_history(input);
 		}
-		head = token_create(tokens, signals);
-		if (!head)
-		{
-			ft_printf("Failed to create token list\n");
-			free(tokens);
-			free(signals);
-			free(input);
-			continue ;
-		}
-		debug_lexer(head);
-		ft_printf("flags: word=%d input=%d output=%d pipe=%d logical=%d\n",
-			flags.word, flags.input, flags.output, flags.pipe, flags.logical);
-		token_list_free(head);
-		free(tokens);
-		free(signals);
-		free(input);
+		err = execute_input(input, envp);
 	}
-	return (0);
+	return (err);
+}
+
+int	main(int argc, char **argv, char **envp)
+{
+	t_envp	*envp_list;
+	int		err;
+
+	if(argc > 1)
+		return (1);
+	(void)*argv;
+	envp_list = create_envp_table(envp);
+	if (!envp_list)
+	{
+		perror("Error");
+		return (1);
+	}
+	err = minishell(envp_list);
+	envp_free(&envp_list);
+	return (err);
 }
