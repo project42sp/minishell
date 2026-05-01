@@ -1,6 +1,6 @@
 NAME	= minishell
 CC		= cc
-CFLAGS	= -Wall -Werror -Wextra -g3 -fsanitize=address -I includes
+CFLAGS	= -Wall -Werror -Wextra -g3 -I includes
 
 SRCS	= \
 		src/lexer/lexer.c			\
@@ -12,6 +12,7 @@ SRCS	= \
 		src/tree/tree_utils.c		\
 		src/executor/execution_base.c	\
 		src/executor/execution_redir.c	\
+		src/executor/execution_utils.c	\
 		src/free/tree_free.c		\
 		src/free/token_list_free.c	\
 		src/free/envp_free.c	\
