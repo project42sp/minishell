@@ -1,6 +1,18 @@
 #include "../../includes/minishell.h"
 
-static int	child_process(t_tree *tree, char **envp, int fd[2], char **path)
+void	ft_close(int fd1, int fd2, int fd3, int fd4)
+{
+	if (fd1 > -1)
+		close(fd1);
+	if (fd2 > -1)
+		close(fd2);
+	if (fd3 > -1)
+		close(fd3);
+	if (fd4 > -1)
+		close(fd4);
+}
+
+static int	child_process(t_tree *tree, char **envp, t_fd *fd, char **path)
 {
 	char	*full_path;
 	char	**node;
@@ -19,29 +31,53 @@ static int	child_process(t_tree *tree, char **envp, int fd[2], char **path)
 	exit(127);
 }
 
+static void	fd_init(t_fd *fd)
+{
+	fd->fd[0] = -1;
+	fd->fd[1] = -1;
+	fd->oldfd = -1;
+}
+
 static int	base_exec(char **path_table, t_tree *tree, char **envp)
 {
 	int		err;
 	pid_t	pid;
-	int		fd[2];
+	t_fd	*fd;
 
 	//if (builtin)
 		//Run builtin
 		// Return status code
 	err = 0;
+	fd = ft_calloc(1, sizeof(t_fd));
+	if (!fd)
+		return (1);
+	fd_init(fd);
 	if (tree->signal != CMD)
-		if (pipe(fd) == -1)
+		if (pipe(fd->fd) == -1)
 			return (1);
 	pid = fork();
 	if (pid == 0)
 		err = child_process(tree, envp, fd, path_table);
 	if (tree->signal != CMD)
-	{
-		close(fd[0]);
-		close(fd[1]);
-	}
+		ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
 	waitpid(pid, &err, 0);
+	free(fd);
 	return (err);
+}
+
+static int	pipe_exec(char **path_table, t_tree *tree, char **envp, int oldfd)
+{
+	int	status_code;
+
+	if (!tree)
+		return (1);
+	if (tree->left && tree->signal == PIPE)
+		status_code = pipe_exec(path_table, tree->left, envp, oldfd);
+	if (tree->right && tree->signal == PIPE)
+		status_code = pipe_exec(path_table, tree->right, envp, oldfd);
+	if (tree->signal <= PIPE)
+		status_code = base_exec(path_table, tree, envp);
+	return (status_code);
 }
 
 int	execution(t_tree *tree, t_envp *envp_table)
@@ -50,6 +86,8 @@ int	execution(t_tree *tree, t_envp *envp_table)
 	int		status_code;
 	char	**rebuilt_envp;
 
+	if (!tree || !envp_table)
+		return (1);
 	status_code = 0;
 	path_table = create_path_table(envp_table);
 	if (!path_table)
@@ -60,7 +98,10 @@ int	execution(t_tree *tree, t_envp *envp_table)
 		split_free(path_table);
 		return (1);
 	}
-	status_code = base_exec(path_table, tree, rebuilt_envp);
+	if (tree->signal != PIPE)
+		status_code = base_exec(path_table, tree, rebuilt_envp);
+	else
+		status_code = pipe_exec(path_table, tree, rebuilt_envp, -1);
 	split_free(rebuilt_envp);
 	split_free(path_table);
 	return (status_code);
