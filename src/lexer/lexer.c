@@ -1,5 +1,13 @@
 #include "../../includes/minishell.h"
 
+static void	append_token(t_token **head, t_token **last, t_token *new_node)
+{
+	if (!*head)
+		*head = new_node;
+	else
+		(*last)->next = new_node;
+	*last = new_node;
+}
 static int	operator_len(t_tokens_type type)
 {
 	if (type == HEREDOC || type == APPEND || type == OR || type == AND)
@@ -82,94 +90,6 @@ static char	*extract_token(char *input, int *i, t_tokens_type *type)
 	return (ft_substr(input, start, *i - start));
 }
 
-static int	count_tokens(char *input)
-{
-	int		i;
-	int		count;
-	char	*temp;
-
-	i = 0;
-	count = 0;
-	while (1)
-	{
-		temp = extract_token(input, &i, NULL);
-		if (!temp && !input[i])
-			break ;
-		if (temp)
-			free(temp);
-		count++;
-	}
-	return (count);
-}
-
-char ***lexer(char *input, t_tokens_type **signals_ptr, t_check *flags)
-{
-	char			***tokens;
-	t_tokens_type 	*signals;
-	int				count;
-	int				i;
-	int				j;
-	t_tokens_type	last_type;
-	char			*token_str;
-	t_tokens_type	token_type;
-
-	if (!input || !flags)
-		return (NULL);
-	ft_bzero(flags, sizeof(t_check));
-	count = count_tokens(input);
-	tokens = ft_calloc(count + 2, sizeof(char **));
-	signals = ft_calloc(count + 2, sizeof(t_tokens_type));
-	if (!tokens || !signals)
-		return (NULL);
-	i = 0;
-	j = 0;
-	last_type = EOFILE;
-	while (j < count)
-	{
-		tokens[j] = ft_calloc(2, sizeof(char *));
-		if (!tokens[j])
-		{
-			while (j > 0)
-			{
-				free(tokens[j - 1][0]);
-				free(tokens[j - 1]);
-				j--;
-			}
-			free(tokens);
-			free(signals);
-			return (NULL);
-		}
-		token_str = extract_token(input, &i, &token_type);
-		tokens[j][0] = token_str;
-		tokens[j][1] = NULL;
-		if (token_str == NULL)
-			signals[j] = token_type;
-		else
-		{
-			if (last_type >= INPUT && last_type <= HEREDOC)
-				signals[j] = FILE_PATH;
-			else
-				signals[j] = CMD;
-		}
-		if (signals[j] == PIPE)
-			flags->pipe = 1;
-		else if (signals[j] == AND || signals[j] == OR)
-			flags->logical = 1;
-		else if (signals[j] == INPUT || signals[j] == HEREDOC)
-			flags->input = 1;
-		else if (signals[j] == OUTPUT || signals[j] == APPEND)
-			flags->output = 1;
-		else if (signals[j] == CMD || signals[j] == FILE_PATH)
-			flags->word = 1;
-		last_type = signals[j];
-		j++;
-	}
-	tokens[j] = NULL;
-	signals[j] = EOFILE;
-	*signals_ptr = signals;
-	return (tokens);
-}
-
 static const char *get_operator_symbol(t_tokens_type type)
 {
 	if (type == INPUT)
@@ -189,6 +109,70 @@ static const char *get_operator_symbol(t_tokens_type type)
 	return ("");
 }
 
+static void	update_flags(t_check *flags, t_tokens_type type)
+{
+	if (type == PIPE)
+		flags->pipe = 1;
+	else if (type == AND || type == OR)
+		flags->logical = 1;
+	else if (type == INPUT || type == HEREDOC)
+		flags->input = 1;
+	else if (type == OUTPUT || type == APPEND)
+		flags->output = 1;
+	else if (type == CMD || type == FILE_PATH)
+		flags->word = 1;
+}
+
+t_token *lexer(char *input, t_check *flags)
+{
+	t_token			*head;
+	t_token			*tail;
+	t_token			*new_node;
+	t_token			*eof_node;
+	char			*content;
+	int				i;
+	t_tokens_type	last_type;
+	t_tokens_type	token_type;
+
+	head = NULL;
+	tail = NULL;
+	i = 0;
+	last_type = EOFILE;
+	ft_bzero(flags, sizeof(t_check));
+	while (1)
+	{
+		ft_skip_spaces(input, &i);
+		if (!input[i])
+			break ;
+		content = extract_token(input, &i, &token_type);
+		if (token_type == CMD && content == NULL)
+		{
+			token_free_partial(head, NULL);
+			return (NULL);
+		}
+		if (token_type == CMD && (last_type >= INPUT && last_type <= HEREDOC))
+			token_type = FILE_PATH;
+		update_flags(flags, token_type);
+		new_node = token_node(content, token_type);
+		if (!new_node)
+		{
+			free(content);
+			token_free_partial(head, NULL);
+			return (NULL);
+		}
+		append_token(&head, &tail, new_node);
+		last_type = token_type;
+	}
+	eof_node = token_node(NULL, EOFILE);
+	if (!eof_node)
+	{
+		token_free_partial(head, NULL);
+		return (NULL);
+	}
+	append_token(&head, &tail, eof_node);
+	return (head);
+}
+
 void debug_lexer(t_token *list)
 {
 	t_token		*curr;
@@ -202,8 +186,9 @@ void debug_lexer(t_token *list)
 	while (curr)
 	{
 		ft_printf("[%-9s] ", types[curr->signal]);
-		// Verifica se há uma string válida
-		if (curr->token && ((char **)curr->token)[0] != NULL)
+		if (curr->signal == EOFILE)
+			ft_printf("(end of file)\n");
+		else if (curr->token)
 			ft_printf("\"%s\"\n", ((char **)curr->token)[0]);
 		else
 			ft_printf("symbol=\"%s\"\n", get_operator_symbol(curr->signal));
