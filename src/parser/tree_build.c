@@ -18,64 +18,125 @@ static t_tree	*tree_node_create(t_tree *left, t_token **token, t_tree *right)
 	return (tree);
 }
 
-static t_token	*tree_redir_helper(t_token **token,
-						t_tree **cmd_node, t_tree **file_node)
+static int	find_signal(t_token **token, int signal)
+{
+	t_token *temp;
+	int		index;
+
+	temp = *token;
+	index = 0;
+	while(temp->next != NULL || temp->signal != signal)
+	{
+		index++;
+		temp = temp->next;
+	}
+	return (index);
+}
+
+static int	token_counter(t_token **token)
+{
+	t_token	*temp;
+	int		len;
+
+	temp = *token;
+	len = 0;
+	while (temp->next != NULL)
+	{
+		len++;
+		temp = temp->next;
+	}
+	return (len);
+}
+
+t_tree	*tree_wrapper(t_tree *left, t_token **tk, t_tree *right, t_tree *old)
+{
+	t_tree	*node;
+
+	if (!*tk || !old)
+		return (NULL);
+	node = tree_node_create(left, tk, right);
+	if (!node)
+	{
+		tree_free(&old);
+	}
+	return (node);
+}
+
+static t_tree	*tree_redir_helper(t_token **token)
 {
 	t_token	*token_redir;
-	t_tree	*last_cmd;
-	t_tree	*new_cmd;
+	t_tree	*cmd;
+	t_tree	*file;
+	t_tree	*redir;
 
+	if (token_counter(token) != 3 || find_signal(token, PIPE) != 4)
+		return (NULL);
 	token_redir = NULL;
-	last_cmd = NULL;
+	cmd = NULL;
+	file = NULL;
+	redir = NULL;
 	while (*token && (*token)->signal <= HEREDOC)
 	{
 		if ((*token)->signal == CMD)
 		{
-			new_cmd = tree_node_create(NULL, token, NULL);
-			if (!*cmd_node)
-			{
-				*cmd_node = new_cmd;
-				last_cmd = new_cmd;
-			}
-			else
-			{
-				last_cmd->right = new_cmd;
-				last_cmd = new_cmd;
-			}
+			cmd = tree_wrapper(NULL, token, NULL, file);
+			if (!cmd)
+				return (NULL);
 		}
 		else if ((*token)->signal == FILE_PATH)
-			*file_node = tree_node_create(NULL, token, NULL);
+		{
+			file = tree_wrapper(NULL, token, NULL, cmd);
+			if (!file)
+				return (NULL);
+		}
 		else if ((*token)->signal >= INPUT && (*token)->signal <= HEREDOC)
 		{
 			token_redir = *token;
 			*token = get_next_token(*token);
 		}
 	}
-	return (token_redir);
+	redir = tree_node_create(file, &token_redir, cmd);
+	if (!redir)
+	{
+		tree_free(&file);
+		tree_free(&cmd);
+		return (NULL);
+	}
+	return (redir);
 }
 
 static t_tree	*tree_redir(t_token **token)
 {
 	t_tree	*redir_node;
-	t_tree	*file_node;
-	t_tree	*cmd_node;
+	t_tree	*left;
+	t_tree	*right;
 	t_token	*token_redir;
 
 	if (!*token)
 		return (NULL);
-	cmd_node = NULL;
-	file_node = NULL;
+	right = NULL;
+	left = NULL;
 	token_redir = NULL;
-	if (!(*token)->next || (*token)->next->signal > HEREDOC)
+//	if (!(*token)->next || (*token)->next->signal > HEREDOC)
+//	{
+//		right = tree_node_create(NULL, token, NULL);
+//		if (!right)
+//			return (NULL);
+//		return (right);
+//	}
+	//token_redir = tree_redir_helper(token);
+//	redir_node = tree_redir(&(*token)->next);
+//	if (!redir_node)
+//		return (right);
+//	redir_node = tree_node_create(left, &token_redir, right);
+//	if (!redir_node)
+//		return (NULL);
+//	return (redir_node);
+	if ((*token)->signal == CMD)
 	{
-		cmd_node = tree_node_create(NULL, token, NULL);
-		return (cmd_node);
+		right = tree_node_create(NULL, token, NULL);
 	}
-	token_redir = tree_redir_helper(token, &cmd_node, &file_node);
-	if (!token_redir)
-		return (cmd_node);
-	redir_node = tree_node_create(file_node, &token_redir, cmd_node);
-	return (redir_node);
+
 }
 
 static t_tree	*tree_pipe_create(t_token **token)
@@ -89,7 +150,8 @@ static t_tree	*tree_pipe_create(t_token **token)
 		return (NULL);
 	right_node = NULL;
 	left_node = NULL;
-	left_node = tree_redir(token);
+	if (token_counter(token) == 3)
+		left_node = tree_redir(token);
 	if (!*token || (*token)->signal != PIPE)
 		return (left_node);
 	pipe_token = *token;

@@ -12,7 +12,11 @@ static int	execute_input(char *input, t_envp *envp_list)
 		free(input);
 		return (1);
 	}
-	status_error = execution(tree, envp_list);
+	tree_print(tree, 0);
+	tree_print_extense(tree);
+	status_error = 0;
+	(void)*envp_list;
+	//status_error = execution(tree, envp_list);
 	tree_free(&tree);
 	free(input);
 	return (status_error);
