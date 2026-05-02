@@ -1,6 +1,6 @@
 #include "../../includes/minishell.h"
 
-static int	define_stdin(t_tree *tree, int *fd, int permission)
+static int	define_stdin(t_tree *tree, t_fd *fd, int permission)
 {
 	int	in_fd;
 
@@ -15,15 +15,18 @@ static int	define_stdin(t_tree *tree, int *fd, int permission)
 			return (1);
 		close(in_fd);
 	}
-	else if (tree->signal == PIPE)
+	else if (tree->signal == PIPE && fd->oldfd > -1)
 	{
-		if (dup2(fd[0], STDIN_FILENO) == -1)
+		if (dup2(fd->oldfd, STDIN_FILENO) == -1)
 			return (1);
 	}
+	else if (tree->signal == PIPE)
+		if (dup2(fd->fd[0], STDIN_FILENO) == -1)
+			return (1);
 	return (0);
 }
 
-static int	define_stdout(t_tree *tree, int *fd, int permission)
+static int	define_stdout(t_tree *tree, t_fd *fd, int permission)
 {
 	int	out_fd;
 
@@ -40,7 +43,7 @@ static int	define_stdout(t_tree *tree, int *fd, int permission)
 	}
 	else if (tree->signal == PIPE)
 	{
-		if (dup2(fd[1], STDOUT_FILENO) == -1)
+		if (dup2(fd->fd[1], STDOUT_FILENO) == -1)
 			return (1);
 	}
 	return (0);
@@ -61,7 +64,7 @@ static int	check_permission(t_tree *tree)
 	return (permission);
 }
 
-int	redirect(t_tree **tree, int *fd)
+int	redirect(t_tree **tree, t_fd *fd)
 {
 	int	permission;
 
@@ -74,8 +77,11 @@ int	redirect(t_tree **tree, int *fd)
 		return (1);
 	if (define_stdout((*tree), fd, permission))
 		return (1);
-	close(fd[0]);
-	close(fd[1]);
+	close(fd->fd[1]);
+	if (fd->oldfd > -1)
+		close(fd->oldfd);
+	fd->oldfd = fd->fd[0];
+	close(fd->fd[0]);
 	*tree = (*tree)->right;
 	return (0);
 }
