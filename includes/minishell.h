@@ -26,6 +26,12 @@ typedef struct s_envp
 	struct s_envp	*next;
 }	t_envp;
 
+typedef struct s_fd
+{
+	int	fd[2];
+	int	oldfd;
+}	t_fd;
+
 //Test Functions
 void	tree_print(t_tree *tree, int level);
 void	tree_print_extense(t_tree *tree);
@@ -50,10 +56,11 @@ t_envp	*create_envp_table(char **envp);
 char	**envp_rebuilt(t_envp *envp_table);
 
 //Execution
-int execution(t_tree *tree, t_envp *envp_table);
-int	redirect(t_tree **tree, int *fd);
+int		execution(t_tree *tree, t_envp *envp_table);
+int		redirect(t_tree **tree, t_fd *fd);
 char	**create_path_table(t_envp *envp);
 char	*find_path(char **path_envp, char **cmd);
+void	ft_close(int fd1, int fd2, int fd3, int fd4);
 
 // Lexer functions
 void	debug_lexer(t_token *list);
