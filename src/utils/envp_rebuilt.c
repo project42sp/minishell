@@ -17,7 +17,7 @@ int	envp_len(t_envp *head)
 	return (len);
 }
 
-char	*envp_rebuilt_util(t_envp *node)
+char	*envp_join(t_envp *node)
 {
 	char	*temp;
 	char	*full_str;
@@ -35,23 +35,35 @@ char	*envp_rebuilt_util(t_envp *node)
 	return (full_str);
 }
 
-char	**envp_rebuilt(t_envp *head)
+char	**envp_table_init(t_envp *head)
 {
 	char	**envp;
-	char	*temp;
 	size_t	len;
-	size_t	index;
 
 	if (!head)
 		return (NULL);
 	len = envp_len(head);
-	envp = (char **)ft_calloc(sizeof(char *), len + 1);
+	envp = (char **)ft_calloc(len + 1, sizeof(char *));
+	if (!envp)
+		return (NULL);
+	return (envp);
+}
+
+char	**envp_rebuilt(t_envp *head)
+{
+	char	**envp;
+	char	*temp;
+	size_t	index;
+	t_envp	*envp_temp;
+
+	envp = envp_table_init(head);
 	if (!envp)
 		return (NULL);
 	index = 0;
-	while (index < len)
+	envp_temp = head;
+	while (envp_temp != NULL)
 	{
-		temp = envp_rebuilt_util(head);
+		temp = envp_join(envp_temp);
 		if (!temp)
 		{
 			envp_char_free(&envp);
@@ -59,6 +71,7 @@ char	**envp_rebuilt(t_envp *head)
 		}
 		envp[index] = temp;
 		temp = NULL;
+		envp_temp = envp_temp->next;
 		index++;
 	}
 	return (envp);
