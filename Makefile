@@ -5,6 +5,8 @@ CFLAGS	= -Wall -Werror -Wextra -g3 -I includes
 SRCS	= \
 		src/lexer/lexer.c			\
 		src/lexer/lexer_utils.c	\
+		src/lexer/lexer_operators.c	\
+		src/lexer/lexer_extract.c	\
 		src/token/token_cmd_create.c	\
 		src/parser/parser.c			\
 		src/tree/tree_print.c		\
