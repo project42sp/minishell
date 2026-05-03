@@ -26,7 +26,16 @@ typedef struct s_envp
 	struct s_envp	*next;
 }	t_envp;
 
-//Test Functions
+typedef struct s_lexer
+{
+	t_token			*head;
+	t_token			*tail;
+	int				i;
+	t_tokens_type	last_type;
+	t_check			*flags;
+}	t_lexer;
+
+// Test Functions
 void	tree_print(t_tree *tree, int level);
 void	tree_print_extense(t_tree *tree);
 void	tokens_print(t_token *token);
@@ -56,10 +65,16 @@ char	**create_path_table(t_envp *envp);
 char	*find_path(char **path_envp, char **cmd);
 
 // Lexer functions
-void	debug_lexer(t_token *list);
-t_token	*lexer(char *input, t_check *flags);
-void	ft_skip_spaces(char *input, int *index);
-int		ft_isspace(char c);
+void			debug_lexer(t_token *list); // Remover
+t_token			*lexer(char *input, t_check *flags);
+void			ft_skip_spaces(char *input, int *index);
+int				ft_isspace(char c);
+void			update_flags(t_check *flags, t_tokens_type type);
+int				operator_len(t_tokens_type type);
+t_tokens_type	get_operator_type(char *str);
+const char		*get_operator_symbol(t_tokens_type type);
+int				handle_operator(char *input, int *i, t_tokens_type *type);
+char			*extract_token(char *input, int *i, t_tokens_type *type);
 
 // Parser functions
 t_tree	*parser(char *input);
