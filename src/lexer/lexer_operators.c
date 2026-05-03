@@ -6,7 +6,7 @@
 /*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/03 11:57:49 by thfernan          #+#    #+#             */
-/*   Updated: 2026/05/03 12:04:26 by thfernan         ###   ########.fr       */
+/*   Updated: 2026/05/03 16:49:02 by thfernan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ t_tokens_type	get_operator_type(char *str)
 	return (CMD);
 }
 
+// Remover junto com a debug_lexer
 const char	*get_operator_symbol(t_tokens_type type)
 {
 	if (type == INPUT)
