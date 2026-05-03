@@ -15,12 +15,12 @@ static int	define_stdin(t_tree *tree, t_fd *fd, int permission)
 			return (1);
 		close(in_fd);
 	}
-	else if (tree->signal == PIPE && fd->oldfd > -1)
+	else if (fd && fd->oldfd > -1)
 	{
 		if (dup2(fd->oldfd, STDIN_FILENO) == -1)
 			return (1);
 	}
-	else if (tree->signal == PIPE)
+	else if (fd->oldfd > -1 && fd->last)
 		if (dup2(fd->fd[0], STDIN_FILENO) == -1)
 			return (1);
 	return (0);
@@ -41,7 +41,7 @@ static int	define_stdout(t_tree *tree, t_fd *fd, int permission)
 			return (1);
 		close(out_fd);
 	}
-	else if (tree->signal == PIPE)
+	else if (!fd->last)
 	{
 		if (dup2(fd->fd[1], STDOUT_FILENO) == -1)
 			return (1);
@@ -70,18 +70,19 @@ int	redirect(t_tree **tree, t_fd *fd)
 
 	if (!*tree)
 		return (1);
-	if ((*tree)->signal < INPUT || (*tree)->signal > PIPE)
-		return (1);
 	permission = check_permission(*tree);
-	if (define_stdin((*tree), fd, permission))
-		return (1);
-	if (define_stdout((*tree), fd, permission))
-		return (1);
-	close(fd->fd[1]);
-	if (fd->oldfd > -1)
-		close(fd->oldfd);
-	fd->oldfd = fd->fd[0];
-	close(fd->fd[0]);
-	*tree = (*tree)->right;
+	if (fd)
+	{
+		if (define_stdin((*tree), fd, permission))
+			return (1);
+		if (define_stdout((*tree), fd, permission))
+			return (1);
+		close(fd->fd[1]);
+		if (fd->oldfd > -1)
+			close(fd->oldfd);
+		fd->oldfd = fd->fd[0];
+		close(fd->fd[0]);
+		*tree = (*tree)->right;
+	}
 	return (0);
 }

@@ -30,6 +30,7 @@ typedef struct s_fd
 {
 	int	fd[2];
 	int	oldfd;
+	int	last;
 }	t_fd;
 
 //Test Functions
