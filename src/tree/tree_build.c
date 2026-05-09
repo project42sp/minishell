@@ -1,6 +1,6 @@
 #include "../../includes/minishell.h"
 
-static t_tree	*tree_node_create(t_tree *left, t_token **token, t_tree *right)
+t_tree	*tree_node_create(t_tree *left, t_token **token, t_tree *right)
 {
 	t_tree	*tree;
 
@@ -22,26 +22,17 @@ static t_token	*tree_redir_helper(t_token **token,
 						t_tree **cmd_node, t_tree **file_node)
 {
 	t_token	*token_redir;
-	t_tree	*last_cmd;
-	t_tree	*new_cmd;
+	char	**argv;
 
 	token_redir = NULL;
-	last_cmd = NULL;
 	while (*token && (*token)->signal <= HEREDOC)
 	{
 		if ((*token)->signal == CMD)
 		{
-			new_cmd = tree_node_create(NULL, token, NULL);
-			if (!*cmd_node)
-			{
-				*cmd_node = new_cmd;
-				last_cmd = new_cmd;
-			}
-			else
-			{
-				last_cmd->right = new_cmd;
-				last_cmd = new_cmd;
-			}
+			argv = collect_args(token);
+			if (!argv)
+				return (NULL);
+			*cmd_node = create_cmd_node(argv);
 		}
 		else if ((*token)->signal == FILE_PATH)
 			*file_node = tree_node_create(NULL, token, NULL);
@@ -50,6 +41,8 @@ static t_token	*tree_redir_helper(t_token **token,
 			token_redir = *token;
 			*token = get_next_token(*token);
 		}
+		else
+			break ;
 	}
 	return (token_redir);
 }
@@ -60,18 +53,19 @@ static t_tree	*tree_redir(t_token **token)
 	t_tree	*file_node;
 	t_tree	*cmd_node;
 	t_token	*token_redir;
+	char	**empty_argv;
 
 	if (!*token)
 		return (NULL);
 	cmd_node = NULL;
 	file_node = NULL;
-	token_redir = NULL;
-	if (!(*token)->next || (*token)->next->signal > HEREDOC)
-	{
-		cmd_node = tree_node_create(NULL, token, NULL);
-		return (cmd_node);
-	}
+	empty_argv = NULL;
 	token_redir = tree_redir_helper(token, &cmd_node, &file_node);
+	if (!cmd_node)
+	{
+		*empty_argv = ft_calloc(1, sizeof(char *));
+		cmd_node = create_cmd_node(empty_argv);
+	}
 	if (!token_redir)
 		return (cmd_node);
 	redir_node = tree_node_create(file_node, &token_redir, cmd_node);
