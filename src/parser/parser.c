@@ -13,6 +13,11 @@ t_tree	*parser(char *input)
 		ft_printf("Lexer error: invalid syntax\n");
 		return (NULL);
 	}
+	if (!validate_syntax(tokens))
+	{
+		token_list_free(tokens);
+		return (NULL);
+	}
 	debug_lexer(tokens);
 	tree = tree_create(tokens, &flags);
 	token_list_free(tokens);
