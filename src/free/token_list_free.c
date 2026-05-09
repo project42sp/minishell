@@ -10,7 +10,7 @@ void	token_list_free(t_token *head)
 		head = head->next;
 		if (temp->token)
 		{
-			split_free((char **)temp->token);
+			free(((char **)temp->token)[0]);
 			free(temp->token);
 		}
 		free(temp);
