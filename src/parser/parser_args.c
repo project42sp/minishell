@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser_args.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/09 14:46:31 by thfernan          #+#    #+#             */
+/*   Updated: 2026/05/09 14:46:32 by thfernan         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
 static char	**add_arg(char **argv, char *new_str, int count)
@@ -19,7 +31,6 @@ static char	**add_arg(char **argv, char *new_str, int count)
 	free(argv);
 	return (new_argv);
 }
-
 
 char	**collect_args(t_token **token)
 {
@@ -43,4 +54,3 @@ char	**collect_args(t_token **token)
 		argv = ft_calloc(1, sizeof(char *));
 	return (argv);
 }
-

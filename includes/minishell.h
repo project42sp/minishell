@@ -82,5 +82,8 @@ char			*extract_token(char *input, int *i, t_tokens_type *type);
 t_tree			*parser(char *input);
 int				validate_syntax(t_token *tokens);
 char			**collect_args(t_token **token);
+int				is_redir(t_tokens_type type);
+int				is_pipe_logical(t_tokens_type type);
+int				syntax_error(t_token *token);
 
 #endif

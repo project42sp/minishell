@@ -11,6 +11,7 @@ SRCS	= \
 		src/parser/parser.c			\
 		src/parser/parser_syntax.c	\
 		src/parser/parser_args.c	\
+		src/parser/parser_utils.c	\
 		src/tree/tree_print.c		\
 		src/tree/tree_build.c		\
 		src/tree/tree_utils.c		\
