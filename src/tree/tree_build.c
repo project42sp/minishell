@@ -63,7 +63,7 @@ static t_tree	*tree_redir(t_token **token)
 	token_redir = tree_redir_helper(token, &cmd_node, &file_node);
 	if (!cmd_node)
 	{
-		*empty_argv = ft_calloc(1, sizeof(char *));
+		empty_argv = ft_calloc(1, sizeof(char *));
 		cmd_node = create_cmd_node(empty_argv);
 	}
 	if (!token_redir)
