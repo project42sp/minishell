@@ -21,7 +21,7 @@ typedef struct e_tk_check
 	int	input;
 	int	output;
 	int	pipe;
-	int logical;
+	int	logical;
 }	t_check;
 
 typedef struct e_token
