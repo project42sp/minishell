@@ -20,7 +20,7 @@ static int	define_stdin(t_tree *tree, t_fd *fd, int permission)
 		if (dup2(fd->oldfd, STDIN_FILENO) == -1)
 			return (1);
 	}
-	else if (fd->oldfd > -1 && fd->last)
+	else if (fd->last && tree->signal >= INPUT)
 		if (dup2(fd->fd[0], STDIN_FILENO) == -1)
 			return (1);
 	return (0);
@@ -82,7 +82,8 @@ int	redirect(t_tree **tree, t_fd *fd)
 			close(fd->oldfd);
 		fd->oldfd = fd->fd[0];
 		close(fd->fd[0]);
-		*tree = (*tree)->right;
+		if ((*tree)->signal >= INPUT && (*tree)->signal <= HEREDOC)
+			*tree = (*tree)->right;
 	}
 	return (0);
 }

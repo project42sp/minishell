@@ -58,9 +58,26 @@ static int	base_exec(char **path_table, t_tree *tree, char **envp, t_fd *fd)
 			return (1);
 		err = child_process(tree, envp, fd, path_table);
 	}
-	ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
-	waitpid(pid, &err, 0);
+	if (fd)
+		ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
+	tree_free(&tree);
 	return (err);
+}
+
+static int	ft_wait(void)
+{
+	int	status;
+	int	exit_code;
+
+	exit_code = 0;
+	while(waitpid(-1, &status, 0) > 0)
+	{
+		if (WIFSIGNALED(status))
+			exit_code = 128 + WTERMSIG(status);
+		else if (WIFEXITED(status))
+			exit_code = WEXITSTATUS(status);
+	}
+	return (exit_code);
 }
 
 static int	pipe_exec(char **path_table, t_tree *tree, char **envp, int oldfd)
@@ -68,24 +85,34 @@ static int	pipe_exec(char **path_table, t_tree *tree, char **envp, int oldfd)
 	int		status_code;
 	t_fd	*fd;
 
-	//TODO:"OLDFD needs to reach stdin and stdout for this to work.
-	// The child needs to inherit the fds and connect the pipes accordingly.
-	// This setup needs to be reviewed because, right now it just doesn't makes sense
-	// in the way it's been built..."
 	if (!tree)
 		return (1);
 	fd = fd_create(oldfd);
 	if (pipe(fd->fd) == -1)
 		return (1);
-	if (tree->signal == PIPE)
-		status_code = base_exec(path_table, tree->left, envp, fd->fd[1]);
-	if (tree->right && tree->signal == PIPE)
-		status_code = pipe_exec(path_table, tree->right, envp, fd->oldfd);
-	else if (tree->right)
+	if (tree && tree->signal >= INPUT && tree->signal <= HEREDOC)
 	{
 		fd->last = 1;
-		status_code = base_exec(path_table, tree->right, envp, fd->oldfd);
+		status_code = base_exec(path_table, tree, envp, fd);
+		tree = NULL;
 	}
+	if (tree && tree->signal == PIPE)
+	{
+		status_code = base_exec(path_table, tree->left, envp, fd);
+		tree->left = NULL;
+	}
+	if (tree && tree->signal == PIPE && tree->right)
+	{
+		status_code = pipe_exec(path_table, tree->right, envp, fd->oldfd);
+		tree->right = NULL;
+	}
+	else if (tree && tree->right)
+	{
+		fd->last = 1;
+		status_code = base_exec(path_table, tree->right, envp, fd);
+		tree->right = NULL;
+	}
+	free(fd);
 	return (status_code);
 }
 
@@ -94,7 +121,6 @@ int	execution(t_tree *tree, t_envp *envp_table)
 	char	**path_table;
 	int		status_code;
 	char	**rebuilt_envp;
-	t_fd	*fd;
 
 	if (!tree || !envp_table)
 		return (1);
@@ -108,17 +134,12 @@ int	execution(t_tree *tree, t_envp *envp_table)
 		split_free(path_table);
 		return (1);
 	}
-	if (tree->signal == PIPE)
-	{
-		fd = fd_create(-1);
-		if (!fd)
-			return (1);
-		status_code = pipe_exec(path_table, tree, rebuilt_envp, fd);
-	}
+	if (tree->signal != CMD)
+		status_code = pipe_exec(path_table, tree, rebuilt_envp, -1);
 	else
 		status_code = base_exec(path_table, tree, rebuilt_envp, NULL);
+	status_code = ft_wait();
 	split_free(rebuilt_envp);
 	split_free(path_table);
 	return (status_code);
-	//TODO: Criar o export e adicionar o status_code dentro da variavel $?
 }
