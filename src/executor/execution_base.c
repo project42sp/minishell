@@ -19,6 +19,15 @@ static int	child_process(t_tree *tree, char **envp, t_fd *fd, char **path)
 
 	node = (char **)tree->node;
 	full_path = find_path(path, node);
+	if (!full_path)
+	{
+		if (fd)
+			free(fd);
+		free(full_path);
+		envp_char_free(&envp);
+		perror("Error");
+		exit(1); //ERROR PATH NOT FOUND
+	}
 	execve(full_path, node, envp);
 	if (fd)
 		free(fd);
@@ -55,11 +64,13 @@ static int	base_exec(char **path_table, t_tree *tree, char **envp, t_fd *fd)
 	if (pid == 0)
 	{
 		if (redirect(&tree, fd))
-			return (1);
+			exit(1); //EDIT RETURN ERROR FOR REDIR
+		if (fd)
+			ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
 		err = child_process(tree, envp, fd, path_table);
 	}
 	if (fd)
-		ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
+		ft_close(fd->fd[1], fd->oldfd, -1, -1);
 	tree_free(&tree);
 	return (err);
 }
@@ -88,9 +99,10 @@ static int	pipe_exec(char **path_table, t_tree *tree, char **envp, int oldfd)
 	if (!tree)
 		return (1);
 	fd = fd_create(oldfd);
-	if (pipe(fd->fd) == -1)
-		return (1);
-	if (tree && tree->signal >= INPUT && tree->signal <= HEREDOC)
+	if (tree && tree->signal != CMD)
+		if (pipe(fd->fd) == -1)
+			return (1);
+	if (tree && tree->signal <= HEREDOC)
 	{
 		fd->last = 1;
 		status_code = base_exec(path_table, tree, envp, fd);
@@ -103,7 +115,7 @@ static int	pipe_exec(char **path_table, t_tree *tree, char **envp, int oldfd)
 	}
 	if (tree && tree->signal == PIPE && tree->right)
 	{
-		status_code = pipe_exec(path_table, tree->right, envp, fd->oldfd);
+		status_code = pipe_exec(path_table, tree->right, envp, fd->fd[0]);
 		tree->right = NULL;
 	}
 	else if (tree && tree->right)
@@ -112,6 +124,7 @@ static int	pipe_exec(char **path_table, t_tree *tree, char **envp, int oldfd)
 		status_code = base_exec(path_table, tree->right, envp, fd);
 		tree->right = NULL;
 	}
+	ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
 	free(fd);
 	return (status_code);
 }

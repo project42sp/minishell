@@ -77,11 +77,7 @@ int	redirect(t_tree **tree, t_fd *fd)
 			return (1);
 		if (define_stdout((*tree), fd, permission))
 			return (1);
-		close(fd->fd[1]);
-		if (fd->oldfd > -1)
-			close(fd->oldfd);
-		fd->oldfd = fd->fd[0];
-		close(fd->fd[0]);
+		ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
 		if ((*tree)->signal >= INPUT && (*tree)->signal <= HEREDOC)
 			*tree = (*tree)->right;
 	}
