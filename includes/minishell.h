@@ -68,18 +68,24 @@ void			tree_free(t_tree **tree);
 void			tree_node_free(char **node);
 void			envp_free(t_envp **envp);
 void			envp_char_free(char ***envp);
+void			envp_path_free(t_envp_path **envps);
 void			split_free(char **split);
 
 // envp function
-t_envp			*create_envp_table(char **envp);
 char			**envp_rebuilt(t_envp *envp_table);
+t_envp			*create_envp_table(char **envp);
 
 //Execution
-int		execution(t_tree *tree, t_envp *envp_table);
-int		redirect(t_tree **tree, t_fd *fd);
-char	**create_path_table(t_envp *envp);
-char	*find_path(char **path_envp, char **cmd);
-void	ft_close(int fd1, int fd2, int fd3, int fd4);
+int				execution(t_tree *tree, t_envp *envp_table);
+int				redirect(t_tree **tree, t_fd *fd);
+int				pipe_exec(t_envp_path *envps, t_tree *tree, int oldfd);
+int				ft_wait(void);
+int				base_exec(t_envp_path *envps, t_tree *tree, t_fd *fd);
+void			ft_close(int fd1, int fd2, int fd3, int fd4);
+char			*find_path(char **path_envp, char **cmd);
+char			**create_path_table(t_envp *envp);
+t_fd			*fd_create(int oldfd);
+t_envp_path		*create_envp_struct(t_envp *envp);
 
 // Lexer functions
 void			debug_lexer(t_token *list); // Remover

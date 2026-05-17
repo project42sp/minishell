@@ -1,66 +1,27 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   execution_utils.c                                  :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/16 21:21:55 by buehara           #+#    #+#             */
-/*   Updated: 2026/05/16 21:22:00 by buehara          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 # include "../../includes/minishell.h"
 
-char	**create_path_table(t_envp *envp)
+void	ft_close(int fd1, int fd2, int fd3, int fd4)
 {
-	char	**table;
-
-	table = NULL;
-	while (envp != NULL)
-	{
-		if (ft_strncmp(envp->key, "PATH", 4) == 0)
-		{
-			table = ft_split(envp->value, ':');
-			break ;
-		}
-		envp = envp->next;
-	}
-	return (table);
+	if (fd1 > -1)
+		close(fd1);
+	if (fd2 > -1)
+		close(fd2);
+	if (fd3 > -1)
+		close(fd3);
+	if (fd4 > -1)
+		close(fd4);
 }
 
-static char	*find_fullpath(char *path, char **path_envp)
+t_fd	*fd_create(int old_fd)
 {
-	int		index;
-	char	*full_path;
+	t_fd	*fd;
 
-	index = 0;
-	full_path = NULL;
-	while(path_envp[index] != NULL)
-	{
-		full_path = ft_strjoin(path_envp[index], path);
-		if (!full_path)
-			return (NULL);
-		if (access(full_path, F_OK | X_OK) == 0)
-			break ;
-		free(full_path);
-		full_path = NULL;
-		index++;
-	}
-	return (full_path);
-}
-
-char	*find_path(char **path_envp, char **cmd)
-{
-	char	*path;
-	char	*full_path;
-
-	path = ft_strjoin("/", cmd[0]);
-	if (!path)
+	fd = ft_calloc(1, sizeof(t_fd));
+	if (!fd)
 		return (NULL);
-	if (access(path, X_OK | F_OK) == 0)
-		return (path);
-	full_path = find_fullpath(path, path_envp);
-	free(path);
-	return (full_path);
+	fd->fd[0] = -1;
+	fd->fd[1] = -1;
+	fd->oldfd = old_fd;
+	fd->last = 0;
+	return (fd);
 }
