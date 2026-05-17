@@ -63,3 +63,17 @@ void	envp_char_free(char ***envp)
 	free(*envp);
 	*envp = NULL;
 }
+
+void	envp_path_free(t_envp_path **envps)
+{
+	if (!envps)
+		return ;
+	if ((*envps)->envp)
+		split_free((*envps)->envp);
+	if ((*envps)->path)
+		split_free((*envps)->path);
+	if ((*envps)->envp_og)
+		envp_free(&(*envps)->envp_og);
+	free(*envps);
+	envps = NULL;
+}
