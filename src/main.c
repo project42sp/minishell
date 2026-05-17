@@ -13,7 +13,6 @@ static int	execute_input(char *input, t_envp *envp_list)
 		return (1);
 	}
 	status_error = execution(tree, envp_list);
-	//tree_free(&tree);
 	free(input);
 	return (status_error);
 }

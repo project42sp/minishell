@@ -26,13 +26,20 @@ typedef struct s_envp
 	struct s_envp	*next;
 }	t_envp;
 
+typedef struct s_envp_path
+{
+	t_envp			*envp_og;
+	char			**path;
+	char			**envp;
+}	t_envp_path;
+
 typedef struct s_lexer
 {
 	t_token			*head;
 	t_token			*tail;
-	int				i;
 	t_tokens_type	last_type;
 	t_check			*flags;
+	int				i;
 }	t_lexer;
 
 typedef struct s_fd

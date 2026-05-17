@@ -36,15 +36,17 @@ static int	child_process(t_tree *tree, char **envp, t_fd *fd, char **path)
 		if (fd)
 			free(fd);
 		free(full_path);
-		envp_char_free(&envp);
+		split_free(path);
+		split_free(envp);
+		tree_free(&tree);
 		perror("Error");
-		exit(1); //ERROR PATH NOT FOUND
+		exit(2);
 	}
 	execve(full_path, node, envp);
 	if (fd)
 		free(fd);
 	free(full_path);
-	envp_char_free(&envp);
+	split_free(envp);
 	perror("Error");
 	exit(127);
 }
@@ -141,30 +143,62 @@ static int	pipe_exec(char **path_table, t_tree *tree, char **envp, int oldfd)
 	return (status_code);
 }
 
+t_envp_path	*create_envp_tables(t_envp *envp)
+{
+	t_envp_path	*envp_struct;
+
+	envp_struct	= (t_envp_path *)ft_calloc(sizeof(t_envp_path), 1);
+	if (!envp_struct)
+		return (NULL);
+	envp_struct->path = create_path_table(envp);
+	if (!envp_struct->path)
+	{
+		free(envp_struct);
+		return (NULL);
+	}
+	envp_struct->envp = envp_rebuilt(envp);
+	if (!envp_struct->envp)
+	{
+		split_free(envp_struct->path);
+		free(envp_struct);
+		return (NULL);
+	}
+	envp_struct->envp_og = envp;
+	return (envp_struct);
+}
+
 int	execution(t_tree *tree, t_envp *envp_table)
 {
-	char	**path_table;
-	int		status_code;
-	char	**rebuilt_envp;
+	t_envp_path	*envp_struct;
+	//char		**path_table;
+	int			status_code;
+	//char		**rebuilt_envp;
 
 	if (!tree || !envp_table)
 		return (1);
 	status_code = 0;
-	path_table = create_path_table(envp_table);
-	if (!path_table)
-		return (1);
-	rebuilt_envp = envp_rebuilt(envp_table);
-	if (!rebuilt_envp)
+	//path_table = create_path_table(envp_table);
+//	if (!path_table)
+//		return (1);
+//	rebuilt_envp = envp_rebuilt(envp_table);
+//	if (!rebuilt_envp)
+//	{
+//		split_free(path_table);
+//		return (1);
+//	}
+	envp_struct = create_envp_tables(envp_table);
+	if (!envp_struct)
 	{
-		split_free(path_table);
+		perror("Malloc");
 		return (1);
 	}
 	if (tree->signal != CMD)
-		status_code = pipe_exec(path_table, tree, rebuilt_envp, -1);
+		status_code = pipe_exec(envp_struct->path, tree, envp_struct->envp, -1);
 	else
-		status_code = base_exec(path_table, tree, rebuilt_envp, NULL);
+		status_code = base_exec(envp_struct->path, tree, envp_struct->envp, NULL);
 	status_code = ft_wait();
-	split_free(rebuilt_envp);
-	split_free(path_table);
+	split_free(envp_struct->envp);
+	split_free(envp_struct->path);
+	free(envp_struct);
 	return (status_code);
 }
