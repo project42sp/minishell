@@ -26,6 +26,15 @@ typedef struct s_envp
 	struct s_envp	*next;
 }	t_envp;
 
+typedef struct s_lexer
+{
+	t_token			*head;
+	t_token			*tail;
+	int				i;
+	t_tokens_type	last_type;
+	t_check			*flags;
+}	t_lexer;
+
 typedef struct s_fd
 {
 	int	fd[2];
@@ -33,28 +42,30 @@ typedef struct s_fd
 	int	last;
 }	t_fd;
 
-//Test Functions
-void	tree_print(t_tree *tree, int level);
-void	tree_print_extense(t_tree *tree);
-void	tokens_print(t_token *token);
+// Test Functions
+void			tree_print(t_tree *tree, int level);
+void			tree_print_extense(t_tree *tree);
+void			tokens_print(t_token *token);
 
-// Token Create Functions
-t_tree	*tree_create(t_token *list, t_check *flags);
-t_token	*token_create(char ***tokens, t_tokens_type *signal);
-t_token	*get_next_token(t_token *token);
+// Token & Tree Create Functions
+t_tree			*tree_create(t_token *list, t_check *flags);
+t_tree			*create_cmd_node(char **argv);
+t_tree			*tree_node_create(t_tree *left, t_token **token, t_tree *right);
+t_token			*token_node(char *token_str, t_tokens_type signal);
+t_token			*get_next_token(t_token *token);
 
 // Free functions
-void	token_list_free(t_token *head);
-void	token_no_content_free(t_token *head);
-void	tree_free(t_tree **tree);
-void	tree_node_free(char **node);
-void	envp_free(t_envp **envp);
-void	envp_char_free(char ***envp);
-void	split_free(char **split);
+void			token_list_free(t_token *head);
+void			token_free_partial(t_token *head, t_token *limit);
+void			tree_free(t_tree **tree);
+void			tree_node_free(char **node);
+void			envp_free(t_envp **envp);
+void			envp_char_free(char ***envp);
+void			split_free(char **split);
 
 // envp function
-t_envp	*create_envp_table(char **envp);
-char	**envp_rebuilt(t_envp *envp_table);
+t_envp			*create_envp_table(char **envp);
+char			**envp_rebuilt(t_envp *envp_table);
 
 //Execution
 int		execution(t_tree *tree, t_envp *envp_table);
@@ -64,12 +75,23 @@ char	*find_path(char **path_envp, char **cmd);
 void	ft_close(int fd1, int fd2, int fd3, int fd4);
 
 // Lexer functions
-void	debug_lexer(t_token *list);
-char	***lexer(char *input, t_tokens_type **signals_ptr, t_check *flags);
-void	ft_skip_spaces(char *input, int *index);
-int		ft_isspace(char c);
+void			debug_lexer(t_token *list); // Remover
+t_token			*lexer(char *input, t_check *flags);
+void			ft_skip_spaces(char *input, int *index);
+int				ft_isspace(char c);
+void			update_flags(t_check *flags, t_tokens_type type);
+int				operator_len(t_tokens_type type);
+t_tokens_type	get_operator_type(char *str);
+const char		*get_operator_symbol(t_tokens_type type);
+int				handle_operator(char *input, int *i, t_tokens_type *type);
+char			*extract_token(char *input, int *i, t_tokens_type *type);
 
 // Parser functions
-t_tree	*parser(char *input);
+t_tree			*parser(char *input);
+int				validate_syntax(t_token *tokens);
+char			**collect_args(t_token **token);
+int				is_redir(t_tokens_type type);
+int				is_pipe_logical(t_tokens_type type);
+int				syntax_error(t_token *token);
 
 #endif

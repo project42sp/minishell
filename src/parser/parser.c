@@ -1,29 +1,37 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/09 14:46:44 by thfernan          #+#    #+#             */
+/*   Updated: 2026/05/09 14:46:45 by thfernan         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
 t_tree	*parser(char *input)
 {
-	char 			***tokens;
-	t_tokens_type	*signals;
 	t_check			flags;
-	t_token			*head;
+	t_token			*tokens;
 	t_tree			*tree;
 
-	tokens = lexer(input, &signals, &flags);
+	ft_bzero(&flags, sizeof(t_check));
+	tokens = lexer(input, &flags);
 	if (!tokens)
 	{
 		ft_printf("Lexer error: invalid syntax\n");
 		return (NULL);
 	}
-	head = token_create(tokens, signals);
-	if (!head)
+	if (!validate_syntax(tokens))
 	{
-		envp_char_free(tokens);
-		free(signals);
+		token_list_free(tokens);
 		return (NULL);
 	}
-	tree = tree_create(head, &flags);
-	token_list_free(head);
-	free(tokens);
-	free(signals);
+	debug_lexer(tokens);
+	tree = tree_create(tokens, &flags);
+	token_list_free(tokens);
 	return (tree);
 }

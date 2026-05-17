@@ -14,34 +14,32 @@
 
 void	token_list_free(t_token *head)
 {
-	t_token	*next;
+	t_token	*temp;
 
 	while (head)
 	{
-		next = head->next;
-		if (head->token)
+		temp = head;
+		head = head->next;
+		if (temp->token)
 		{
-			split_free((char **)head->token);
-			free(head->token);
+			free(((char **)temp->token)[0]);
+			free(temp->token);
 		}
-		free(head);
-		head = next;
+		free(temp);
 	}
 }
 
-void	token_no_content_free(t_token *head)
+void	token_free_partial(t_token *head, t_token *limit)
 {
-	t_token	*next;
+	t_token *temp;
+	t_token *current;
 
-	while (head)
+	current = head;
+	while (current && current != limit)
 	{
-		next = head->next;
-		if (head->token)
-		{
-			free(((char **)head->token)[0]);
-			free(head->token);
-		}
-		free(head);
-		head = next;
+		temp = current;
+		current = current->next;
+		free(temp->token);
+		free(temp);
 	}
 }
