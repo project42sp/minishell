@@ -42,6 +42,7 @@ int	pipe_exec(t_envp_path *envps, t_tree *tree, int oldfd)
 	{
 		status_code = pipe_exec(envps, tree->right, fd->fd[0]);
 		tree->right = NULL;
+		free(tree);
 	}
 	else if (tree && tree->right)
 	{
