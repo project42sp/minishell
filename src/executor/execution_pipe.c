@@ -26,7 +26,10 @@ int	pipe_exec(t_envp_path *envps, t_tree *tree, int oldfd)
 	fd = fd_create(oldfd);
 	if (tree && tree->signal != CMD)
 		if (pipe(fd->fd) == -1)
+		{
+			free(fd);
 			return (1);
+		}
 	if (tree && tree->signal <= HEREDOC)
 	{
 		fd->last = 1;

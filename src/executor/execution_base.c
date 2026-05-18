@@ -33,7 +33,7 @@ static int	child_process(t_tree *tree, t_envp_path *envps, t_fd *fd)
 	if (fd)
 		free(fd);
 	free(full_path);
-	split_free(envps->envp);
+	envp_path_free(&envps);
 	tree_free(&tree);
 	perror("Error");
 	exit(127);
