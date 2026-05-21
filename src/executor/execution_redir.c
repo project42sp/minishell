@@ -79,19 +79,20 @@ static int	check_permission(t_tree *tree)
 int	redirect(t_tree **tree, t_fd *fd)
 {
 	int	permission;
+	int	err;
 
 	if (!*tree)
 		return (1);
+	err = 0;
 	permission = check_permission(*tree);
 	if (fd)
 	{
-		if (define_stdin((*tree), fd, permission))
-			return (1);
-		if (define_stdout((*tree), fd, permission))
-			return (1);
+		err = define_stdin((*tree), fd, permission);
+		if (!err)
+			err = define_stdout((*tree), fd, permission);
 		ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
 		if ((*tree)->signal >= INPUT && (*tree)->signal <= HEREDOC)
 			*tree = (*tree)->right;
 	}
-	return (0);
+	return (err);
 }

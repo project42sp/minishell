@@ -22,8 +22,10 @@ static int	child_process(t_tree *tree, t_envp_path *envps, t_fd *fd)
 	if (!full_path)
 	{
 		if (fd)
+		{
+			ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
 			free(fd);
-		free(full_path);
+		}
 		envp_path_free(&envps);
 		tree_free(&tree);
 		perror("Error");

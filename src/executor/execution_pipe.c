@@ -27,6 +27,7 @@ int	pipe_exec(t_envp_path *envps, t_tree *tree, int oldfd)
 	if (tree && tree->signal != CMD)
 		if (pipe(fd->fd) == -1)
 		{
+			ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
 			free(fd);
 			return (1);
 		}

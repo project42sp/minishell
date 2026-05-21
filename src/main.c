@@ -22,6 +22,7 @@ static int	minishell(t_envp *envp)
 	char	*input;
 	int		err;
 
+	err = 0;
 	while(1)
 	{
 		input = readline("minishell$ ");
