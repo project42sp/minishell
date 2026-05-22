@@ -25,3 +25,23 @@ t_fd	*fd_create(int old_fd)
 	fd->last = 0;
 	return (fd);
 }
+
+int	ft_wait(t_pid *pid)
+{
+	int	status;
+	int	exit_code;
+	int	index;
+
+	exit_code = 0;
+	index = 0;
+	while(index < pid->size)
+	{
+		waitpid(pid->pid[index], &status, 0);
+		if (WIFSIGNALED(status))
+			exit_code = 128 + WTERMSIG(status);
+		else if (WIFEXITED(status))
+			exit_code = WEXITSTATUS(status);
+		index++;
+	}
+	return (exit_code);
+}

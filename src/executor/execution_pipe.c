@@ -1,22 +1,47 @@
 #include "../../includes/minishell.h"
 
-int	ft_wait(void)
+int	tree_cmd_count(t_tree *tree)
 {
-	int	status;
-	int	exit_code;
+	t_tree	*temp;
+	int		count;
 
-	exit_code = 0;
-	while(waitpid(-1, &status, 0) > 0)
-	{
-		if (WIFSIGNALED(status))
-			exit_code = 128 + WTERMSIG(status);
-		else if (WIFEXITED(status))
-			exit_code = WEXITSTATUS(status);
-	}
-	return (exit_code);
+	if (!tree)
+		return (0);
+	temp = tree;
+	count = 0;
+	count += tree_cmd_count(temp->left);
+	count += tree_cmd_count(temp->right);
+	if (tree->signal == CMD)
+		count++;
+	return (count);
 }
 
-int	pipe_exec(t_envp_path *envps, t_tree *tree, int oldfd)
+t_pid	*create_pid(t_tree *tree)
+{
+	t_pid	*pid;
+
+	if (!tree)
+		return (NULL);
+	pid = ft_calloc(sizeof(t_pid), 1);
+	if (!pid)
+		return (NULL);
+	pid->size = tree_cmd_count(tree);
+	if (!pid->size)
+	{
+		free(pid);
+		return (NULL);
+	}
+	pid->pid = ft_calloc(sizeof(pid_t), pid->size);
+	if (!pid->pid)
+	{
+		free(pid);
+		return (NULL);
+	}
+	pid->index = 0;
+	return (pid);
+}
+
+int	pipe_exec(t_envp_path *envps, t_tree *tree, int oldfd, t_pid *pid)
 {
 	int		status_code;
 	t_fd	*fd;
@@ -34,24 +59,24 @@ int	pipe_exec(t_envp_path *envps, t_tree *tree, int oldfd)
 	if (tree && tree->signal <= HEREDOC)
 	{
 		fd->last = 1;
-		status_code = base_exec(envps, tree, fd);
+		status_code = base_exec(envps, tree, fd, pid);
 		tree = NULL;
 	}
 	if (tree && tree->signal == PIPE)
 	{
-		status_code = base_exec(envps, tree->left, fd);
+		status_code = base_exec(envps, tree->left, fd, pid);
 		tree->left = NULL;
 	}
 	if (tree && tree->signal == PIPE && tree->right)
 	{
-		status_code = pipe_exec(envps, tree->right, fd->fd[0]);
+		status_code = pipe_exec(envps, tree->right, fd->fd[0], pid);
 		tree->right = NULL;
 		free(tree);
 	}
 	else if (tree && tree->right)
 	{
 		fd->last = 1;
-		status_code = base_exec(envps, tree->right, fd);
+		status_code = base_exec(envps, tree->right, fd, pid);
 		tree->right = NULL;
 	}
 	ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);

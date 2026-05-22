@@ -33,6 +33,13 @@ typedef struct s_envp_path
 	char			**envp;
 }	t_envp_path;
 
+typedef struct s_pid
+{
+	pid_t	*pid;
+	int		size;
+	int		index;
+}	t_pid;
+
 typedef struct s_lexer
 {
 	t_token			*head;
@@ -70,21 +77,24 @@ void			envp_free(t_envp **envp);
 void			envp_char_free(char ***envp);
 void			envp_path_free(t_envp_path **envps);
 void			split_free(char **split);
+void			pid_free(t_pid **pid);
 
 // envp function
 char			**envp_rebuilt(t_envp *envp_table);
 t_envp			*create_envp_table(char **envp);
 
 //Execution
+int				tree_cmd_count(t_tree *tree);
 int				execution(t_tree *tree, t_envp *envp_table);
 int				redirect(t_tree **tree, t_fd *fd);
-int				pipe_exec(t_envp_path *envps, t_tree *tree, int oldfd);
-int				ft_wait(void);
-int				base_exec(t_envp_path *envps, t_tree *tree, t_fd *fd);
+int				pipe_exec(t_envp_path *envps, t_tree *tree, int oldfd, t_pid *pid);
+int				ft_wait(t_pid *pid);
+int				base_exec(t_envp_path *envps, t_tree *tree, t_fd *fd, t_pid *pid);
 void			ft_close(int fd1, int fd2, int fd3, int fd4);
 char			*find_path(char **path_envp, char **cmd);
 char			**create_path_table(t_envp *envp);
 t_fd			*fd_create(int oldfd);
+t_pid			*create_pid(t_tree *tree);
 t_envp_path		*create_envp_struct(t_envp *envp);
 
 // Lexer functions
