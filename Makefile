@@ -16,14 +16,17 @@ SRCS	= \
 		src/tree/tree_print.c		\
 		src/tree/tree_build.c		\
 		src/tree/tree_utils.c		\
+		src/executor/envp.c		\
+		src/executor/envp_rebuilt.c	\
 		src/executor/execution_base.c	\
 		src/executor/execution_redir.c	\
 		src/executor/execution_utils.c	\
+		src/executor/execution_pipe.c	\
+		src/executor/execution_pid.c	\
+		src/executor/execution_path.c	\
 		src/free/tree_free.c		\
 		src/free/token_list_free.c	\
 		src/free/envp_free.c	\
-		src/utils/envp.c		\
-		src/utils/envp_rebuilt.c	\
 		src/main.c
 
 OBJS_DIR	= obj
@@ -43,6 +46,7 @@ val:
 		--track-origins=yes \
 		--trace-children=yes \
 		--track-fds=yes		\
+		--trace-children-skip='*/bin/*,*/sbin/*,/usr/bin/*' \
 		--suppressions=readline.supp \
 		./$(NAME)
 

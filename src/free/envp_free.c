@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   envp_free.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/16 21:23:14 by buehara           #+#    #+#             */
+/*   Updated: 2026/05/16 21:23:16 by buehara          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
 void	envp_free(t_envp **envp)
@@ -50,4 +62,20 @@ void	envp_char_free(char ***envp)
 	}
 	free(*envp);
 	*envp = NULL;
+}
+
+void	envp_path_free(t_envp_path **envps)
+{
+	if (!envps)
+		return ;
+	if ((*envps)->envp)
+		split_free((*envps)->envp);
+	if ((*envps)->path)
+		split_free((*envps)->path);
+	if ((*envps)->pid)
+		pid_free(&(*envps)->pid);
+	if ((*envps)->envp_og)
+		(*envps)->envp_og = NULL;
+	free(*envps);
+	envps = NULL;
 }

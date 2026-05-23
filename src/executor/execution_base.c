@@ -1,68 +1,104 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execution_base.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/16 21:21:33 by buehara           #+#    #+#             */
+/*   Updated: 2026/05/16 21:21:38 by buehara          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
-static int	child_process(t_tree *tree, char **envp, int fd[2], char **path)
+void	child_free(t_tree *tree, t_envp_path *envps, t_fd *fd)
+{
+	if (fd)
+	{
+		ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
+		free(fd);
+	}
+	envp_free(&envps->envp_og);
+	envp_path_free(&envps);
+	tree_free(&tree);
+}
+
+static int	child_process(t_tree *tree, t_envp_path *envps, t_fd *fd)
 {
 	char	*full_path;
 	char	**node;
 
-	if (tree->signal != CMD)
-	{
-		if (redirect(&tree, fd))
-			return (1);
-	}
 	node = (char **)tree->node;
-	full_path = find_path(path, node);
-	execve(full_path, node, envp);
+	full_path = find_path(envps->path, node);
+	if (!full_path)
+	{
+		perror("Error");
+		child_free(tree, envps, fd);
+		exit(2);
+	}
+	execve(full_path, node, envps->envp);
 	free(full_path);
-	envp_char_free(&envp);
+	child_free(tree, envps, fd);
 	perror("Error");
 	exit(127);
 }
 
-static int	base_exec(char **path_table, t_tree *tree, char **envp)
+int	base_exec(t_envp_path *envps, t_tree *tree, t_fd *fd)
 {
 	int		err;
-	pid_t	pid;
-	int		fd[2];
 
 	//if (builtin)
 		//Run builtin
 		// Return status code
 	err = 0;
-	if (tree->signal != CMD)
-		if (pipe(fd) == -1)
-			return (1);
-	pid = fork();
-	if (pid == 0)
-		err = child_process(tree, envp, fd, path_table);
-	if (tree->signal != CMD)
+	envps->pid->pid[envps->pid->index] = fork();
+	if (envps->pid->pid[envps->pid->index] == 0)
 	{
-		close(fd[0]);
-		close(fd[1]);
+		signal(SIGPIPE, SIG_DFL);
+		signal(SIGINT, SIG_DFL);
+		if (redirect(&tree, fd))
+		{
+			tree_free(&tree);
+			if (fd)
+			{
+				ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
+				free(fd);
+			}
+			exit(1);
+		}
+		if (fd)
+			ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
+		err = child_process(tree, envps, fd);
 	}
-	waitpid(pid, &err, 0);
+	if (fd)
+		ft_close(fd->fd[1], fd->oldfd, -1, -1);
+	envps->pid->index++;
+	tree_free(&tree);
 	return (err);
 }
 
 int	execution(t_tree *tree, t_envp *envp_table)
 {
-	char	**path_table;
-	int		status_code;
-	char	**rebuilt_envp;
+	t_envp_path	*envp_struct;
+	int			status_code;
 
-	status_code = 0;
-	path_table = create_path_table(envp_table);
-	if (!path_table)
+	if (!tree || !envp_table)
 		return (1);
-	rebuilt_envp = envp_rebuilt(envp_table);
-	if (!rebuilt_envp)
+	signal(SIGPIPE, SIG_IGN);
+	signal(SIGINT, SIG_IGN);
+	status_code = 0;
+	envp_struct = create_envp_struct(tree, envp_table);
+	if (!envp_struct)
 	{
-		split_free(path_table);
+		perror("Malloc");
 		return (1);
 	}
-	status_code = base_exec(path_table, tree, rebuilt_envp);
-	split_free(rebuilt_envp);
-	split_free(path_table);
+	if (tree->signal != CMD)
+		status_code = pipe_exec(envp_struct, tree, -1);
+	else
+		status_code = base_exec(envp_struct, tree, NULL);
+	status_code = ft_wait(envp_struct->pid);
+	envp_path_free(&envp_struct);
 	return (status_code);
-	//TODO: Criar o export e adicionar o status_code dentro da variavel $?
 }
