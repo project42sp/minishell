@@ -28,32 +28,7 @@ int	tree_cmd_count(t_tree *tree)
 	return (count);
 }
 
-t_pid	*create_pid(t_tree *tree)
-{
-	t_pid	*pid;
-
-	if (!tree)
-		return (NULL);
-	pid = ft_calloc(sizeof(t_pid), 1);
-	if (!pid)
-		return (NULL);
-	pid->size = tree_cmd_count(tree);
-	if (!pid->size)
-	{
-		free(pid);
-		return (NULL);
-	}
-	pid->pid = ft_calloc(sizeof(pid_t), pid->size);
-	if (!pid->pid)
-	{
-		free(pid);
-		return (NULL);
-	}
-	pid->index = 0;
-	return (pid);
-}
-
-int	pipe_exec(t_envp_path *envps, t_tree *tree, int oldfd, t_pid *pid)
+int	pipe_exec(t_envp_path *envps, t_tree *tree, int oldfd)
 {
 	int		status_code;
 	t_fd	*fd;
@@ -73,21 +48,21 @@ int	pipe_exec(t_envp_path *envps, t_tree *tree, int oldfd, t_pid *pid)
 	if (tree && tree->signal <= HEREDOC)
 	{
 		fd->last = 1;
-		status_code = base_exec(envps, tree, fd, pid);
+		status_code = base_exec(envps, tree, fd);
 		tree = NULL;
 	}
 	if (tree && tree->signal == PIPE)
 	{
-		status_code = base_exec(envps, tree->left, fd, pid);
+		status_code = base_exec(envps, tree->left, fd);
+		status_code = pipe_exec(envps, tree->right, fd->fd[0]);
 		tree->left = NULL;
-		status_code = pipe_exec(envps, tree->right, fd->fd[0], pid);
 		tree->right = NULL;
 		free(tree);
 	}
 	else if (tree && tree->right)
 	{
 		fd->last = 1;
-		status_code = base_exec(envps, tree->right, fd, pid);
+		status_code = base_exec(envps, tree->right, fd);
 		tree->right = NULL;
 	}
 	ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);

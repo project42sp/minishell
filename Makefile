@@ -21,6 +21,7 @@ SRCS	= \
 		src/executor/execution_redir.c	\
 		src/executor/execution_utils.c	\
 		src/executor/execution_pipe.c	\
+		src/executor/execution_pid.c	\
 		src/executor/execution_path.c	\
 		src/free/tree_free.c		\
 		src/free/token_list_free.c	\
@@ -44,6 +45,7 @@ val:
 		--track-origins=yes \
 		--trace-children=yes \
 		--track-fds=yes		\
+		--trace-children-skip='*/bin/*,*/sbin/*,/usr/bin/*' \
 		--suppressions=readline.supp \
 		./$(NAME)
 

@@ -31,12 +31,21 @@ void	tree_free(t_tree **tree)
 {
 	if (!tree || !*tree)
 		return ;
-	if ((*tree)->left != NULL)
+	if (*tree && (*tree)->left != NULL)
+	{
 		tree_free(&((*tree)->left));
-	if ((*tree)->node)
+		(*tree)->left = NULL;
+	}
+	if (*tree && (*tree)->node)
+	{
 		split_free((char **)(*tree)->node);
-	if ((*tree)->right != NULL)
+		(*tree)->node = NULL;
+	}
+	if (*tree && (*tree)->right != NULL)
+	{
 		tree_free(&((*tree)->right));
+		(*tree)->right = NULL;
+	}
 	free(*tree);
 	*tree = NULL;
 }

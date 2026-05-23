@@ -55,7 +55,16 @@ char	*find_path(char **path_envp, char **cmd)
 	char	*path;
 	char	*full_path;
 
-	path = ft_strjoin("/", cmd[0]);
+	if (!path_envp || !*cmd)
+		return (NULL);
+	if (!ft_strchr(cmd[0], '/'))
+	{
+		path = ft_strjoin("/", cmd[0]);
+		if (!path)
+			return (NULL);
+	}
+	else
+		path = ft_strdup(cmd[0]);
 	if (!path)
 		return (NULL);
 	if (access(path, X_OK | F_OK) == 0)
@@ -65,13 +74,19 @@ char	*find_path(char **path_envp, char **cmd)
 	return (full_path);
 }
 
-t_envp_path	*create_envp_struct(t_envp *envp)
+t_envp_path	*create_envp_struct(t_tree *tree, t_envp *envp)
 {
 	t_envp_path	*envp_struct;
 
 	envp_struct	= (t_envp_path *)ft_calloc(sizeof(t_envp_path), 1);
 	if (!envp_struct)
 		return (NULL);
+	envp_struct->pid = create_pid(tree);
+	if (!envp_struct->pid)
+	{
+		free(envp_struct);
+		return (NULL);
+	}
 	envp_struct->path = create_path_table(envp);
 	if (!envp_struct->path)
 	{

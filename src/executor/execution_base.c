@@ -12,21 +12,19 @@
 
 #include "../../includes/minishell.h"
 
-void	child_free(t_tree *tree, t_envp_path *envps, t_fd *fd, t_pid *pid)
+void	child_free(t_tree *tree, t_envp_path *envps, t_fd *fd)
 {
 	if (fd)
 	{
 		ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
 		free(fd);
 	}
-	free(pid->pid);
-	free(pid);
 	envp_free(&envps->envp_og);
 	envp_path_free(&envps);
 	tree_free(&tree);
 }
 
-static int	child_process(t_tree *tree, t_envp_path *envps, t_fd *fd, t_pid *pid)
+static int	child_process(t_tree *tree, t_envp_path *envps, t_fd *fd)
 {
 	char	*full_path;
 	char	**node;
@@ -35,18 +33,18 @@ static int	child_process(t_tree *tree, t_envp_path *envps, t_fd *fd, t_pid *pid)
 	full_path = find_path(envps->path, node);
 	if (!full_path)
 	{
-		child_free(tree, envps, fd, pid);
-		perror("Error path");
+		perror("Error");
+		child_free(tree, envps, fd);
 		exit(2);
 	}
 	execve(full_path, node, envps->envp);
 	free(full_path);
-	child_free(tree, envps, fd, pid);
-	perror("Error exec");
+	child_free(tree, envps, fd);
+	perror("Error");
 	exit(127);
 }
 
-int	base_exec(t_envp_path *envps, t_tree *tree, t_fd *fd, t_pid *pid)
+int	base_exec(t_envp_path *envps, t_tree *tree, t_fd *fd)
 {
 	int		err;
 
@@ -54,54 +52,35 @@ int	base_exec(t_envp_path *envps, t_tree *tree, t_fd *fd, t_pid *pid)
 		//Run builtin
 		// Return status code
 	err = 0;
-	pid->pid[pid->index] = fork();
-	if (pid->pid[pid->index] == 0)
+	envps->pid->pid[envps->pid->index] = fork();
+	if (envps->pid->pid[envps->pid->index] == 0)
 	{
 		signal(SIGPIPE, SIG_DFL);
 		signal(SIGINT, SIG_DFL);
 		if (redirect(&tree, fd))
+		{
+			tree_free(&tree);
+			if (fd)
+			{
+				ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
+				free(fd);
+			}
 			exit(1);
+		}
 		if (fd)
 			ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
-		err = child_process(tree, envps, fd, pid);
+		err = child_process(tree, envps, fd);
 	}
 	if (fd)
 		ft_close(fd->fd[1], fd->oldfd, -1, -1);
-	pid->index++;
+	envps->pid->index++;
 	tree_free(&tree);
 	return (err);
-}
-
-t_pid	*pid_create_free(t_tree *tree, t_envp_path *envp)
-{
-	t_pid	*pid;
-
-	if (!tree || !envp)
-		return (NULL);
-	pid = create_pid(tree);
-	if (!pid)
-	{
-		tree_free(&tree);
-		envp_path_free(&envp);
-		return (NULL);
-	}
-	return (pid);
-}
-
-void	pid_free(t_pid **pid)
-{
-	if (!*pid)
-		return ;
-	if ((*pid)->pid)
-		free((*pid)->pid);
-	free(*pid);
-	*pid = NULL;
 }
 
 int	execution(t_tree *tree, t_envp *envp_table)
 {
 	t_envp_path	*envp_struct;
-	t_pid		*pid;
 	int			status_code;
 
 	if (!tree || !envp_table)
@@ -109,21 +88,17 @@ int	execution(t_tree *tree, t_envp *envp_table)
 	signal(SIGPIPE, SIG_IGN);
 	signal(SIGINT, SIG_IGN);
 	status_code = 0;
-	envp_struct = create_envp_struct(envp_table);
+	envp_struct = create_envp_struct(tree, envp_table);
 	if (!envp_struct)
 	{
 		perror("Malloc");
 		return (1);
 	}
-	pid = pid_create_free(tree, envp_struct);
-	if (!pid)
-		return (1);
 	if (tree->signal != CMD)
-		status_code = pipe_exec(envp_struct, tree, -1, pid);
+		status_code = pipe_exec(envp_struct, tree, -1);
 	else
-		status_code = base_exec(envp_struct, tree, NULL, pid);
-	status_code = ft_wait(pid);
-	pid_free(&pid);
+		status_code = base_exec(envp_struct, tree, NULL);
+	status_code = ft_wait(envp_struct->pid);
 	envp_path_free(&envp_struct);
 	return (status_code);
 }

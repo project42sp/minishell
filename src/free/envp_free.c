@@ -72,6 +72,8 @@ void	envp_path_free(t_envp_path **envps)
 		split_free((*envps)->envp);
 	if ((*envps)->path)
 		split_free((*envps)->path);
+	if ((*envps)->pid)
+		pid_free(&(*envps)->pid);
 	if ((*envps)->envp_og)
 		(*envps)->envp_og = NULL;
 	free(*envps);
