@@ -73,7 +73,7 @@ void	envp_path_free(t_envp_path **envps)
 	if ((*envps)->path)
 		split_free((*envps)->path);
 	if ((*envps)->envp_og)
-		envp_free(&(*envps)->envp_og);
+		(*envps)->envp_og = NULL;
 	free(*envps);
 	envps = NULL;
 }

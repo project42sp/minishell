@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execution_pipe.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/23 15:20:20 by buehara           #+#    #+#             */
+/*   Updated: 2026/05/23 15:20:23 by buehara          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
 int	tree_cmd_count(t_tree *tree)
@@ -49,6 +61,8 @@ int	pipe_exec(t_envp_path *envps, t_tree *tree, int oldfd, t_pid *pid)
 	if (!tree)
 		return (1);
 	fd = fd_create(oldfd);
+	if (!fd)
+		return (1);
 	if (tree && tree->signal != CMD)
 		if (pipe(fd->fd) == -1)
 		{
@@ -66,9 +80,6 @@ int	pipe_exec(t_envp_path *envps, t_tree *tree, int oldfd, t_pid *pid)
 	{
 		status_code = base_exec(envps, tree->left, fd, pid);
 		tree->left = NULL;
-	}
-	if (tree && tree->signal == PIPE && tree->right)
-	{
 		status_code = pipe_exec(envps, tree->right, fd->fd[0], pid);
 		tree->right = NULL;
 		free(tree);
