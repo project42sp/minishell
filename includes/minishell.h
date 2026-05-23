@@ -120,4 +120,9 @@ int				is_redir(t_tokens_type type);
 int				is_pipe_logical(t_tokens_type type);
 int				syntax_error(t_token *token);
 
+// Signals
+void			setup_signals(void);
+void			ignore_signals(void);
+void			set_signals_default(void);
+
 #endif
