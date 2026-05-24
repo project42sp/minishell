@@ -35,7 +35,7 @@ t_fd	fd_create(int old_fd)
 	return (fd);
 }
 
-int	ft_wait(t_pid *pid)
+int	ft_wait(t_pid *pid, int status_code)
 {
 	int	status;
 	int	exit_code;
@@ -43,6 +43,7 @@ int	ft_wait(t_pid *pid)
 
 	exit_code = 0;
 	index = 0;
+	status = status_code;
 	while (index < pid->size)
 	{
 		waitpid(pid->pid[index], &status, 0);

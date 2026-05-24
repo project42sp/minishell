@@ -34,7 +34,6 @@ static int	child_process(t_tree *tree, t_envp_path *envps)
 	}
 	execve(full_path, node, envps->envp);
 	free(full_path);
-	child_free(envps);
 	perror("Error");
 	exit(127);
 }
@@ -62,9 +61,6 @@ int	base_exec(t_envp_path *envps, t_tree *tree, t_fd *fd)
 {
 	int		err;
 
-	//if (builtin)
-		//Run builtin
-		// Return status code
 	err = 0;
 	envps->pid->pid[envps->pid->index] = fork();
 	if (envps->pid->pid[envps->pid->index] == 0)
@@ -73,14 +69,17 @@ int	base_exec(t_envp_path *envps, t_tree *tree, t_fd *fd)
 		signal(SIGINT, SIG_DFL);
 		if (redir_control(&tree, fd) != 0)
 			exit(1);
+		err = check_builtin(envps, tree);
+		if (err != -1)
+		{
+			child_free(envps);
+			exit(2);
+		}
 		err = child_process(tree, envps);
+		child_free(envps);
 	}
 	if (fd)
-	{
 		ft_close(fd->fd[1], fd->oldfd, -1, -1);
-		fd->fd[1] = -1;
-		fd->oldfd = -1;
-	}
 	envps->pid->index++;
 	return (err);
 }
@@ -103,8 +102,12 @@ int	execution(t_tree *tree, t_envp *envp_table)
 	if (tree->signal != CMD)
 		status_code = pipe_exec(envp_struct, tree, -1);
 	else
-		status_code = base_exec(envp_struct, tree, NULL);
-	status_code = ft_wait(envp_struct->pid);
+	{
+		status_code = check_builtin(envp_struct, tree);
+		if (status_code == -1)
+			status_code = base_exec(envp_struct, tree, NULL);
+	}
+	status_code = ft_wait(envp_struct->pid, status_code);
 	envp_path_free(&envp_struct);
 	return (status_code);
 }
