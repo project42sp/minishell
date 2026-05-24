@@ -143,5 +143,7 @@ void			set_signals_default(void);
 int				check_builtin(t_envp_path *envps, t_tree *tree);
 int				ft_env(char **envp);
 int				ft_echo(char **envp, char **cmd);
+int				ft_pwd(void);
+int				ft_cd(t_envp_path *envps, char **cmd);
 
 #endif

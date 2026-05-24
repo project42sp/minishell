@@ -20,6 +20,8 @@ SRCS	= \
 		src/executor/envp_rebuilt.c	\
 		src/executor/builtin_check.c	\
 		src/executor/builtin_env.c	\
+		src/executor/builtin_cd.c	\
+		src/executor/builtin_pwd.c	\
 		src/executor/builtin_echo.c	\
 		src/executor/execution_base.c	\
 		src/executor/execution_redir.c	\
