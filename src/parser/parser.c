@@ -30,7 +30,6 @@ t_tree	*parser(char *input)
 		token_list_free(tokens);
 		return (NULL);
 	}
-	debug_lexer(tokens);
 	tree = tree_create(tokens, &flags);
 	token_list_free(tokens);
 	return (tree);

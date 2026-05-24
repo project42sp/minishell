@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/24 02:34:01 by buehara           #+#    #+#             */
+/*   Updated: 2026/05/24 02:34:43 by buehara          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/minishell.h"
 
 static int	execute_input(char *input, t_envp *envp_list)
@@ -13,6 +25,7 @@ static int	execute_input(char *input, t_envp *envp_list)
 		return (1);
 	}
 	status_error = execution(tree, envp_list);
+	tree_free(&tree);
 	free(input);
 	return (status_error);
 }
@@ -24,7 +37,7 @@ static int	minishell(t_envp *envp)
 
 	err = 0;
 	setup_signals();
-	while(1)
+	while (1)
 	{
 		input = readline("minishell$ ");
 		if (!input)
@@ -35,9 +48,7 @@ static int	minishell(t_envp *envp)
 			continue ;
 		}
 		else
-		{
 			add_history(input);
-		}
 		err = execute_input(input, envp);
 	}
 	return (err);
@@ -48,7 +59,7 @@ int	main(int argc, char **argv, char **envp)
 	t_envp	*envp_list;
 	int		err;
 
-	if(argc > 1)
+	if (argc > 1)
 		return (1);
 	(void)*argv;
 	envp_list = create_envp_table(envp);

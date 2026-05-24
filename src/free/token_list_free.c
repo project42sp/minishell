@@ -6,7 +6,7 @@
 /*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/16 21:23:22 by buehara           #+#    #+#             */
-/*   Updated: 2026/05/16 21:23:24 by buehara          ###   ########.fr       */
+/*   Updated: 2026/05/24 02:42:29 by buehara          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,8 @@ void	token_list_free(t_token *head)
 
 void	token_free_partial(t_token *head, t_token *limit)
 {
-	t_token *temp;
-	t_token *current;
+	t_token	*temp;
+	t_token	*current;
 
 	current = head;
 	while (current && current != limit)

@@ -6,7 +6,7 @@
 /*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/16 21:23:30 by buehara           #+#    #+#             */
-/*   Updated: 2026/05/16 21:23:32 by buehara          ###   ########.fr       */
+/*   Updated: 2026/05/24 02:44:21 by buehara          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	tree_node_free(char **node)
 	int	index;
 
 	if (!node)
-		return;
+		return ;
 	index = 0;
 	while (node[index] != NULL)
 	{

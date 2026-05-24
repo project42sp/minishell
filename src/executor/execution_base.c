@@ -12,19 +12,14 @@
 
 #include "../../includes/minishell.h"
 
-void	child_free(t_tree *tree, t_envp_path *envps, t_fd *fd)
+void	child_free(t_envp_path *envps)
 {
-	if (fd)
-	{
-		ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
-		free(fd);
-	}
 	envp_free(&envps->envp_og);
+	tree_free(&envps->root);
 	envp_path_free(&envps);
-	tree_free(&tree);
 }
 
-static int	child_process(t_tree *tree, t_envp_path *envps, t_fd *fd)
+static int	child_process(t_tree *tree, t_envp_path *envps)
 {
 	char	*full_path;
 	char	**node;
@@ -33,15 +28,34 @@ static int	child_process(t_tree *tree, t_envp_path *envps, t_fd *fd)
 	full_path = find_path(envps->path, node);
 	if (!full_path)
 	{
+		child_free(envps);
 		perror("Error");
-		child_free(tree, envps, fd);
 		exit(2);
 	}
 	execve(full_path, node, envps->envp);
 	free(full_path);
-	child_free(tree, envps, fd);
+	child_free(envps);
 	perror("Error");
 	exit(127);
+}
+
+int	redir_control(t_tree **tree, t_fd *fd)
+{
+	if (redirect(tree, fd))
+	{
+		tree_free(tree);
+		if (fd)
+		{
+			ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
+			free(fd);
+		}
+		return (1);
+	}
+	if (fd)
+	{
+		ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
+	}
+	return (0);
 }
 
 int	base_exec(t_envp_path *envps, t_tree *tree, t_fd *fd)
@@ -57,24 +71,17 @@ int	base_exec(t_envp_path *envps, t_tree *tree, t_fd *fd)
 	{
 		signal(SIGPIPE, SIG_DFL);
 		signal(SIGINT, SIG_DFL);
-		if (redirect(&tree, fd))
-		{
-			tree_free(&tree);
-			if (fd)
-			{
-				ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
-				free(fd);
-			}
+		if (redir_control(&tree, fd) != 0)
 			exit(1);
-		}
-		if (fd)
-			ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
-		err = child_process(tree, envps, fd);
+		err = child_process(tree, envps);
 	}
 	if (fd)
+	{
 		ft_close(fd->fd[1], fd->oldfd, -1, -1);
+		fd->fd[1] = -1;
+		fd->oldfd = -1;
+	}
 	envps->pid->index++;
-	tree_free(&tree);
 	return (err);
 }
 
@@ -86,7 +93,6 @@ int	execution(t_tree *tree, t_envp *envp_table)
 	if (!tree || !envp_table)
 		return (1);
 	signal(SIGPIPE, SIG_IGN);
-	signal(SIGINT, SIG_IGN);
 	status_code = 0;
 	envp_struct = create_envp_struct(tree, envp_table);
 	if (!envp_struct)

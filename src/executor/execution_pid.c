@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execution_pid.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/24 02:41:37 by buehara           #+#    #+#             */
+/*   Updated: 2026/05/24 02:41:39 by buehara          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
 t_pid	*pid_create_free(t_tree *tree, t_envp_path *envp)
@@ -40,7 +52,7 @@ t_pid	*create_pid(t_tree *tree)
 		free(pid);
 		return (NULL);
 	}
-	pid->pid = ft_calloc(sizeof(pid_t), pid->size);
+	pid->pid = ft_calloc(sizeof(pid_t), pid->size + 1);
 	if (!pid->pid)
 	{
 		free(pid);
