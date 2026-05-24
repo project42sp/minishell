@@ -22,6 +22,14 @@
 }
 
 {
+	history_internal_leaks
+	Memcheck:Leak
+	match-leak-kinds: reachable
+	...
+	obj:libhistory
+}
+
+{
    tinfo_indirect
    Memcheck:Leak
    ...
