@@ -12,7 +12,7 @@
 
 #include "../../includes/minishell.h"
 
-static t_envp	*fill_envp_node(char *key, char *value)
+static t_envp	*fill_envp_node(char *key, char *value, t_export flag)
 {
 	t_envp	*node;
 
@@ -21,6 +21,7 @@ static t_envp	*fill_envp_node(char *key, char *value)
 		return (NULL);
 	node->key = key;
 	node->value = value;
+	node->flag = flag;
 	node->next = NULL;
 	return (node);
 }
@@ -44,7 +45,7 @@ static t_envp	*create_envp_node(char *envp)
 		free(key);
 		return (NULL);
 	}
-	node = fill_envp_node(key, value);
+	node = fill_envp_node(key, value, ENV);
 	if (!node)
 	{
 		free(key);

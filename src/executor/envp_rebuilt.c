@@ -61,7 +61,7 @@ char	**envp_table_init(t_envp *head)
 	return (envp);
 }
 
-char	**envp_rebuilt(t_envp *head)
+char	**envp_rebuilt(t_envp *head, t_export mask)
 {
 	char	**envp;
 	char	*temp;
@@ -75,16 +75,19 @@ char	**envp_rebuilt(t_envp *head)
 	envp_temp = head;
 	while (envp_temp != NULL)
 	{
-		temp = envp_join(envp_temp);
-		if (!temp)
+		if (envp_temp && (envp_temp->flag & mask) == mask)
 		{
-			envp_char_free(&envp);
-			return (NULL);
+			temp = envp_join(envp_temp);
+			if (!temp)
+			{
+				envp_char_free(&envp);
+				return (NULL);
+			}
+			envp[index] = temp;
+			temp = NULL;
+			index++;
 		}
-		envp[index] = temp;
-		temp = NULL;
 		envp_temp = envp_temp->next;
-		index++;
 	}
 	return (envp);
 }

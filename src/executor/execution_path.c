@@ -105,7 +105,7 @@ t_envp_path	*create_envp_struct(t_tree *tree, t_envp *envp)
 	envp_struct = create_envp_struct_init(tree, envp);
 	if (!envp_struct)
 		return (NULL);
-	envp_struct->envp = envp_rebuilt(envp);
+	envp_struct->envp = envp_rebuilt(envp, ENV);
 	if (!envp_struct->envp)
 	{
 		pid_free(&envp_struct->pid);
