@@ -12,7 +12,7 @@
 
 #include "../../includes/minishell.h"
 
-static int	find_node_envp(t_envp_path *envps, char *key, char *path)
+int	find_node_envp(t_envp_path *envps, char *key, char *path)
 {
 	t_envp	*temp;
 

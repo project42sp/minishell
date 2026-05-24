@@ -29,5 +29,7 @@ int	check_builtin(t_envp_path *envps, t_tree *tree)
 		err = ft_pwd();
 	else if (ft_strncmp(cmd[0], "cd", 2) == 0)
 		err = ft_cd(envps, cmd);
+	else if (ft_strncmp(cmd[0], "unset", 5) == 0)
+		err = ft_unset(&envps->envp_og, cmd);
 	return (err);
 }

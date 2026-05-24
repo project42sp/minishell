@@ -97,6 +97,8 @@ void			child_free(t_envp_path *envps);
 // envp function
 char			**envp_rebuilt(t_envp *envp_table);
 t_envp			*create_envp_table(char **envp);
+t_envp			*find_envp(t_envp **envp, char *key);
+t_envp			*envp_index(t_envp **envp, int count);
 
 //Execution
 int				tree_cmd_count(t_tree *tree);
@@ -145,5 +147,6 @@ int				ft_env(char **envp);
 int				ft_echo(char **envp, char **cmd);
 int				ft_pwd(void);
 int				ft_cd(t_envp_path *envps, char **cmd);
+int				ft_unset(t_envp **envp, char **cmd);
 
 #endif
