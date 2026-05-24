@@ -40,7 +40,7 @@ t_pid	*create_pid(t_tree *tree)
 		free(pid);
 		return (NULL);
 	}
-	pid->pid = ft_calloc(sizeof(pid_t), pid->size);
+	pid->pid = ft_calloc(sizeof(pid_t), pid->size + 1);
 	if (!pid->pid)
 	{
 		free(pid);

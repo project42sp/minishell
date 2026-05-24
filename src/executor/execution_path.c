@@ -55,7 +55,7 @@ char	*find_path(char **path_envp, char **cmd)
 	char	*path;
 	char	*full_path;
 
-	if (!path_envp || !*cmd)
+	if (!path_envp || !cmd || !*cmd)
 		return (NULL);
 	if (!ft_strchr(cmd[0], '/'))
 	{
@@ -74,7 +74,7 @@ char	*find_path(char **path_envp, char **cmd)
 	return (full_path);
 }
 
-t_envp_path	*create_envp_struct(t_tree *tree, t_envp *envp)
+t_envp_path *create_envp_struct_init(t_tree *tree, t_envp *envp)
 {
 	t_envp_path	*envp_struct;
 
@@ -90,12 +90,25 @@ t_envp_path	*create_envp_struct(t_tree *tree, t_envp *envp)
 	envp_struct->path = create_path_table(envp);
 	if (!envp_struct->path)
 	{
+		pid_free(&envp_struct->pid);
 		free(envp_struct);
 		return (NULL);
 	}
+	envp_struct->envp = NULL;
+	return (envp_struct);
+}
+
+t_envp_path	*create_envp_struct(t_tree *tree, t_envp *envp)
+{
+	t_envp_path	*envp_struct;
+
+	envp_struct	= create_envp_struct_init(tree, envp);
+	if (!envp_struct)
+		return (NULL);
 	envp_struct->envp = envp_rebuilt(envp);
 	if (!envp_struct->envp)
 	{
+		pid_free(&envp_struct->pid);
 		split_free(envp_struct->path);
 		free(envp_struct);
 		return (NULL);

@@ -79,7 +79,7 @@ void			envp_char_free(char ***envp);
 void			envp_path_free(t_envp_path **envps);
 void			split_free(char **split);
 void			pid_free(t_pid **pid);
-void			child_free(t_tree *tree, t_envp_path *envps, t_fd *fd);
+void			child_free(t_tree *tree, t_envp_path *envps);
 
 // envp function
 char			**envp_rebuilt(t_envp *envp_table);
@@ -89,13 +89,14 @@ t_envp			*create_envp_table(char **envp);
 int				tree_cmd_count(t_tree *tree);
 int				execution(t_tree *tree, t_envp *envp_table);
 int				redirect(t_tree **tree, t_fd *fd);
+int				redir_control(t_tree **tree, t_fd *fd);
 int				pipe_exec(t_envp_path *envps, t_tree *tree, int oldfd);
 int				ft_wait(t_pid *pid);
 int				base_exec(t_envp_path *envps, t_tree *tree, t_fd *fd);
 void			ft_close(int fd1, int fd2, int fd3, int fd4);
 char			*find_path(char **path_envp, char **cmd);
 char			**create_path_table(t_envp *envp);
-t_fd			*fd_create(int oldfd);
+t_fd			fd_create(int oldfd);
 t_pid			*create_pid(t_tree *tree);
 t_pid			*pid_create_free(t_tree *tree, t_envp_path *envp);
 t_envp_path		*create_envp_struct(t_tree *tree, t_envp *envp);

@@ -24,17 +24,14 @@ void	ft_close(int fd1, int fd2, int fd3, int fd4)
 		close(fd4);
 }
 
-t_fd	*fd_create(int old_fd)
+t_fd	fd_create(int old_fd)
 {
-	t_fd	*fd;
+	t_fd	fd;
 
-	fd = ft_calloc(1, sizeof(t_fd));
-	if (!fd)
-		return (NULL);
-	fd->fd[0] = -1;
-	fd->fd[1] = -1;
-	fd->oldfd = old_fd;
-	fd->last = 0;
+	fd.fd[0] = -1;
+	fd.fd[1] = -1;
+	fd.oldfd = old_fd;
+	fd.last = 0;
 	return (fd);
 }
 

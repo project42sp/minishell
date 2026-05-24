@@ -84,9 +84,9 @@ int	redirect(t_tree **tree, t_fd *fd)
 	if (!*tree)
 		return (1);
 	err = 0;
-	permission = check_permission(*tree);
 	if (fd)
 	{
+		permission = check_permission(*tree);
 		err = define_stdin((*tree), fd, permission);
 		if (!err)
 			err = define_stdout((*tree), fd, permission);
