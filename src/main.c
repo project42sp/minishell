@@ -24,6 +24,7 @@ static int	execute_input(char *input, t_envp *envp_list)
 		free(input);
 		return (1);
 	}
+	tree_print_extense(tree);
 	status_error = execution(tree, envp_list);
 	tree_free(&tree);
 	free(input);
@@ -36,9 +37,9 @@ static int	minishell(t_envp *envp)
 	int		err;
 
 	err = 0;
-	setup_signals();
 	while (1)
 	{
+		setup_signals();
 		input = readline("minishell$ ");
 		if (!input)
 			break ;

@@ -35,6 +35,7 @@
    ...
    obj:*/libtinfo.so.*
 }
+
 {
    suppress_execved_usr_bin
    Memcheck:Leak

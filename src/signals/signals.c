@@ -6,7 +6,7 @@
 /*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 14:29:17 by thfernan          #+#    #+#             */
-/*   Updated: 2026/05/23 16:39:45 by thfernan         ###   ########.fr       */
+/*   Updated: 2026/05/24 12:04:01 by thfernan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,6 @@ static void	handle_sigint(int sig)
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
-}
-
-static void	handle_sigquit(int sig)
-{
-	(void)sig;
-	g_signal = SIGQUIT;
 }
 
 void	ignore_signals(void)
@@ -61,7 +55,7 @@ void	setup_signals(void)
 	sigemptyset(&sa_int.sa_mask);
 	sa_int.sa_flags = SA_RESTART;
 	sigaction(SIGINT, &sa_int, NULL);
-	sa_quit.sa_handler = handle_sigquit;
+	sa_quit.sa_handler = SIG_IGN;
 	sigemptyset(&sa_quit.sa_mask);
 	sa_quit.sa_flags = SA_RESTART;
 	sigaction(SIGQUIT, &sa_quit, NULL);

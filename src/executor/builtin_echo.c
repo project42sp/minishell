@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_echo.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
+/*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/24 10:23:51 by buehara           #+#    #+#             */
-/*   Updated: 2026/05/24 10:24:34 by buehara          ###   ########.fr       */
+/*   Updated: 2026/05/24 16:35:58 by thfernan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,15 @@ static void	ft_echo_print(char **envp, char **cmd, int flag)
 	int	count;
 
 	(void)envp;
-	count = 2;
-	while (cmd[count - flag])
+	count = 0;
+	while (cmd[count + flag])
 	{
-		ft_printf("%s", cmd[count - flag]);
+		ft_printf("%s", cmd[count + flag]);
 		count++;
-		if (cmd[count - flag])
+		if (cmd[count + flag])
 			write(1, &" ", 1);
 	}
-	if (flag)
+	if (!flag)
 		write(1, &"\n", 1);
 }
 
@@ -43,9 +43,9 @@ int	ft_echo(char **envp, char **cmd)
 	{
 		while (cmd[1][i] && cmd[1][i] == 'n')
 			i++;
-		if ((int)(ft_strlen(cmd[1])) == i + 1)
+		if ((int)(ft_strlen(cmd[1])) == i)
 			flag = 1;
 	}
-	ft_echo_print(envp, cmd, flag);
+	ft_echo_print(envp, &cmd[1], flag);
 	return (0);
 }

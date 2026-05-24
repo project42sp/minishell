@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
+/*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/24 02:33:32 by buehara           #+#    #+#             */
-/*   Updated: 2026/05/24 02:33:34 by buehara          ###   ########.fr       */
+/*   Updated: 2026/05/24 16:31:32 by thfernan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,5 +143,7 @@ void			set_signals_default(void);
 int				check_builtin(t_envp_path *envps, t_tree *tree);
 int				ft_env(char **envp);
 int				ft_echo(char **envp, char **cmd);
+int				ft_pwd(void);
+int				ft_cd(t_envp_path *envps, char **cmd);
 
 #endif
