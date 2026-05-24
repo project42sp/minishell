@@ -1,33 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtin_check.c                                    :+:      :+:    :+:   */
+/*   builtin_pwd.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/24 10:21:44 by buehara           #+#    #+#             */
-/*   Updated: 2026/05/24 10:21:46 by buehara          ###   ########.fr       */
+/*   Created: 2026/05/24 14:52:45 by buehara           #+#    #+#             */
+/*   Updated: 2026/05/24 14:52:46 by buehara          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-int	check_builtin(t_envp_path *envps, t_tree *tree)
+int	ft_pwd(void)
 {
-	char	**cmd;
-	int		err;
+	int		size;
+	char	*buf;
 
-	if (!tree || !tree->node)
+	size = 4096;
+	buf = NULL;
+	buf = getcwd(buf, size);
+	if (!buf)
 		return (2);
-	err = -1;
-	cmd = (char **)tree->node;
-	if (ft_strncmp(cmd[0], "env", 3) == 0)
-		err = ft_env(envps->envp);
-	else if (ft_strncmp(cmd[0], "echo", 4) == 0)
-		err = ft_echo(envps->envp, cmd);
-	else if (ft_strncmp(cmd[0], "pwd", 3) == 0)
-		err = ft_pwd();
-	else if (ft_strncmp(cmd[0], "cd", 2) == 0)
-		err = ft_cd(envps, cmd);
-	return (err);
+	ft_printf("%s\n", buf);
+	free(buf);
+	return (0);
 }
