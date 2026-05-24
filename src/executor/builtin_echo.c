@@ -1,12 +1,24 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtin_echo.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/24 10:23:51 by buehara           #+#    #+#             */
+/*   Updated: 2026/05/24 10:24:34 by buehara          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
 static void	ft_echo_print(char **envp, char **cmd, int flag)
 {
-	int count;
+	int	count;
 
 	(void)envp;
 	count = 2;
-	while(cmd[count - flag])
+	while (cmd[count - flag])
 	{
 		ft_printf("%s", cmd[count - flag]);
 		count++;
@@ -19,8 +31,8 @@ static void	ft_echo_print(char **envp, char **cmd, int flag)
 
 int	ft_echo(char **envp, char **cmd)
 {
-	int i;
-	int flag;
+	int	i;
+	int	flag;
 
 	(void)envp;
 	if (!envp)
