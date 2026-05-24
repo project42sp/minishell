@@ -12,12 +12,11 @@
 
 #include "../../includes/minishell.h"
 
-void	child_free(t_tree *tree, t_envp_path *envps)
+void	child_free(t_envp_path *envps)
 {
-	(void)tree;
 	envp_free(&envps->envp_og);
+	tree_free(&envps->root);
 	envp_path_free(&envps);
-	//tree_free(&tree);
 }
 
 static int	child_process(t_tree *tree, t_envp_path *envps)
@@ -29,13 +28,13 @@ static int	child_process(t_tree *tree, t_envp_path *envps)
 	full_path = find_path(envps->path, node);
 	if (!full_path)
 	{
-		child_free(tree, envps);
+		child_free(envps);
 		perror("Error");
 		exit(2);
 	}
 	execve(full_path, node, envps->envp);
 	free(full_path);
-	child_free(tree, envps);
+	child_free(envps);
 	perror("Error");
 	exit(127);
 }

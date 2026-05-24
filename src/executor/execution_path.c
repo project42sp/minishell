@@ -114,5 +114,6 @@ t_envp_path	*create_envp_struct(t_tree *tree, t_envp *envp)
 		return (NULL);
 	}
 	envp_struct->envp_og = envp;
+	envp_struct->root = tree;
 	return (envp_struct);
 }

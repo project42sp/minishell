@@ -39,6 +39,7 @@ typedef struct s_envp_path
 	char			**path;
 	char			**envp;
 	t_pid			*pid;
+	t_tree			*root;
 }	t_envp_path;
 
 typedef struct s_lexer
@@ -79,7 +80,7 @@ void			envp_char_free(char ***envp);
 void			envp_path_free(t_envp_path **envps);
 void			split_free(char **split);
 void			pid_free(t_pid **pid);
-void			child_free(t_tree *tree, t_envp_path *envps);
+void			child_free(t_envp_path *envps);
 
 // envp function
 char			**envp_rebuilt(t_envp *envp_table);
