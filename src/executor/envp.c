@@ -80,7 +80,8 @@ t_envp	*create_envp_table(char **envp)
 	t_envp	*list;
 
 	index = 0;
-	list = create_envp_node(envp[index++]);
+	list = create_envp_node(envp[index]);
+	index++;
 	if (!list)
 		return (NULL);
 	while (envp[index])
