@@ -1,4 +1,4 @@
-*Este projeto foi criado como parte do currículo da 42 por buehara e thfernan.*
+*This project has been created as part of the 42 curriculum by buehara and thfernan.*
 
 ## Description
 
