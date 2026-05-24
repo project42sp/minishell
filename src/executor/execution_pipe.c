@@ -46,21 +46,11 @@ int	pipe_exec(t_envp_path *envps, t_tree *tree, int oldfd)
 	{
 		fd.last = 1;
 		status_code = base_exec(envps, tree, &fd);
-		tree = NULL;
 	}
 	if (tree && tree->signal == PIPE)
 	{
 		status_code = base_exec(envps, tree->left, &fd);
 		status_code = pipe_exec(envps, tree->right, fd.fd[0]);
-		tree->left = NULL;
-		tree->right = NULL;
-		free(tree);
-	}
-	else if (tree && tree->right)
-	{
-		fd.last = 1;
-		status_code = base_exec(envps, tree->right, &fd);
-		tree->right = NULL;
 	}
 	ft_close(fd.fd[0], fd.fd[1], fd.oldfd, -1);
 	return (status_code);
