@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   execution_utils.c                                  :+:      :+:    :+:   */
+/*   execution_path.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/16 21:21:55 by buehara           #+#    #+#             */
-/*   Updated: 2026/05/16 21:22:00 by buehara          ###   ########.fr       */
+/*   Updated: 2026/05/24 02:36:53 by buehara          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../../includes/minishell.h"
+#include "../../includes/minishell.h"
 
 char	**create_path_table(t_envp *envp)
 {
@@ -36,7 +36,7 @@ static char	*find_fullpath(char *path, char **path_envp)
 
 	index = 0;
 	full_path = NULL;
-	while(path_envp[index] != NULL)
+	while (path_envp[index] != NULL)
 	{
 		full_path = ft_strjoin(path_envp[index], path);
 		if (!full_path)
@@ -74,11 +74,11 @@ char	*find_path(char **path_envp, char **cmd)
 	return (full_path);
 }
 
-t_envp_path *create_envp_struct_init(t_tree *tree, t_envp *envp)
+t_envp_path	*create_envp_struct_init(t_tree *tree, t_envp *envp)
 {
 	t_envp_path	*envp_struct;
 
-	envp_struct	= (t_envp_path *)ft_calloc(sizeof(t_envp_path), 1);
+	envp_struct = (t_envp_path *)ft_calloc(sizeof(t_envp_path), 1);
 	if (!envp_struct)
 		return (NULL);
 	envp_struct->pid = create_pid(tree);
@@ -102,7 +102,7 @@ t_envp_path	*create_envp_struct(t_tree *tree, t_envp *envp)
 {
 	t_envp_path	*envp_struct;
 
-	envp_struct	= create_envp_struct_init(tree, envp);
+	envp_struct = create_envp_struct_init(tree, envp);
 	if (!envp_struct)
 		return (NULL);
 	envp_struct->envp = envp_rebuilt(envp);

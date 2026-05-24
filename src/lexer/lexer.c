@@ -90,28 +90,3 @@ t_token	*lexer(char *input, t_check *flags)
 		return (NULL);
 	return (data.head);
 }
-
-// Só para testes - retirar depois
-void	debug_lexer(t_token *list)
-{
-	t_token		*curr;
-	const char	*types[] = {
-		"CMD", "FILE_PATH", "INPUT", "OUTPUT",
-		"APPEND", "HEREDOC", "PIPE", "AND", "OR", "EOFILE"
-	};
-
-	ft_printf("\n=== LEXER DEBUG ===\n");
-	curr = list;
-	while (curr)
-	{
-		ft_printf("[%-9s] ", types[curr->signal]);
-		if (curr->signal == EOFILE)
-			ft_printf("(end of file)\n");
-		else if (curr->token)
-			ft_printf("\"%s\"\n", ((char **)curr->token)[0]);
-		else
-			ft_printf("symbol=\"%s\"\n", get_operator_symbol(curr->signal));
-		curr = curr->next;
-	}
-	ft_printf("===================\n\n");
-}

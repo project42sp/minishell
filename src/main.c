@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/24 02:34:01 by buehara           #+#    #+#             */
+/*   Updated: 2026/05/24 02:34:43 by buehara          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/minishell.h"
 
 static int	execute_input(char *input, t_envp *envp_list)
@@ -25,7 +37,7 @@ static int	minishell(t_envp *envp)
 
 	err = 0;
 	setup_signals();
-	while(1)
+	while (1)
 	{
 		input = readline("minishell$ ");
 		if (!input)
@@ -47,7 +59,7 @@ int	main(int argc, char **argv, char **envp)
 	t_envp	*envp_list;
 	int		err;
 
-	if(argc > 1)
+	if (argc > 1)
 		return (1);
 	(void)*argv;
 	envp_list = create_envp_table(envp);

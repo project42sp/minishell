@@ -6,11 +6,11 @@
 /*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 15:19:53 by buehara           #+#    #+#             */
-/*   Updated: 2026/05/23 15:19:58 by buehara          ###   ########.fr       */
+/*   Updated: 2026/05/24 02:37:17 by buehara          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "../../includes/minishell.h"
+#include "../../includes/minishell.h"
 
 void	ft_close(int fd1, int fd2, int fd3, int fd4)
 {
@@ -43,7 +43,7 @@ int	ft_wait(t_pid *pid)
 
 	exit_code = 0;
 	index = 0;
-	while(index < pid->size)
+	while (index < pid->size)
 	{
 		waitpid(pid->pid[index], &status, 0);
 		if (WIFSIGNALED(status))
