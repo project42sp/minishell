@@ -75,7 +75,7 @@ char	**envp_rebuilt(t_envp *head, t_export mask)
 	envp_temp = head;
 	while (envp_temp != NULL)
 	{
-		if (envp_temp && (envp_temp->flag & mask) == mask)
+		if (envp_temp && (envp_temp->flag & mask))
 		{
 			temp = envp_join(envp_temp);
 			if (!temp)

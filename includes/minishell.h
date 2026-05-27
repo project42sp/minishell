@@ -102,6 +102,7 @@ void			pid_free(t_pid **pid);
 void			child_free(t_envp_path *envps);
 
 // envp function
+int				envp_len(t_envp *head);
 char			**envp_rebuilt(t_envp *envp_table, t_export mask);
 t_envp			*create_envp_table(char **envp);
 t_envp			*find_envp(t_envp **envp, char *key);
@@ -155,5 +156,11 @@ int				ft_echo(char **envp, char **cmd);
 int				ft_pwd(void);
 int				ft_cd(t_envp_path *envps, char **cmd);
 int				ft_unset(t_envp **envp, char **cmd);
+// EXPORT
+int				ft_export(t_envp **envp, char **cmd);
+int				count_keys(t_envp **envp);
+void			print_export(t_envp **envp);
+t_envp			**create_list(t_envp *envp);
+t_envp			**envp_reorder(t_envp **envp);
 
 #endif
