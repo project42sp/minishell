@@ -158,9 +158,6 @@ int				ft_cd(t_envp_path *envps, char **cmd);
 int				ft_unset(t_envp **envp, char **cmd);
 // EXPORT
 int				ft_export(t_envp **envp, char **cmd);
-int				count_keys(t_envp **envp);
-void			print_export(t_envp **envp);
-t_envp			**create_list(t_envp *envp);
-t_envp			**envp_reorder(t_envp **envp);
+int				export_empty(t_envp **envp);
 
 #endif

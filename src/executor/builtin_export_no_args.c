@@ -1,6 +1,6 @@
 #include "../../includes/minishell.h"
 
-int	count_keys(t_envp **envp)
+static int	count_keys(t_envp **envp)
 {
 	int	count;
 
@@ -14,7 +14,7 @@ int	count_keys(t_envp **envp)
 	return (count);
 }
 
-t_envp	**create_list(t_envp *envp)
+static t_envp	**create_list(t_envp *envp)
 {
 	int		size;
 	int		index;
@@ -38,7 +38,7 @@ t_envp	**create_list(t_envp *envp)
 	return (list);
 }
 
-t_envp	**envp_reorder(t_envp **envp)
+static t_envp	**envp_reorder(t_envp **envp)
 {
 	int		size;
 	int		inner;
@@ -65,7 +65,7 @@ t_envp	**envp_reorder(t_envp **envp)
 	return (envp);
 }
 
-void	print_export(t_envp **envp)
+static void	print_export(t_envp **envp)
 {
 	int	index;
 
@@ -77,4 +77,22 @@ void	print_export(t_envp **envp)
 		printf("\"%s\"\n", envp[index]->value);
 		index++;
 	}
+}
+
+int	export_empty(t_envp **envp)
+{
+	t_envp	**list;
+
+	list = create_list(*envp);
+	if (!list)
+		return (1);
+	list = envp_reorder(list);
+	if (!list)
+	{
+		free(list);
+		return (1);
+	}
+	print_export(list);
+	free(list);
+	return (0);
 }
