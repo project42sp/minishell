@@ -105,7 +105,7 @@ void			child_free(t_envp_path *envps);
 int				envp_len(t_envp *head);
 char			**envp_rebuilt(t_envp *envp_table, t_export mask);
 t_envp			*create_envp_table(char **envp);
-t_envp          *create_last_envp_node(char *envp, t_envp *list);
+t_envp			*create_last_envp_node(char *envp, t_envp *list);
 t_envp			*find_envp(t_envp **envp, char *key);
 t_envp			*envp_index(t_envp **envp, int count);
 

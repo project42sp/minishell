@@ -37,14 +37,18 @@ char	*envp_join(t_envp *node)
 	temp = ft_strjoin(node->key, "=");
 	if (!temp)
 		return (NULL);
-	full_str = ft_strjoin(temp, node->value);
-	if (!full_str)
+	if (node->value)
 	{
+		full_str = ft_strjoin(temp, node->value);
+		if (!full_str)
+		{
+			free(temp);
+			return (NULL);
+		}
 		free(temp);
-		return (NULL);
+		return (full_str);
 	}
-	free(temp);
-	return (full_str);
+	return (temp);
 }
 
 char	**envp_table_init(t_envp *head)

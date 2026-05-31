@@ -56,7 +56,7 @@ char	*get_current_pwd(void)
 int	move_to_correct_dir(t_envp_path *envps, char **dirpwd)
 {
 	int		err;
-	char 	*home_path;
+	char	*home_path;
 	t_envp	*node;
 
 	if (!dirpwd)

@@ -10,7 +10,7 @@ int	check_export_args(char *cmd)
 	index = 1;
 	barr = ft_strchr(cmd, '\\');
 	if (barr)
-		ft_memmove(cmd, barr + 1, ft_strlen(barr) + 1);
+		ft_memmove(barr, barr + 1, ft_strlen(barr));
 	while(cmd[index])
 	{
 		if (cmd[index] == '\\' || cmd[index] == '#' || cmd[index] == '*' ||
@@ -49,11 +49,16 @@ void	append_env_node(t_envp **envp, char *cmd, t_envp *find)
 		return ;
 	}
 	index = ft_strchr(cmd, '=');
-	if (index && index[1])
+	if (index)
 	{
-		new_value = ft_strdup(index + 1);
+		new_value = ft_strdup(&index[1]);
+		if (!new_value)
+			return ;
 		free(find->value);
+		if (!index[1])
+			bzero(new_value, 1);
 		find->value = new_value;
+		find->flag = ENV;
 	}
 }
 
@@ -69,9 +74,14 @@ int	export_args(t_envp **envp, char **cmd)
 	while(cmd[index])
 	{
 		if(check_export_args(cmd[index]))
+		{
 			err = 1;
-		if (err)
+			ft_putstr_fd("minishell: export: `", 2);
+			ft_putstr_fd(cmd[index], 2);
+			ft_putendl_fd("': not a valid indentifier", 2);
+			index++;
 			continue ;
+		}
 		find = find_export_node(*envp, cmd[index]);
 		append_env_node(envp, cmd[index], find);
 		index++;

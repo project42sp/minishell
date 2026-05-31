@@ -35,8 +35,6 @@ static char	*divider_for_key(char *envp)
 		return (NULL);
 	divider = ft_strchr(envp, '=');
 	if (!divider)
-		return (NULL);
-	if (!divider[1])
 	{
 		key = ft_strdup(envp);
 		if (!key)

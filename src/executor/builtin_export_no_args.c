@@ -72,9 +72,17 @@ static void	print_export(t_envp **envp)
 	index = 0;
 	while(envp[index])
 	{
-		printf("declare\t-x ");
-		printf("%s=", envp[index]->key);
-		printf("\"%s\"\n", envp[index]->value);
+		ft_printf("declare\t-x ");
+		ft_printf("%s", envp[index]->key);
+		if (envp[index]->flag == ENV)
+		{
+			ft_printf("=");
+			if (envp[index]->value)
+				ft_printf("\"%s\"", envp[index]->value);
+			else
+				ft_printf("\"\"");
+		}
+		ft_printf("\n");
 		index++;
 	}
 }
