@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtin_export_no_args.c                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/31 18:06:43 by buehara           #+#    #+#             */
+/*   Updated: 2026/05/31 18:06:46 by buehara          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
 static int	count_keys(t_envp **envp)
@@ -53,8 +65,9 @@ static t_envp	**envp_reorder(t_envp **envp)
 	{
 		inner = out - 1;
 		key = envp[out];
-		while (inner >= 0 &&
-			ft_strncmp(envp[inner]->key, key->key, ft_strlen(envp[inner]->key)) > 0)
+		while (inner >= 0
+			&& ft_strncmp(envp[inner]->key, key->key,
+				ft_strlen(envp[inner]->key)) > 0)
 		{
 			envp[inner + 1] = envp[inner];
 			inner--;
@@ -70,7 +83,7 @@ static void	print_export(t_envp **envp)
 	int	index;
 
 	index = 0;
-	while(envp[index])
+	while (envp[index])
 	{
 		ft_printf("declare\t-x ");
 		ft_printf("%s", envp[index]->key);

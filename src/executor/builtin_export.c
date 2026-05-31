@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtin_export.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/05/31 18:06:53 by buehara           #+#    #+#             */
+/*   Updated: 2026/05/31 18:06:54 by buehara          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
 int	check_export_args(char *cmd)
 {
-	int	index;
-	char *barr;
+	int		index;
+	char	*barr;
 
 	if (!ft_isalpha(cmd[0]) && !(cmd[0] == '_'))
 		return (1);
@@ -11,10 +23,10 @@ int	check_export_args(char *cmd)
 	barr = ft_strchr(cmd, '\\');
 	if (barr)
 		ft_memmove(barr, barr + 1, ft_strlen(barr));
-	while(cmd[index])
+	while (cmd[index])
 	{
-		if (cmd[index] == '\\' || cmd[index] == '#' || cmd[index] == '*' ||
-			cmd[index] == ' ' || cmd[index] == '!' || cmd[index] == '@')
+		if (cmd[index] == '\\' || cmd[index] == '#' || cmd[index] == '*'
+			|| cmd[index] == ' ' || cmd[index] == '!' || cmd[index] == '@')
 			return (1);
 		index++;
 	}
@@ -70,10 +82,9 @@ int	export_args(t_envp **envp, char **cmd)
 
 	index = 1;
 	err = 0;
-	(void)envp;
-	while(cmd[index])
+	while (cmd[index])
 	{
-		if(check_export_args(cmd[index]))
+		if (check_export_args(cmd[index]))
 		{
 			err = 1;
 			ft_putstr_fd("minishell: export: `", 2);

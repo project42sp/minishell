@@ -39,8 +39,6 @@ int	ft_echo(char **envp, char **cmd)
 		return (2);
 	i = 1;
 	flag = 0;
-	//if (!cmd[1])
-		//return (1);
 	if (cmd[1] && '-' == cmd[1][0])
 	{
 		while (cmd[1][i] && cmd[1][i] == 'n')

@@ -65,10 +65,24 @@ char	**envp_table_init(t_envp *head)
 	return (envp);
 }
 
+void	envp_join_wrapper(t_envp *envp_temp, t_export mask, char **envp)
+{
+	char	*temp;
+
+	temp = NULL;
+	if (envp_temp && (envp_temp->flag & mask))
+	{
+		temp = envp_join(envp_temp);
+		if (!temp)
+			return ;
+		*envp = temp;
+		temp = NULL;
+	}
+}
+
 char	**envp_rebuilt(t_envp *head, t_export mask)
 {
 	char	**envp;
-	char	*temp;
 	size_t	index;
 	t_envp	*envp_temp;
 
@@ -81,14 +95,12 @@ char	**envp_rebuilt(t_envp *head, t_export mask)
 	{
 		if (envp_temp && (envp_temp->flag & mask))
 		{
-			temp = envp_join(envp_temp);
-			if (!temp)
+			envp_join_wrapper(envp_temp, mask, &envp[index]);
+			if (!envp[index])
 			{
 				envp_char_free(&envp);
 				return (NULL);
 			}
-			envp[index] = temp;
-			temp = NULL;
 			index++;
 		}
 		envp_temp = envp_temp->next;

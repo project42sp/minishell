@@ -17,6 +17,7 @@ SRCS	= \
 		src/tree/tree_build.c		\
 		src/tree/tree_utils.c		\
 		src/executor/envp.c		\
+		src/executor/envp_node.c		\
 		src/executor/envp_rebuilt.c	\
 		src/executor/builtin_cd.c	\
 		src/executor/builtin_check.c	\
