@@ -26,36 +26,88 @@ static t_envp	*fill_envp_node(char *key, char *value, t_export flag)
 	return (node);
 }
 
-static t_envp	*create_envp_node(char *envp)
+static char	*divider_for_key(char *envp)
 {
-	t_envp	*node;
 	char	*divider;
 	char	*key;
-	char	*value;
 
 	if (!envp)
 		return (NULL);
 	divider = ft_strchr(envp, '=');
+	if (!divider)
+		return (NULL);
+	if (!divider[1])
+	{
+		key = ft_strdup(envp);
+		if (!key)
+			return (NULL);
+		return (key);
+	}
 	key = ft_substr(envp, 0, divider - envp);
 	if (!key)
 		return (NULL);
-	value = ft_strdup(divider + 1);
-	if (!value)
-	{
-		free(key);
+	return (key);
+}
+
+static char	*divider_for_value(char *envp)
+{
+	char	*value;
+	char	*divider;
+
+	if (!envp)
 		return (NULL);
-	}
-	node = fill_envp_node(key, value, ENV);
+	divider = ft_strchr(envp, '=');
+	if (!divider)
+		return (NULL);
+	if (!divider[1])
+		return (NULL);
+	value = ft_strdup(&divider[1]);
+	if (!value)
+		return (NULL);
+	return (value);
+}
+
+static t_export	divider_for_flag(char *envp)
+{
+	char		*divider;
+	t_export	flag;
+
+	if (!envp)
+		return (0);
+	divider = ft_strchr(envp, '=');
+	if (!divider)
+		flag = EXPORT;
+	else
+		flag = ENV;
+	return (flag);
+}
+
+static t_envp	*create_envp_node(char *envp)
+{
+	t_envp	*node;
+	char	*key;
+	char	*value;
+	t_export	flag;
+
+	if (!envp)
+		return (NULL);
+	key = divider_for_key(envp);
+	if (!key)
+		return (NULL);
+	value = divider_for_value(envp);
+	flag = divider_for_flag(envp);
+	node = fill_envp_node(key, value, flag);
 	if (!node)
 	{
 		free(key);
-		free(value);
+		if (value)
+			free(value);
 		return (NULL);
 	}
 	return (node);
 }
 
-static t_envp	*create_last_envp_node(char *envp, t_envp *list)
+t_envp	*create_last_envp_node(char *envp, t_envp *list)
 {
 	t_envp	*head;
 

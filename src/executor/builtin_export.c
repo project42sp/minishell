@@ -16,6 +16,7 @@ int	check_export_args(char *cmd)
 		if (cmd[index] == '\\' || cmd[index] == '#' || cmd[index] == '*' ||
 			cmd[index] == ' ' || cmd[index] == '!' || cmd[index] == '@')
 			return (1);
+		index++;
 	}
 	return (0);
 }
@@ -29,7 +30,7 @@ t_envp	*find_export_node(t_envp *envp, char *cmd)
 	temp = envp;
 	while (temp)
 	{
-		if (ft_strncmp(temp->key, cmd, ft_strlen(temp->key)))
+		if (ft_strncmp(temp->key, cmd, ft_strlen(temp->key)) == 0)
 			return (temp);
 		temp = temp->next;
 	}
@@ -38,16 +39,22 @@ t_envp	*find_export_node(t_envp *envp, char *cmd)
 
 void	append_env_node(t_envp **envp, char *cmd, t_envp *find)
 {
+	char	*index;
+	char	*new_value;
+
+	new_value = NULL;
 	if (!find)
-		//Atualizar funcao de criar nodo de envp para gerar nodo
-		// sem valor, sem quebrar
-		// Pois o export pode criar nodos sem valores
-		// e estes terao a flag EXPORT
-		// se o export tiver um '='
-		// então a flag será ENV
-		// mas também não terá value se não tiver string depois do '='
-		// Criar também função para atualizar o nodo caso
-		// a key já exista no env
+	{
+		*envp = create_last_envp_node(cmd, *envp);
+		return ;
+	}
+	index = ft_strchr(cmd, '=');
+	if (index && index[1])
+	{
+		new_value = ft_strdup(index + 1);
+		free(find->value);
+		find->value = new_value;
+	}
 }
 
 int	export_args(t_envp **envp, char **cmd)
@@ -57,6 +64,7 @@ int	export_args(t_envp **envp, char **cmd)
 	t_envp	*find;
 
 	index = 1;
+	err = 0;
 	(void)envp;
 	while(cmd[index])
 	{
@@ -66,6 +74,7 @@ int	export_args(t_envp **envp, char **cmd)
 			continue ;
 		find = find_export_node(*envp, cmd[index]);
 		append_env_node(envp, cmd[index], find);
+		index++;
 	}
 	return (err);
 }

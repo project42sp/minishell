@@ -63,12 +63,10 @@ int	ft_unset(t_envp **envp, char **cmd)
 	t_envp	*temp;
 	t_envp	*prev;
 	char	*key;
-	int		count;
 
 	if (!envp || !cmd || !cmd[1])
 		return (1);
 	key = cmd[1];
-	count = 0;
 	temp = find_envp(envp, key);
 	if (!temp)
 		return (1);
