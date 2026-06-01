@@ -26,7 +26,10 @@ static int	child_process(t_tree *tree, t_envp_path *envps)
 
 	node = (char **)tree->node;
 	if (!node || !node[0])
+	{
+		child_free(envps);
 		exit(0);
+	}
 	full_path = find_path(envps->path, node);
 	if (!full_path)
 	{
@@ -36,6 +39,7 @@ static int	child_process(t_tree *tree, t_envp_path *envps)
 	}
 	execve(full_path, node, envps->envp);
 	free(full_path);
+	child_free(envps);
 	perror("Error");
 	exit(127);
 }
@@ -44,12 +48,8 @@ int	redir_control(t_tree **tree, t_fd *fd)
 {
 	if (redirect(tree, fd))
 	{
-		tree_free(tree);
 		if (fd)
-		{
 			ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
-			free(fd);
-		}
 		return (1);
 	}
 	if (fd)
@@ -70,9 +70,16 @@ int	base_exec(t_envp_path *envps, t_tree *tree, t_fd *fd)
 		set_signals_default();
 		signal(SIGPIPE, SIG_DFL);
 		if (redir_control(&tree, fd) != 0)
+		{
+			child_free(envps);
 			exit(1);
+		}
+		envps->root = tree;
 		if (!tree->node || !((char **)tree->node)[0])
+		{
+			child_free(envps);
 			exit(0);
+		}
 		err = check_builtin(envps, tree);
 		if (err != -1)
 		{
@@ -102,6 +109,11 @@ int	execution(t_tree *tree, t_envp *envp_table)
 	{
 		perror("Malloc");
 		return (1);
+	}
+	if (has_invalid_source(tree))
+	{
+		envp_path_free(&envp_struct);
+		return (2);
 	}
 	ignore_signals();
 	if (tree->signal != CMD)
