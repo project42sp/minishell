@@ -19,6 +19,8 @@
 # include <signal.h>
 # include <stdlib.h>
 # include <unistd.h>
+# include <string.h>
+# include <stdio.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <sys/wait.h>
@@ -105,6 +107,7 @@ int				redirect(t_tree **tree, t_fd *fd);
 int				redir_control(t_tree **tree, t_fd *fd);
 int				pipe_exec(t_envp_path *envps, t_tree *tree, int oldfd);
 int				ft_wait(t_pid *pid, int status_code);
+int				has_invalid_source(t_tree *tree);
 int				base_exec(t_envp_path *envps, t_tree *tree, t_fd *fd);
 void			ft_close(int fd1, int fd2, int fd3, int fd4);
 char			*find_path(char **path_envp, char **cmd);
@@ -141,6 +144,7 @@ void			set_signals_default(void);
 
 // Built-in
 int				check_builtin(t_envp_path *envps, t_tree *tree);
+int				ft_strcmp(const char *s1, const char *s2);
 int				ft_env(char **envp);
 int				ft_echo(char **envp, char **cmd);
 int				ft_pwd(void);
