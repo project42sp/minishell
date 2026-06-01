@@ -18,7 +18,7 @@ static void	ft_echo_print(char **envp, char **cmd, int flag)
 
 	(void)envp;
 	count = 0;
-	while (cmd[count + flag])
+	while (cmd && cmd[count + flag])
 	{
 		ft_printf("%s", cmd[count + flag]);
 		count++;
@@ -35,11 +35,11 @@ int	ft_echo(char **envp, char **cmd)
 	int	flag;
 
 	(void)envp;
-	if (!envp)
+	if (!envp || !cmd)
 		return (2);
 	i = 1;
 	flag = 0;
-	if ('-' == cmd[1][0])
+	if (cmd[1] && '-' == cmd[1][0])
 	{
 		while (cmd[1][i] && cmd[1][i] == 'n')
 			i++;

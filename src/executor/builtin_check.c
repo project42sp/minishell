@@ -24,7 +24,7 @@ int	ft_strcmp(const char *s1, const char *s2)
 
 int	check_builtin(t_envp_path *envps, t_tree *tree)
 {
-	char	**cmd;
+	char	***cmd;
 	int		err;
 
 	if (!tree || !tree->node)
@@ -45,7 +45,7 @@ int	check_builtin(t_envp_path *envps, t_tree *tree)
 		err = ft_unset(envps, cmd);
 	else if (ft_strcmp(cmd[0], "unset") == 0)
 		err = ft_export(envps, cmd);
-	// else if (ft_strcmp(cmd[0], "exit") == 0)
-	// 	err = ft_exit(envps, cmd);
+	else if (ft_strcmp(cmd[0], "exit") == 0)
+		err = ft_exit(envps, cmd);
 	return (err);
 }

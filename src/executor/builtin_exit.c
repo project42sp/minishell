@@ -1,28 +1,32 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtin_pwd.c                                      :+:      :+:    :+:   */
+/*   builtin_exit.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/24 14:52:45 by buehara           #+#    #+#             */
-/*   Updated: 2026/05/24 14:52:46 by buehara          ###   ########.fr       */
+/*   Created: 2026/05/31 20:53:11 by buehara           #+#    #+#             */
+/*   Updated: 2026/05/31 20:53:13 by buehara          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-int	ft_pwd(void)
+int	ft_exit(t_envp_path *envp, char **cmd)
 {
-	int		size;
-	char	*buf;
+	int	err;
 
-	size = 4096;
-	buf = NULL;
-	buf = getcwd(buf, size);
-	if (!buf)
-		return (2);
-	ft_printf("%s\n", buf);
-	free(buf);
-	return (0);
+	err = 0;
+	if (!*cmd)
+		return (1);
+	if (cmd[2])
+	{
+		ft_putendl_fd("minishell: exit: too many arguments", 2);
+		return (1);
+	}
+	if (cmd[1])
+		err = ft_atoi(cmd[1]);
+	child_free(envp);
+	ft_printf("exit\n");
+	exit(err);
 }
