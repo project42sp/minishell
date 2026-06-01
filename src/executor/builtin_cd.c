@@ -12,7 +12,7 @@
 
 #include "../../includes/minishell.h"
 
-int	find_node_envp(t_envp_path *envps, char *key, char *path)
+static int	find_node_envp(t_envp_path *envps, char *key, char *path)
 {
 	t_envp	*temp;
 
@@ -32,7 +32,7 @@ int	find_node_envp(t_envp_path *envps, char *key, char *path)
 	return (1);
 }
 
-char	*get_current_pwd(void)
+static char	*get_current_pwd(void)
 {
 	char	*temp;
 	char	*path;
@@ -53,7 +53,7 @@ char	*get_current_pwd(void)
 	return (path);
 }
 
-int	move_to_correct_dir(t_envp_path *envps, char **dirpwd)
+static int	move_to_correct_dir(t_envp_path *envps, char **dirpwd)
 {
 	int		err;
 	char	*home_path;
@@ -77,7 +77,7 @@ int	move_to_correct_dir(t_envp_path *envps, char **dirpwd)
 	return (err);
 }
 
-int	cd_return_error(void)
+static int	cd_return_error(void)
 {
 	ft_putendl_fd("minishell: cd: too many arguments", 2);
 	return (1);
