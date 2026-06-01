@@ -35,6 +35,7 @@ void	pid_free(t_pid **pid)
 	if ((*pid)->pid)
 		free((*pid)->pid);
 	free(*pid);
+	*pid = NULL;
 }
 
 t_pid	*create_pid(t_tree *tree)
