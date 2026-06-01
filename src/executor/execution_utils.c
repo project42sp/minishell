@@ -55,3 +55,24 @@ int	ft_wait(t_pid *pid, int status_code)
 	}
 	return (exit_code);
 }
+
+int	has_invalid_source(t_tree *tree)
+{
+	char **cmd;
+
+	if (!tree)
+		return (0);
+	if (tree->signal == CMD)
+	{
+		cmd = (char **)tree->node;
+		if (cmd && ft_strcmp(cmd[0], ".") == 0 && !cmd[1])
+		{
+			ft_putstr_fd("minishell: .: filename argument required\n", 2);
+			ft_putstr_fd(".: usage: . filename [arguments]\n", 2);
+			return (1);
+		}
+	}
+	if (has_invalid_source(tree->left))
+		return (1);
+	return (has_invalid_source(tree->right));
+}
