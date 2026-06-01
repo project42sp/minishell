@@ -33,5 +33,7 @@ int	check_builtin(t_envp_path *envps, t_tree *tree)
 		err = ft_unset(&envps->envp_og, cmd);
 	else if (ft_strncmp(cmd[0], "export", 6) == 0)
 		err = ft_export(&envps->envp_og, cmd);
+	else if (ft_strncmp(cmd[0], "exit", 4) == 0)
+		err = ft_exit(envps, cmd);
 	return (err);
 }

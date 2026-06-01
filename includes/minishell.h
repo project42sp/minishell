@@ -156,6 +156,7 @@ int				check_builtin(t_envp_path *envps, t_tree *tree);
 int				ft_env(char **envp);
 int				ft_echo(char **envp, char **cmd);
 int				ft_pwd(void);
+int				ft_exit(t_envp_path *envp, char **cmd);
 int				ft_cd(t_envp_path *envps, char **cmd);
 int				ft_unset(t_envp **envp, char **cmd);
 // EXPORT

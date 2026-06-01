@@ -14,9 +14,14 @@
 
 void	child_free(t_envp_path *envps)
 {
-	envp_free(&envps->envp_og);
-	tree_free(&envps->root);
-	envp_path_free(&envps);
+	if (!envps)
+		return ;
+	if (envps->envp_og)
+		envp_free(&envps->envp_og);
+	if (envps->root)
+		tree_free(&envps->root);
+	if (envps)
+		envp_path_free(&envps);
 }
 
 static int	child_process(t_tree *tree, t_envp_path *envps)

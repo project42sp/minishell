@@ -22,6 +22,7 @@ void	tree_node_free(char **node)
 	while (node[index] != NULL)
 	{
 		free(node[index]);
+		node[index] = NULL;
 		index++;
 	}
 	node = NULL;

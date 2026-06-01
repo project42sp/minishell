@@ -77,12 +77,20 @@ int	move_to_correct_dir(t_envp_path *envps, char **dirpwd)
 	return (err);
 }
 
+int	cd_return_error(void)
+{
+	ft_putendl_fd("minishell: cd: too many arguments", 2);
+	return (1);
+}
+
 int	ft_cd(t_envp_path *envps, char **dirpwd)
 {
 	int		err;
 	char	*oldpwd;
 	char	*newpwd;
 
+	if (dirpwd[1] && dirpwd[2])
+		return (cd_return_error());
 	oldpwd = get_current_pwd();
 	if (!oldpwd)
 		return (2);
