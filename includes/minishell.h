@@ -23,6 +23,12 @@
 # include <readline/history.h>
 # include <sys/wait.h>
 
+typedef enum s_export
+{
+	ENV = 0b01,
+	EXPORT = 0b10
+}	t_export;
+
 typedef struct s_tree
 {
 	int				signal;
@@ -36,6 +42,7 @@ typedef struct s_envp
 	char			*key;
 	char			*value;
 	struct s_envp	*next;
+	int				flag;
 }	t_envp;
 
 typedef struct s_pid
@@ -95,8 +102,13 @@ void			pid_free(t_pid **pid);
 void			child_free(t_envp_path *envps);
 
 // envp function
-char			**envp_rebuilt(t_envp *envp_table);
+int				envp_len(t_envp *head);
+char			**envp_rebuilt(t_envp *envp_table, t_export mask);
+t_envp			*create_envp_node(char *envp);
 t_envp			*create_envp_table(char **envp);
+t_envp			*create_last_envp_node(char *envp, t_envp *list);
+t_envp			*find_envp(t_envp **envp, char *key);
+t_envp			*envp_index(t_envp **envp, int count);
 
 //Execution
 int				tree_cmd_count(t_tree *tree);
@@ -145,5 +157,9 @@ int				ft_env(char **envp);
 int				ft_echo(char **envp, char **cmd);
 int				ft_pwd(void);
 int				ft_cd(t_envp_path *envps, char **cmd);
+int				ft_unset(t_envp **envp, char **cmd);
+// EXPORT
+int				ft_export(t_envp **envp, char **cmd);
+int				export_empty(t_envp **envp);
 
 #endif

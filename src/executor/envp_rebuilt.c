@@ -37,14 +37,18 @@ char	*envp_join(t_envp *node)
 	temp = ft_strjoin(node->key, "=");
 	if (!temp)
 		return (NULL);
-	full_str = ft_strjoin(temp, node->value);
-	if (!full_str)
+	if (node->value)
 	{
+		full_str = ft_strjoin(temp, node->value);
+		if (!full_str)
+		{
+			free(temp);
+			return (NULL);
+		}
 		free(temp);
-		return (NULL);
+		return (full_str);
 	}
-	free(temp);
-	return (full_str);
+	return (temp);
 }
 
 char	**envp_table_init(t_envp *head)
@@ -61,10 +65,24 @@ char	**envp_table_init(t_envp *head)
 	return (envp);
 }
 
-char	**envp_rebuilt(t_envp *head)
+void	envp_join_wrapper(t_envp *envp_temp, t_export mask, char **envp)
+{
+	char	*temp;
+
+	temp = NULL;
+	if (envp_temp && (envp_temp->flag & mask))
+	{
+		temp = envp_join(envp_temp);
+		if (!temp)
+			return ;
+		*envp = temp;
+		temp = NULL;
+	}
+}
+
+char	**envp_rebuilt(t_envp *head, t_export mask)
 {
 	char	**envp;
-	char	*temp;
 	size_t	index;
 	t_envp	*envp_temp;
 
@@ -75,16 +93,17 @@ char	**envp_rebuilt(t_envp *head)
 	envp_temp = head;
 	while (envp_temp != NULL)
 	{
-		temp = envp_join(envp_temp);
-		if (!temp)
+		if (envp_temp && (envp_temp->flag & mask))
 		{
-			envp_char_free(&envp);
-			return (NULL);
+			envp_join_wrapper(envp_temp, mask, &envp[index]);
+			if (!envp[index])
+			{
+				envp_char_free(&envp);
+				return (NULL);
+			}
+			index++;
 		}
-		envp[index] = temp;
-		temp = NULL;
 		envp_temp = envp_temp->next;
-		index++;
 	}
 	return (envp);
 }

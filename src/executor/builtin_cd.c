@@ -12,7 +12,7 @@
 
 #include "../../includes/minishell.h"
 
-static int	find_node_envp(t_envp_path *envps, char *key, char *path)
+int	find_node_envp(t_envp_path *envps, char *key, char *path)
 {
 	t_envp	*temp;
 
@@ -53,6 +53,30 @@ char	*get_current_pwd(void)
 	return (path);
 }
 
+int	move_to_correct_dir(t_envp_path *envps, char **dirpwd)
+{
+	int		err;
+	char	*home_path;
+	t_envp	*node;
+
+	if (!dirpwd)
+		return (1);
+	if (!dirpwd[1])
+	{
+		node = find_envp(&envps->envp_og, "HOME");
+		home_path = node->value;
+		if (!home_path)
+		{
+			ft_putstr_fd("cd: HOME not set", 2);
+			return (1);
+		}
+		err = chdir(home_path);
+		return (err);
+	}
+	err = chdir(dirpwd[1]);
+	return (err);
+}
+
 int	ft_cd(t_envp_path *envps, char **dirpwd)
 {
 	int		err;
@@ -62,7 +86,7 @@ int	ft_cd(t_envp_path *envps, char **dirpwd)
 	oldpwd = get_current_pwd();
 	if (!oldpwd)
 		return (2);
-	err = chdir(dirpwd[1]);
+	err = move_to_correct_dir(envps, dirpwd);
 	if (err == -1)
 	{
 		free(oldpwd);

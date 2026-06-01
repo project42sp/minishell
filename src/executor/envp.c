@@ -12,49 +12,7 @@
 
 #include "../../includes/minishell.h"
 
-static t_envp	*fill_envp_node(char *key, char *value)
-{
-	t_envp	*node;
-
-	node = ft_calloc(sizeof(t_envp), 1);
-	if (!node)
-		return (NULL);
-	node->key = key;
-	node->value = value;
-	node->next = NULL;
-	return (node);
-}
-
-static t_envp	*create_envp_node(char *envp)
-{
-	t_envp	*node;
-	char	*divider;
-	char	*key;
-	char	*value;
-
-	if (!envp)
-		return (NULL);
-	divider = ft_strchr(envp, '=');
-	key = ft_substr(envp, 0, divider - envp);
-	if (!key)
-		return (NULL);
-	value = ft_strdup(divider + 1);
-	if (!value)
-	{
-		free(key);
-		return (NULL);
-	}
-	node = fill_envp_node(key, value);
-	if (!node)
-	{
-		free(key);
-		free(value);
-		return (NULL);
-	}
-	return (node);
-}
-
-static t_envp	*create_last_envp_node(char *envp, t_envp *list)
+t_envp	*create_last_envp_node(char *envp, t_envp *list)
 {
 	t_envp	*head;
 
