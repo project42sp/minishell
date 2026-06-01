@@ -31,9 +31,7 @@ static void	handle_quote_char(char *input, int *i, char *quote)
 static int	skip_word(char *input, int *i)
 {
 	char	quote;
-	int		start;
 
-	start = *i;
 	quote = 0;
 	while (input[*i] != '\0')
 	{
