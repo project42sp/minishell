@@ -56,7 +56,7 @@ void	envp_char_free(char ***envp)
 	index = 0;
 	while ((*envp)[index])
 	{
-		split_free(&(*envp)[index]);
+		free((*envp)[index]);
 		(*envp)[index] = NULL;
 		index++;
 	}
@@ -66,16 +66,21 @@ void	envp_char_free(char ***envp)
 
 void	envp_path_free(t_envp_path **envps)
 {
-	if (!envps)
+	if (!envps || !*envps)
 		return ;
 	if ((*envps)->envp)
+	{
 		split_free((*envps)->envp);
+		(*envps)->envp = NULL;
+	}
 	if ((*envps)->path)
+	{
 		split_free((*envps)->path);
+		(*envps)->envp = NULL;
+	}
 	if ((*envps)->pid)
 		pid_free(&(*envps)->pid);
-	if ((*envps)->envp_og)
-		(*envps)->envp_og = NULL;
+	(*envps)->envp_og = NULL;
 	free(*envps);
-	envps = NULL;
+	*envps = NULL;
 }
