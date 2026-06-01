@@ -24,7 +24,6 @@ static int	execute_input(char *input, t_envp *envp_list)
 		free(input);
 		return (1);
 	}
-	tree_print_extense(tree);
 	status_error = execution(tree, envp_list);
 	tree_free(&tree);
 	free(input);
