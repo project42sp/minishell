@@ -21,10 +21,10 @@ SRCS	= \
 		src/executor/envp_rebuilt.c	\
 		src/executor/builtin_cd.c	\
 		src/executor/builtin_check.c	\
+		src/executor/builtin_pwd.c	\
 		src/executor/builtin_echo.c	\
 		src/executor/builtin_env.c	\
 		src/executor/builtin_exit.c	\
-		src/executor/builtin_pwd.c	\
 		src/executor/builtin_unset.c	\
 		src/executor/builtin_export.c	\
 		src/executor/builtin_export_no_args.c	\

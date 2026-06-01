@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution_base.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
+/*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/16 21:21:33 by buehara           #+#    #+#             */
-/*   Updated: 2026/05/16 21:21:38 by buehara          ###   ########.fr       */
+/*   Updated: 2026/05/24 18:27:00 by thfernan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,11 @@ static int	child_process(t_tree *tree, t_envp_path *envps)
 	char	**node;
 
 	node = (char **)tree->node;
+	if (!node || !node[0])
+	{
+		child_free(envps);
+		exit(0);
+	}
 	full_path = find_path(envps->path, node);
 	if (!full_path)
 	{
@@ -39,6 +44,7 @@ static int	child_process(t_tree *tree, t_envp_path *envps)
 	}
 	execve(full_path, node, envps->envp);
 	free(full_path);
+	child_free(envps);
 	perror("Error");
 	exit(127);
 }
@@ -47,12 +53,8 @@ int	redir_control(t_tree **tree, t_fd *fd)
 {
 	if (redirect(tree, fd))
 	{
-		tree_free(tree);
 		if (fd)
-		{
 			ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
-			free(fd);
-		}
 		return (1);
 	}
 	if (fd)
@@ -70,10 +72,19 @@ int	base_exec(t_envp_path *envps, t_tree *tree, t_fd *fd)
 	envps->pid->pid[envps->pid->index] = fork();
 	if (envps->pid->pid[envps->pid->index] == 0)
 	{
+		set_signals_default();
 		signal(SIGPIPE, SIG_DFL);
-		signal(SIGINT, SIG_DFL);
 		if (redir_control(&tree, fd) != 0)
+		{
+			child_free(envps);
 			exit(1);
+		}
+		envps->root = tree;
+		if (!tree->node || !((char **)tree->node)[0])
+		{
+			child_free(envps);
+			exit(0);
+		}
 		err = check_builtin(envps, tree);
 		if (err != -1)
 		{
@@ -104,6 +115,12 @@ int	execution(t_tree *tree, t_envp *envp_table)
 		perror("Malloc");
 		return (1);
 	}
+	if (has_invalid_source(tree))
+	{
+		envp_path_free(&envp_struct);
+		return (2);
+	}
+	ignore_signals();
 	if (tree->signal != CMD)
 		status_code = pipe_exec(envp_struct, tree, -1);
 	else
@@ -113,6 +130,7 @@ int	execution(t_tree *tree, t_envp *envp_table)
 			status_code = base_exec(envp_struct, tree, NULL);
 	}
 	status_code = ft_wait(envp_struct->pid, status_code);
+	setup_signals();
 	envp_path_free(&envp_struct);
 	return (status_code);
 }

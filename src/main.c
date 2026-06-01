@@ -36,9 +36,9 @@ static int	minishell(t_envp *envp)
 	int		err;
 
 	err = 0;
-	setup_signals();
 	while (1)
 	{
+		setup_signals();
 		input = readline("minishell$ ");
 		if (!input)
 			break ;

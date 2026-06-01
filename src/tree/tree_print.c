@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tree_print.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
+/*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/16 21:23:58 by buehara           #+#    #+#             */
-/*   Updated: 2026/05/16 21:23:59 by buehara          ###   ########.fr       */
+/*   Updated: 2026/05/24 17:44:21 by thfernan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,8 @@ void	tree_print_extense(t_tree *tree)
 	if (!tree)
 		return ;
 	tree_print_extense(tree->left);
-	ft_printf("%s \n", ((char **)tree->node)[0]);
+	if (tree->node)
+		ft_printf("%s \n", ((char **)tree->node)[0]);
 	tree_print_extense(tree->right);
 }
 

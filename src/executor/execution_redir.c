@@ -14,15 +14,21 @@
 
 static int	define_stdin(t_tree *tree, t_fd *fd, int permission)
 {
-	int	in_fd;
+	int		in_fd;
+	char	*filename;
 
 	if (!tree)
 		return (1);
 	if (tree->signal == INPUT || tree->signal == HEREDOC)
 	{
-		in_fd = open(((char **)tree->left->node)[0], permission);
+		filename = ((char **)tree->left->node)[0];
+		in_fd = open(filename, permission);
 		if (in_fd == -1)
+		{
+			ft_putstr_fd("minishell: ", 2);
+			perror(filename);
 			return (1);
+		}
 		if (dup2(in_fd, STDIN_FILENO) == -1)
 			return (1);
 		close(in_fd);
@@ -40,15 +46,21 @@ static int	define_stdin(t_tree *tree, t_fd *fd, int permission)
 
 static int	define_stdout(t_tree *tree, t_fd *fd, int permission)
 {
-	int	out_fd;
+	int		out_fd;
+	char	*filename;
 
 	if (!tree)
 		return (1);
 	if (tree->signal == OUTPUT || tree->signal == APPEND)
 	{
-		out_fd = open(((char **)tree->left->node)[0], permission, 0644);
+		filename = ((char **)tree->left->node)[0];
+		out_fd = open(filename, permission, 0644);
 		if (out_fd == -1)
+		{
+			ft_putstr_fd("minishell: ", 2);
+			perror(filename);
 			return (1);
+		}
 		if (dup2(out_fd, STDOUT_FILENO) == -1)
 			return (1);
 		close(out_fd);
