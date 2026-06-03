@@ -121,7 +121,6 @@ int	execution(t_tree *tree, t_envp *envp_table)
 		return (2);
 	}
 	ignore_signals();
-	status_code = find_heredoc(tree, envp_struct);
 	if (tree->signal != CMD)
 		status_code = pipe_exec(envp_struct, tree, -1);
 	else

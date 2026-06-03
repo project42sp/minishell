@@ -167,8 +167,4 @@ int				ft_unset(t_envp **envp, char **cmd);
 int				ft_export(t_envp **envp, char **cmd);
 int				export_empty(t_envp **envp);
 
-//Heredoc
-int				find_heredoc(t_tree *tree, t_envp_path *envp);
-char			*heredoc(t_envp_path *envp, char *eof);
-
 #endif
