@@ -34,6 +34,7 @@ SRCS	= \
 		src/executor/execution_pipe.c	\
 		src/executor/execution_pid.c	\
 		src/executor/execution_path.c	\
+		src/heredoc/heredoc.c	\
 		src/free/tree_free.c		\
 		src/free/token_list_free.c	\
 		src/free/envp_free.c	\
@@ -88,6 +89,9 @@ $(OBJS_DIR)/%.o: src/utils/%.c | $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJS_DIR)/%.o: src/executor/%.c | $(OBJS_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJS_DIR)/%.o: src/heredoc/%.c | $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJS_DIR)/%.o: %.c | $(OBJS_DIR)
