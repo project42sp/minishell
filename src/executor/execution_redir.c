@@ -12,6 +12,13 @@
 
 #include "../../includes/minishell.h"
 
+static int	err_define_std(char *filename)
+{
+	ft_putstr_fd("minishell: ", 2);
+	perror(filename);
+	return (1);
+}
+
 static int	define_stdin(t_tree *tree, t_fd *fd, int permission)
 {
 	int		in_fd;
@@ -24,11 +31,7 @@ static int	define_stdin(t_tree *tree, t_fd *fd, int permission)
 		filename = ((char **)tree->left->node)[0];
 		in_fd = open(filename, permission);
 		if (in_fd == -1)
-		{
-			ft_putstr_fd("minishell: ", 2);
-			perror(filename);
-			return (1);
-		}
+			return (err_define_std(filename));
 		if (dup2(in_fd, STDIN_FILENO) == -1)
 			return (1);
 		close(in_fd);
@@ -56,11 +59,7 @@ static int	define_stdout(t_tree *tree, t_fd *fd, int permission)
 		filename = ((char **)tree->left->node)[0];
 		out_fd = open(filename, permission, 0644);
 		if (out_fd == -1)
-		{
-			ft_putstr_fd("minishell: ", 2);
-			perror(filename);
-			return (1);
-		}
+			return (err_define_std(filename));
 		if (dup2(out_fd, STDOUT_FILENO) == -1)
 			return (1);
 		close(out_fd);
