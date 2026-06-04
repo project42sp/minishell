@@ -1,1 +1,5 @@
 .vscode/
+minishell
+*.o
+.gitignore
+
