@@ -6,7 +6,7 @@
 /*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 14:46:52 by thfernan          #+#    #+#             */
-/*   Updated: 2026/05/24 15:16:15 by thfernan         ###   ########.fr       */
+/*   Updated: 2026/06/04 03:59:40 by buehara          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static int	check_control_op(t_token *current, t_token *next)
 {
 	if (!is_pipe_logical(current->signal))
 		return (1);
-	if (!next || next->signal == EOFILE )
+	if (!next || next->signal == EOFILE)
 		return (syntax_error(current));
 	if (is_pipe_logical(next->signal))
 		return (syntax_error(current));

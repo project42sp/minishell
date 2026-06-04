@@ -84,12 +84,14 @@ t_envp_path	*create_envp_struct_init(t_tree *tree, t_envp *envp)
 	envp_struct->pid = create_pid(tree);
 	if (!envp_struct->pid)
 	{
+		perror("Malloc");
 		free(envp_struct);
 		return (NULL);
 	}
 	envp_struct->path = create_path_table(envp);
 	if (!envp_struct->path)
 	{
+		perror("Malloc");
 		pid_free(&envp_struct->pid);
 		free(envp_struct);
 		return (NULL);

@@ -28,12 +28,15 @@ static int	child_process(t_tree *tree, t_envp_path *envps)
 {
 	char	*full_path;
 	char	**node;
+	int		err;
 
+	err = 0;
 	node = (char **)tree->node;
-	if (!node || !node[0])
+	err = check_builtin(envps, tree);
+	if (err != -1)
 	{
 		child_free(envps);
-		exit(0);
+		exit(2);
 	}
 	full_path = find_path(envps->path, node);
 	if (!full_path)
@@ -73,23 +76,15 @@ int	base_exec(t_envp_path *envps, t_tree *tree, t_fd *fd)
 	if (envps->pid->pid[envps->pid->index] == 0)
 	{
 		set_signals_default();
-		signal(SIGPIPE, SIG_DFL);
 		if (redir_control(&tree, fd) != 0)
 		{
 			child_free(envps);
 			exit(1);
 		}
-		envps->root = tree;
 		if (!tree->node || !((char **)tree->node)[0])
 		{
 			child_free(envps);
 			exit(0);
-		}
-		err = check_builtin(envps, tree);
-		if (err != -1)
-		{
-			child_free(envps);
-			exit(2);
 		}
 		err = child_process(tree, envps);
 		child_free(envps);
@@ -107,21 +102,13 @@ int	execution(t_tree *tree, t_envp *envp_table)
 
 	if (!tree || !envp_table)
 		return (1);
-	signal(SIGPIPE, SIG_IGN);
 	status_code = 0;
 	envp_struct = create_envp_struct(tree, envp_table);
 	if (!envp_struct)
-	{
-		perror("Malloc");
 		return (1);
-	}
-	if (has_invalid_source(tree))
-	{
-		envp_path_free(&envp_struct);
-		return (2);
-	}
+	status_code = find_heredoc(tree, envp_struct, 0);
 	ignore_signals();
-	status_code = find_heredoc(tree, envp_struct);
+	envp_struct->root = tree;
 	if (tree->signal != CMD)
 		status_code = pipe_exec(envp_struct, tree, -1);
 	else
