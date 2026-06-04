@@ -17,7 +17,18 @@ void	tree_print(t_tree *tree, int level)
 	if (!tree)
 		return ;
 	tree_print(tree->right, level + 1);
-	printf("%*c%s\n", level * 5, ' ', ((char **)tree->node)[0]);
+	if (tree && tree->node)
+		printf("%*c%s\n", level * 5, ' ', ((char **)tree->node)[0]);
+	else
+		switch (tree->signal) {
+			case INPUT: printf("%*c<\n", level * 5, ' '); break;
+			case OUTPUT: printf("%*c>\n", level * 5, ' '); break;
+			case APPEND: printf("%*c>>\n", level * 5, ' '); break;
+			case HEREDOC: printf("%*c<<\n", level * 5, ' '); break;
+			case PIPE: printf("%*c | \n", level * 5, ' '); break;
+			default:
+				printf(" ");
+		}
 	tree_print(tree->left, level + 1);
 }
 

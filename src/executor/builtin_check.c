@@ -27,10 +27,10 @@ int	check_builtin(t_envp *envp, t_tree *tree)
 	char	**cmd;
 
 	if (!tree || !tree->node)
-		return (2);
+		return (-1);
 	cmd = ((char **)tree->node);
 	if (!cmd)
-		return (1);
+		return (-1);
 	if (ft_strcmp(cmd[0], "env") == 0)
 		return (ft_env(envp));
 	else if (ft_strcmp(cmd[0], "echo") == 0)
