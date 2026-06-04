@@ -6,7 +6,7 @@
 /*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/24 02:34:01 by buehara           #+#    #+#             */
-/*   Updated: 2026/05/24 02:34:43 by buehara          ###   ########.fr       */
+/*   Updated: 2026/06/04 03:57:54 by buehara          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ static int	execute_input(char *input, t_envp *envp_list)
 	tree = parser(input);
 	if (!tree)
 	{
-		perror("Error");
 		free(input);
 		return (1);
 	}

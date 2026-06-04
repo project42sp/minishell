@@ -6,7 +6,7 @@
 /*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 15:19:53 by buehara           #+#    #+#             */
-/*   Updated: 2026/05/24 02:37:17 by buehara          ###   ########.fr       */
+/*   Updated: 2026/06/04 03:58:32 by buehara          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int	ft_wait(t_pid *pid, int status_code)
 
 int	has_invalid_source(t_tree *tree)
 {
-	char **cmd;
+	char	**cmd;
 
 	if (!tree)
 		return (0);

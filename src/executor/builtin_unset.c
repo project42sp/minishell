@@ -82,14 +82,11 @@ int	ft_unset(t_envp **envp, char **cmd)
 	temp = find_envp(envp, key);
 	if (!temp)
 		return (1);
-	ft_printf("%s\n", temp->key);
 	prev = find_prev_envp(envp, key);
 	if (!temp || prev == temp)
 		*envp = temp->next;
 	else if (prev)
 		prev->next = temp->next;
-	if (prev)
-		ft_printf("%s\n", prev->key);
 	free_node(temp);
 	return (0);
 }

@@ -37,6 +37,7 @@ static int	process_token(char *input, t_lexer *data)
 	t_tokens_type	token_type;
 	t_token			*new_node;
 
+	token_type = 0;
 	content = extract_token(input, &data->i, &token_type);
 	if (token_type == CMD && content == NULL)
 	{

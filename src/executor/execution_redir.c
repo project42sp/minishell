@@ -22,18 +22,18 @@ static int	err_define_std(char *filename)
 static int	define_stdin(t_tree *tree, t_fd *fd, int permission)
 {
 	int		in_fd;
-	char	*filename;
 
 	if (!tree)
 		return (1);
 	if (tree->signal == INPUT || tree->signal == HEREDOC)
 	{
-		filename = ((char **)tree->left->node)[0];
-		in_fd = open(filename, permission);
+		in_fd = open(((char **)tree->left->node)[0], permission);
 		if (in_fd == -1)
-			return (err_define_std(filename));
+			return (err_define_std(((char **)tree->left->node)[0]));
 		if (dup2(in_fd, STDIN_FILENO) == -1)
 			return (1);
+		if (tree->signal == HEREDOC)
+			unlink(((char **)tree->left->node)[0]);
 		close(in_fd);
 	}
 	else if (fd && fd->oldfd > -1)

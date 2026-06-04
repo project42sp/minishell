@@ -28,6 +28,7 @@ void	ignore_signals(void)
 {
 	struct sigaction	sa;
 
+	rl_event_hook = NULL;
 	sa.sa_handler = SIG_IGN;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_RESTART;

@@ -90,6 +90,7 @@ t_envp_path	*create_envp_struct_init(t_tree *tree, t_envp *envp)
 	envp_struct->path = create_path_table(envp);
 	if (!envp_struct->path)
 	{
+		ft_putendl_fd("minishell: No such file or directory", 2);
 		pid_free(&envp_struct->pid);
 		free(envp_struct);
 		return (NULL);
