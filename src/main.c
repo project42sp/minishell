@@ -23,6 +23,7 @@ static int	execute_input(char *input, t_envp *envp_list)
 		free(input);
 		return (1);
 	}
+	expand_tree_args(tree, envp_list);
 	status_error = execution(tree, envp_list);
 	tree_free(&tree);
 	free(input);
@@ -49,6 +50,7 @@ static int	minishell(t_envp *envp)
 		else
 			add_history(input);
 		err = execute_input(input, envp);
+		update_exit_status(envp, err);
 	}
 	return (err);
 }
@@ -67,6 +69,7 @@ int	main(int argc, char **argv, char **envp)
 		perror("Error");
 		return (1);
 	}
+	create_last_envp_node("?=0", envp_list);
 	err = minishell(envp_list);
 	envp_free(&envp_list);
 	return (err);
