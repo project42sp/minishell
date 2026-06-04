@@ -25,6 +25,8 @@
 # include <readline/history.h>
 # include <sys/wait.h>
 
+extern int	g_signal;
+
 typedef enum s_export
 {
 	ENV = 0b01,
@@ -153,6 +155,7 @@ int				syntax_error(t_token *token);
 void			setup_signals(void);
 void			ignore_signals(void);
 void			set_signals_default(void);
+void			setup_signals_heredoc(void);
 
 // Built-in
 int				check_builtin(t_envp_path *envps, t_tree *tree);
@@ -168,7 +171,7 @@ int				ft_export(t_envp **envp, char **cmd);
 int				export_empty(t_envp **envp);
 
 //Heredoc
-int				find_heredoc(t_tree *tree, t_envp_path *envp);
-char			*heredoc(t_envp_path *envp, char *eof);
+int				find_heredoc(t_tree *tree, t_envp_path *envp, int index);
+char			**heredoc(char *eof, int index);
 
 #endif

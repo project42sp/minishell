@@ -13,6 +13,7 @@ SRCS	= \
 		src/parser/parser_args.c	\
 		src/parser/parser_utils.c	\
 		src/signals/signals.c	\
+		src/signals/signals_heredoc.c	\
 		src/tree/tree_print.c		\
 		src/tree/tree_build.c		\
 		src/tree/tree_utils.c		\
