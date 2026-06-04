@@ -35,6 +35,7 @@ SRCS	= \
 		src/executor/execution_pipe.c	\
 		src/executor/execution_pid.c	\
 		src/executor/execution_path.c	\
+		src/executor/expander.c	\
 		src/heredoc/heredoc.c	\
 		src/free/tree_free.c		\
 		src/free/token_list_free.c	\
