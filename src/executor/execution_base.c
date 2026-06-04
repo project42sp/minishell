@@ -12,18 +12,6 @@
 
 #include "../../includes/minishell.h"
 
-void	child_free(t_envp_path *envps)
-{
-	if (!envps)
-		return ;
-	if (envps->envp_og)
-		envp_free(&envps->envp_og);
-	if (envps->root)
-		tree_free(&envps->root);
-	if (envps)
-		envp_path_free(&envps);
-}
-
 static int	child_process(t_tree *tree, t_envp_path *envps)
 {
 	char	*full_path;
@@ -32,7 +20,7 @@ static int	child_process(t_tree *tree, t_envp_path *envps)
 
 	err = 0;
 	node = (char **)tree->node;
-	err = check_builtin(envps, tree);
+	err = check_builtin(envps->envp_og, tree);
 	if (err != -1)
 	{
 		child_free(envps);
@@ -95,6 +83,22 @@ int	base_exec(t_envp_path *envps, t_tree *tree, t_fd *fd)
 	return (err);
 }
 
+int	call_commands(t_envp_path *envp_struct, t_tree *tree)
+{
+	int	status_code;
+
+	status_code = 0;
+	ignore_signals();
+	envp_struct->root = tree;
+	if (tree->signal != CMD)
+		status_code = pipe_exec(envp_struct, tree, -1);
+	else
+		status_code = base_exec(envp_struct, tree, NULL);
+	status_code = ft_wait(envp_struct->pid, status_code);
+	setup_signals();
+	return (status_code);
+}
+
 int	execution(t_tree *tree, t_envp *envp_table)
 {
 	t_envp_path	*envp_struct;
@@ -103,22 +107,14 @@ int	execution(t_tree *tree, t_envp *envp_table)
 	if (!tree || !envp_table)
 		return (1);
 	status_code = 0;
+	status_code = find_heredoc(tree, 0);
+	status_code = check_builtin(envp_table, tree);
+	if (status_code != -1)
+		return (status_code);
 	envp_struct = create_envp_struct(tree, envp_table);
 	if (!envp_struct)
 		return (1);
-	status_code = find_heredoc(tree, envp_struct, 0);
-	ignore_signals();
-	envp_struct->root = tree;
-	if (tree->signal != CMD)
-		status_code = pipe_exec(envp_struct, tree, -1);
-	else
-	{
-		status_code = check_builtin(envp_struct, tree);
-		if (status_code == -1)
-			status_code = base_exec(envp_struct, tree, NULL);
-	}
-	status_code = ft_wait(envp_struct->pid, status_code);
-	setup_signals();
+	status_code = call_commands(envp_struct, tree);
 	envp_path_free(&envp_struct);
 	return (status_code);
 }

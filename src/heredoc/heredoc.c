@@ -124,7 +124,7 @@ char	**heredoc(char *eof, int index)
 	return (file);
 }
 
-int	find_heredoc(t_tree *tree, t_envp_path *envp, int index)
+int	find_heredoc(t_tree *tree, int index)
 {
 	char	**file;
 	int		err;
@@ -141,8 +141,8 @@ int	find_heredoc(t_tree *tree, t_envp_path *envp, int index)
 	}
 	if (!file)
 		err = 1;
-	err = find_heredoc(tree->left, envp, index + 1);
+	err = find_heredoc(tree->left, index + 1);
 	if (!err)
-		err = find_heredoc(tree->right, envp, index + 2);
+		err = find_heredoc(tree->right, index + 2);
 	return (err);
 }

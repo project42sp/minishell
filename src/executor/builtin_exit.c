@@ -12,7 +12,7 @@
 
 #include "../../includes/minishell.h"
 
-int	ft_exit(t_envp_path *envp, char **cmd)
+int	ft_exit(t_envp *envp, t_tree *tree, char **cmd)
 {
 	int	err;
 
@@ -26,7 +26,8 @@ int	ft_exit(t_envp_path *envp, char **cmd)
 	}
 	if (cmd[1])
 		err = ft_atoi(cmd[1]);
-	child_free(envp);
+	envp_free(&envp);
+	tree_free(&tree);
 	ft_printf("exit\n");
 	exit(err);
 }

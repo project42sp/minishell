@@ -84,3 +84,15 @@ void	envp_path_free(t_envp_path **envps)
 	free(*envps);
 	*envps = NULL;
 }
+
+void	child_free(t_envp_path *envps)
+{
+	if (!envps)
+		return ;
+	if (envps->envp_og)
+		envp_free(&envps->envp_og);
+	if (envps->root)
+		tree_free(&envps->root);
+	if (envps)
+		envp_path_free(&envps);
+}

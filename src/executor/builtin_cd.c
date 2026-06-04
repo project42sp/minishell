@@ -12,13 +12,13 @@
 
 #include "../../includes/minishell.h"
 
-static int	find_node_envp(t_envp_path *envps, char *key, char *path)
+static int	find_node_envp(t_envp *envp, char *key, char *path)
 {
 	t_envp	*temp;
 
-	if (!envps || !path)
+	if (!envp || !path)
 		return (1);
-	temp = envps->envp_og;
+	temp = envp;
 	while (temp)
 	{
 		if (ft_strncmp(temp->key, key, ft_strlen(key)) == 0)
@@ -53,24 +53,22 @@ static char	*get_current_pwd(void)
 	return (path);
 }
 
-static int	move_to_correct_dir(t_envp_path *envps, char **dirpwd)
+static int	move_to_correct_dir(t_envp *envp, char **dirpwd)
 {
 	int		err;
-	char	*home_path;
 	t_envp	*node;
 
 	if (!dirpwd)
 		return (1);
 	if (!dirpwd[1])
 	{
-		node = find_envp(&envps->envp_og, "HOME");
-		home_path = node->value;
-		if (!home_path)
+		node = find_envp(&envp, "HOME");
+		if (!node || !node->value)
 		{
-			ft_putstr_fd("cd: HOME not set", 2);
+			ft_putendl_fd("cd: HOME not set", 2);
 			return (1);
 		}
-		err = chdir(home_path);
+		err = chdir(node->value);
 		return (err);
 	}
 	err = chdir(dirpwd[1]);
@@ -83,7 +81,7 @@ static int	cd_return_error(void)
 	return (1);
 }
 
-int	ft_cd(t_envp_path *envps, char **dirpwd)
+int	ft_cd(t_envp *envp, char **dirpwd)
 {
 	int		err;
 	char	*oldpwd;
@@ -94,7 +92,7 @@ int	ft_cd(t_envp_path *envps, char **dirpwd)
 	oldpwd = get_current_pwd();
 	if (!oldpwd)
 		return (2);
-	err = move_to_correct_dir(envps, dirpwd);
+	err = move_to_correct_dir(envp, dirpwd);
 	if (err == -1)
 	{
 		free(oldpwd);
@@ -106,8 +104,8 @@ int	ft_cd(t_envp_path *envps, char **dirpwd)
 		free(oldpwd);
 		return (2);
 	}
-	err = find_node_envp(envps, "PWD", newpwd);
+	err = find_node_envp(envp, "PWD", newpwd);
 	if (!err)
-		err = find_node_envp(envps, "OLDPWD", oldpwd);
+		err = find_node_envp(envp, "OLDPWD", oldpwd);
 	return (err);
 }

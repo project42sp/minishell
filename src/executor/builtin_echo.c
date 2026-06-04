@@ -12,7 +12,7 @@
 
 #include "../../includes/minishell.h"
 
-static void	ft_echo_print(char **envp, char **cmd, int flag)
+static void	ft_echo_print(t_envp *envp, char **cmd, int flag)
 {
 	int	count;
 
@@ -29,12 +29,11 @@ static void	ft_echo_print(char **envp, char **cmd, int flag)
 		write(1, &"\n", 1);
 }
 
-int	ft_echo(char **envp, char **cmd)
+int	ft_echo(t_envp *envp, char **cmd)
 {
 	int	i;
 	int	flag;
 
-	(void)envp;
 	if (!envp || !cmd)
 		return (2);
 	i = 1;

@@ -158,20 +158,20 @@ void			set_signals_default(void);
 void			setup_signals_heredoc(void);
 
 // Built-in
-int				check_builtin(t_envp_path *envps, t_tree *tree);
+int				check_builtin(t_envp *envp_table, t_tree *tree);
 int				ft_strcmp(const char *s1, const char *s2);
-int				ft_env(char **envp);
-int				ft_echo(char **envp, char **cmd);
+int				ft_env(t_envp *envp);
+int				ft_echo(t_envp *envp, char **cmd);
 int				ft_pwd(void);
-int				ft_exit(t_envp_path *envp, char **cmd);
-int				ft_cd(t_envp_path *envps, char **cmd);
+int				ft_exit(t_envp *envp, t_tree *tree, char **cmd);
+int				ft_cd(t_envp *envp, char **cmd);
 int				ft_unset(t_envp **envp, char **cmd);
 // EXPORT
 int				ft_export(t_envp **envp, char **cmd);
 int				export_empty(t_envp **envp);
 
 //Heredoc
-int				find_heredoc(t_tree *tree, t_envp_path *envp, int index);
+int				find_heredoc(t_tree *tree, int index);
 char			**heredoc(char *eof, int index);
 
 #endif

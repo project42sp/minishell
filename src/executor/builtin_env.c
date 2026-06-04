@@ -12,15 +12,19 @@
 
 #include "../../includes/minishell.h"
 
-int	ft_env(char **envp)
+int	ft_env(t_envp *envp)
 {
-	int	index;
+	t_envp	*head;
+	char	*value;
 
-	index = 0;
-	while (envp[index])
+	head = envp;
+	while (head)
 	{
-		ft_printf("%s\n", envp[index]);
-		index++;
+		value = head->value;
+		if (!value)
+			value = "";
+		ft_printf("%s=%s\n", head->key, value);
+		head = head->next;
 	}
 	return (0);
 }
