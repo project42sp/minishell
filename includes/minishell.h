@@ -6,7 +6,7 @@
 /*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/24 02:33:32 by buehara           #+#    #+#             */
-/*   Updated: 2026/05/24 16:31:32 by thfernan         ###   ########.fr       */
+/*   Updated: 2026/06/04 14:45:06 by thfernan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,5 +173,11 @@ int				export_empty(t_envp **envp);
 //Heredoc
 int				find_heredoc(t_tree *tree, int index);
 char			**heredoc(char *eof, int index);
+
+// Expander
+void			expand_tree_args(t_tree *tree, t_envp *envp);
+char			*expand_argument(char *arg, t_envp *envp);
+void			update_exit_status(t_envp *envp, int status);
+char			*envp_get_value(t_envp *envp, char *key);
 
 #endif
