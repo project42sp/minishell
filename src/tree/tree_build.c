@@ -32,7 +32,7 @@ t_tree	*tree_node_create(t_tree *left, t_token **token, t_tree *right)
 
 t_tree	*tree_redir_helper(t_token **token, t_tree *cmd_node)
 {
-	t_tree	*file_node;
+//	t_tree	*file_node;
 
 	if (!*token || (*token)->signal > HEREDOC)
 		return (cmd_node);
@@ -40,7 +40,7 @@ t_tree	*tree_redir_helper(t_token **token, t_tree *cmd_node)
 		return (handle_cmd_token(token, cmd_node));
 	if ((*token)->signal == FILE_PATH)
 	{
-		file_node = tree_node_create(NULL, token, NULL);
+	//	file_node = tree_node_create(NULL, token, NULL);
 		return (tree_redir_helper(token, cmd_node));
 	}
 	return (handle_redir_token(token, cmd_node));
