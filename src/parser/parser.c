@@ -30,7 +30,11 @@ t_tree	*parser(char *input)
 		token_list_free(tokens);
 		return (NULL);
 	}
+	tokens_print(tokens);
 	tree = tree_create(tokens, &flags);
+	tree_print(tree, 0);
+	tree_print_extense(tree);
+	printf("\n\n");
 	token_list_free(tokens);
 	return (tree);
 }
