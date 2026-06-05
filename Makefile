@@ -38,6 +38,7 @@ SRCS	= \
 		src/executor/expander.c	\
 		src/executor/expander_helpers.c	\
 		src/heredoc/heredoc.c	\
+		src/heredoc/heredoc_utils.c	\
 		src/free/tree_free.c		\
 		src/free/token_list_free.c	\
 		src/free/envp_free.c	\

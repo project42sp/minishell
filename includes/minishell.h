@@ -6,7 +6,7 @@
 /*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/24 02:33:32 by buehara           #+#    #+#             */
-/*   Updated: 2026/06/05 02:28:14 by thfernan         ###   ########.fr       */
+/*   Updated: 2026/06/05 05:41:00 by thfernan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,14 @@ typedef struct s_expand
 	int		in_double;
 }	t_expand;
 
+typedef struct s_heredoc
+{
+	char	*eof;
+	int		size;
+	int		fd;
+	t_envp	*envp;
+}	t_heredoc;
+
 // Test Functions
 void			tree_print(t_tree *tree, int level);
 void			tree_print_extense(t_tree *tree);
@@ -98,8 +106,12 @@ void			tokens_print(t_token *token);
 t_tree			*tree_create(t_token *list, t_check *flags);
 t_tree			*create_cmd_node(char **argv);
 t_tree			*tree_node_create(t_tree *left, t_token **token, t_tree *right);
+t_tree			*tree_redir_helper(t_token **token, t_tree *cmd_node);
 t_token			*token_node(char *token_str, t_tokens_type signal);
 t_token			*get_next_token(t_token *token);
+t_tree			*handle_cmd_token(t_token **token, t_tree *cmd_node);
+t_tree			*handle_redir_token(t_token **token, t_tree *cmd_node);
+t_tree			*tree_redir_helper(t_token **token, t_tree *cmd_node);
 
 // Free functions
 void			token_list_free(t_token *head);
@@ -137,6 +149,7 @@ char			**create_path_table(t_envp *envp);
 t_fd			fd_create(int oldfd);
 t_pid			*create_pid(t_tree *tree);
 t_pid			*pid_create_free(t_tree *tree, t_envp_path *envp);
+int				check_redir_files(t_tree *tree);
 t_envp_path		*create_envp_struct(t_tree *tree, t_envp *envp);
 
 // Lexer functions
@@ -179,8 +192,10 @@ int				ft_export(t_envp **envp, char **cmd);
 int				export_empty(t_envp **envp);
 
 //Heredoc
-int				find_heredoc(t_tree *tree, int index);
-char			**heredoc(char *eof, int index);
+int				find_heredoc(t_tree *tree, int index, t_envp *envp);
+char			**heredoc(char *eof, int index, t_envp *envp);
+char			*create_temp_path_name(char *eof, int index);
+char			**create_temp_file(char *eof, int index, int *fd);
 
 // Expander
 void			expand_tree_args(t_tree *tree, t_envp *envp);

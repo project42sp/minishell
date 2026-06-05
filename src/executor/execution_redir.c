@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution_redir.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
+/*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/16 21:21:43 by buehara           #+#    #+#             */
-/*   Updated: 2026/05/16 21:21:47 by buehara          ###   ########.fr       */
+/*   Updated: 2026/06/05 04:52:20 by thfernan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,9 @@ int	redirect(t_tree **tree, t_fd *fd)
 	int	permission;
 	int	err;
 
-	if (!*tree)
+	if (!*tree || (*tree)->signal == CMD)
+		return (0);
+	if (check_redir_files(*tree))
 		return (1);
 	err = 0;
 	if (fd)
@@ -101,9 +103,10 @@ int	redirect(t_tree **tree, t_fd *fd)
 		err = define_stdin((*tree), fd, permission);
 		if (!err)
 			err = define_stdout((*tree), fd, permission);
-		ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
-		if ((*tree)->signal >= INPUT && (*tree)->signal <= HEREDOC)
-			*tree = (*tree)->right;
+		if (err)
+			return (1);
+		*tree = (*tree)->right;
+		err = redirect(tree, fd);
 	}
 	return (err);
 }

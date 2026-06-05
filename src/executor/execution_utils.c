@@ -3,14 +3,35 @@
 /*                                                        :::      ::::::::   */
 /*   execution_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
+/*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/23 15:19:53 by buehara           #+#    #+#             */
-/*   Updated: 2026/06/04 03:58:32 by buehara          ###   ########.fr       */
+/*   Updated: 2026/06/05 04:18:17 by thfernan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+
+int	check_redir_files(t_tree *tree)
+{
+	char	*filename;
+
+	if (!tree || tree->signal == CMD)
+		return (0);
+	if (tree->signal == INPUT)
+	{
+		filename = ((char **)tree->left->node)[0];
+		if (access(filename, F_OK) != 0)
+		{
+			ft_putstr_fd("minishell: ", 2);
+			perror(filename);
+			return (1);
+		}
+	}
+	if (check_redir_files(tree->right))
+		return (1);
+	return (0);
+}
 
 void	ft_close(int fd1, int fd2, int fd3, int fd4)
 {
