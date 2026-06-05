@@ -3,73 +3,39 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
+/*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 03:53:53 by buehara           #+#    #+#             */
-/*   Updated: 2026/06/04 03:53:54 by buehara          ###   ########.fr       */
+/*   Updated: 2026/06/05 05:41:46 by thfernan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-static char	*create_temp_path_name(char *eof, int index)
+static int	heredoc_warning(t_heredoc *hd, int counter)
 {
-	char	*name_pid;
-	char	*name_index;
-	char	*pid;
-	char	*index_char;
-
-	pid = ft_itoa(getpid());
-	if (!pid)
-		return (NULL);
-	name_pid = ft_strjoin(eof, pid);
-	free(pid);
-	if (!name_pid)
-		return (NULL);
-	index_char = ft_itoa(index);
-	if (!index_char)
-	{
-		free(name_pid);
-		return (NULL);
-	}
-	name_index = ft_strjoin(name_pid, index_char);
-	free(index_char);
-	free(name_pid);
-	if (!name_index)
-		return (NULL);
-	return (name_index);
+	ft_putstr_fd("minishell: warning: here-document at line ", 2);
+	ft_putnbr_fd(counter, 2);
+	ft_putstr_fd(" delimited by end-of-file (wanted `", 2);
+	ft_putstr_fd(hd->eof, 2);
+	ft_putendl_fd("')\n", 2);
+	return (1);
 }
 
-char	**create_temp_file(char *eof, int index, int *fd)
+static int	heredoc_write(t_heredoc *hd, char *input)
 {
-	char	*file;
-	char	*full_path;
-	char	**file_node;
+	char	*expanded;
 
-	file = create_temp_path_name(eof, index);
-	if (!file)
-		return (NULL);
-	full_path = ft_strjoin("/tmp/.", file);
-	free(file);
-	if (!full_path)
-		return (NULL);
-	*fd = open(full_path, O_RDWR | O_CREAT, 0600);
-	if (*fd == -1)
-	{
-		free(full_path);
-		return (NULL);
-	}
-	file_node = (char **)ft_calloc(sizeof(char *), 2);
-	if (!file_node)
-	{
-		free(full_path);
-		return (NULL);
-	}
-	file_node[0] = full_path;
-	return (file_node);
+	expanded = expand_argument(input, hd->envp);
+	free(input);
+	if (!expanded)
+		return (1);
+	ft_putendl_fd(expanded, hd->fd);
+	free(expanded);
+	return (0);
 }
 
-static int	heredoc_readline(char *eof, int size, int fd, int counter)
+static int	heredoc_readline(t_heredoc *hd, int counter)
 {
 	char	*input;
 
@@ -80,34 +46,26 @@ static int	heredoc_readline(char *eof, int size, int fd, int counter)
 		return (1);
 	}
 	if (!input)
-	{
-		ft_putstr_fd("minishell: warning: here-document at line ", 2);
-		ft_putnbr_fd(counter, 2);
-		ft_putstr_fd(" delimited by end-of-file (wanted `", 2);
-		ft_putstr_fd(eof, 2);
-		ft_putendl_fd("')\n", 2);
-		return (1);
-	}
-	if (ft_strncmp(input, eof, size + 1) == 0)
+		return (heredoc_warning(hd, counter));
+	if (ft_strncmp(input, hd->eof, hd->size + 1) == 0)
 	{
 		free(input);
 		return (1);
 	}
-	// Expander function here
-	ft_putendl_fd(input, fd);
-	return (0);
+	return (heredoc_write(hd, input));
 }
 
-char	**heredoc(char *eof, int index)
+char	**heredoc(char *eof, int index, t_envp *envp)
 {
-	char	**file;
-	int		size;
-	int		fd;
-	int		err;
-	int		counter;
+	t_heredoc	data;
+	char		**file;
+	int			err;
+	int			counter;
 
-	size = ft_strlen(eof);
-	file = create_temp_file(eof, index, &fd);
+	data.eof = eof;
+	data.size = ft_strlen(eof);
+	data.envp = envp;
+	file = create_temp_file(eof, index, &data.fd);
 	if (!file)
 		return (NULL);
 	err = 0;
@@ -115,34 +73,34 @@ char	**heredoc(char *eof, int index)
 	setup_signals_heredoc();
 	while (err == 0)
 	{
-		err = heredoc_readline(eof, size, fd, counter);
+		err = heredoc_readline(&data, counter);
 		counter++;
 	}
 	ignore_signals();
 	setup_signals();
-	close(fd);
+	close(data.fd);
 	return (file);
 }
 
-int	find_heredoc(t_tree *tree, int index)
+int	find_heredoc(t_tree *tree, int index, t_envp *envp)
 {
 	char	**file;
 	int		err;
 
-	err = 0;
 	if (!tree)
-		return (err);
-	file = NULL;
-	if (tree->signal == HEREDOC)
-	{
-		file = heredoc(((char **)tree->left->node)[0], index);
-		split_free(tree->left->node);
-		tree->left->node = (void *)file;
-	}
+		return (0);
+	err = find_heredoc(tree->right, index + 1, envp);
+	if (err)
+		return (1);
+	err = find_heredoc(tree->left, index + 2, envp);
+	if (err)
+		return (1);
+	if (tree->signal != HEREDOC)
+		return (0);
+	file = heredoc(((char **)tree->left->node)[0], index, envp);
 	if (!file)
-		err = 1;
-	err = find_heredoc(tree->left, index + 1);
-	if (!err)
-		err = find_heredoc(tree->right, index + 2);
-	return (err);
+		return (1);
+	split_free(tree->left->node);
+	tree->left->node = (void *)file;
+	return (0);
 }
