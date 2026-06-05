@@ -6,26 +6,11 @@
 /*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 12:20:49 by thfernan          #+#    #+#             */
-/*   Updated: 2026/06/04 16:07:04 by thfernan         ###   ########.fr       */
+/*   Updated: 2026/06/05 02:25:26 by thfernan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-
-static char	*safe_strjoin(char *s1, char *s2)
-{
-	char	*result;
-
-	if (!s1 && !s2)
-		return (ft_strdup(""));
-	if (!s1)
-		return (ft_strdup(s2));
-	if (!s2)
-		return (ft_strdup(s1));
-	result = ft_strjoin(s1, s2);
-	free(s1);
-	return (result);
-}
 
 char	*envp_get_value(t_envp *envp, char *key)
 {
@@ -55,161 +40,60 @@ void	update_exit_status(t_envp *envp, int status)
 	}
 }
 
-static char	*append_char(char *result, char c)
+static int	process_char(t_expand *state, char *arg, t_envp *envp)
 {
-	char	*temp;
-
-	if (!result)
-		result = ft_strdup("");
-	if (!result)
-		return (NULL);
-	temp = malloc(2);
-	if (!temp)
-	{
-		free(result);
-		return (NULL);
-	}
-	temp[0] = c;
-	temp[1] = '\0';
-	result = safe_strjoin(result, temp);
-	free(temp);
-	return (result);
-}
-
-static char	*handle_dollar(char *result, char *str, int *i, t_envp *envp)
-{
-	char	*value;
-	char	*var_name;
-	int		start;
-	int		j;
-
-	if (str[*i + 1] == '?')
-	{
-		value = envp_get_value(envp, "?");
-		if (value)
-			result = safe_strjoin(result, value);
-		*i += 2;
-		return (result);
-	}
-	if (ft_isalnum(str[*i + 1]) || str[*i + 1] == '_')
-	{
-		start = *i + 1;
-		j = start;
-		while (str[j] && (ft_isalnum(str[j]) || str[j] == '_'))
-			j++;
-		var_name = ft_substr(str, start, j - start);
-		if (!var_name)
-		{
-			free(result);
-			return (NULL);
-		}
-		value = envp_get_value(envp, var_name);
-		if (value)
-			result = safe_strjoin(result, value);
-		free(var_name);
-		*i = j;
-		return (result);
-	}
-	result = append_char(result, '$');
-	(*i)++;
-	return (result);
-}
-
-static char	*handle_backslash(char *result, char *str, int *i, int in_double)
-{
-	char	c;
-
-	(*i)++;
-	if (str[*i] == '\0')
-		return (result);
-	if (in_double)
-	{
-		c = str[*i];
-		if (c == '$' || c == '"' || c == '\\' || c == '`' || c == '\n')
-			result = append_char(result, c);
-		else
-		{
-			result = append_char(result, '\\');
-			if (result)
-				result = append_char(result, c);
-		}
-	}
+	if (!state->in_single && arg[state->i] == '"')
+		state->in_double = !state->in_double;
+	else if (!state->in_double && arg[state->i] == '\'')
+		state->in_single = !state->in_single;
+	else if (state->in_single)
+		state->result = append_char(state->result, arg[state->i]);
+	else if (arg[state->i] == '\\')
+		state->result = handle_backslash(state->result, arg, &state->i,
+				state->in_double);
+	else if (arg[state->i] == '$')
+		state->result = handle_dollar(state->result, arg, &state->i, envp);
 	else
-		result = append_char(result, str[*i]);
-	(*i)++;
-	return (result);	
+		state->result = append_char(state->result, arg[state->i]);
+	if (!state->result)
+		return (0);
+	if (arg[state->i] && arg[state->i] != '\\' && arg[state->i] != '$')
+		state->i++;
+	return (1);
 }
 
 char	*expand_argument(char *arg, t_envp *envp)
 {
-	char	*result;
-	int		i;
-	int		in_single;
-	int		in_double;
+	t_expand	state;
 
 	if (!arg)
 		return (ft_strdup(""));
-	result = ft_strdup("");
-	if (!result)
+	state.result = ft_strdup("");
+	if (!state.result)
 		return (NULL);
-	i = 0;
-	in_single = 0;
-	in_double = 0;
-	while (arg[i])
-	{
-		if (!in_single && arg[i] == '"')
-		{
-			in_double = !in_double;
-			i++;
-			continue ;
-		}
-		if (!in_double && arg[i] == '\'')
-		{
-			in_single = !in_single;
-			i++;
-			continue ;
-		}
-		if (in_single)
-		{
-			result = append_char(result, arg[i]);
-			i++;
-			continue ;
-		}
-		if (arg[i] == '\\')
-		{
-			result = handle_backslash(result, arg, &i, in_double);
-			if (!result)
-				return (NULL);
-			continue ;
-		}
-		if (arg[i] == '$')
-		{
-			result = handle_dollar(result, arg, &i, envp);
-			if (!result)
-				return (NULL);
-			continue ;
-		}
-		result = append_char(result, arg[i]);
-		i++;
-	}
-	return (result);
+	state.i = 0;
+	state.in_single = 0;
+	state.in_double = 0;
+	while (arg[state.i] && process_char(&state, arg, envp))
+		continue ;
+	return (state.result);
 }
 
-void expand_tree_args(t_tree *tree, t_envp *envp)
+void	expand_tree_args(t_tree *tree, t_envp *envp)
 {
 	int		i;
 	char	**argv;
 	char	*expanded;
 
 	if (!tree)
-		return;
+		return ;
 	expand_tree_args(tree->left, envp);
 	expand_tree_args(tree->right, envp);
 	if (tree->signal == CMD)
 	{
 		argv = (char **)tree->node;
 		if (!argv)
-			return;
+			return ;
 		i = 0;
 		while (argv[i])
 		{
