@@ -17,15 +17,15 @@ SRCS	= \
 		src/tree/tree_print.c		\
 		src/tree/tree_build.c		\
 		src/tree/tree_utils.c		\
-		src/bultin/builtin_cd.c	\
-		src/bultin/builtin_check.c	\
-		src/bultin/builtin_pwd.c	\
-		src/bultin/builtin_echo.c	\
-		src/bultin/builtin_env.c	\
-		src/bultin/builtin_exit.c	\
-		src/bultin/builtin_unset.c	\
-		src/bultin/builtin_export.c	\
-		src/bultin/builtin_export_no_args.c	\
+		src/builtin/builtin_cd.c	\
+		src/builtin/builtin_check.c	\
+		src/builtin/builtin_pwd.c	\
+		src/builtin/builtin_echo.c	\
+		src/builtin/builtin_env.c	\
+		src/builtin/builtin_exit.c	\
+		src/builtin/builtin_unset.c	\
+		src/builtin/builtin_export.c	\
+		src/builtin/builtin_export_no_args.c	\
 		src/executor/envp.c		\
 		src/executor/envp_node.c		\
 		src/executor/envp_rebuilt.c	\
