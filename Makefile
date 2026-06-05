@@ -17,18 +17,18 @@ SRCS	= \
 		src/tree/tree_print.c		\
 		src/tree/tree_build.c		\
 		src/tree/tree_utils.c		\
+		src/bultin/builtin_cd.c	\
+		src/bultin/builtin_check.c	\
+		src/bultin/builtin_pwd.c	\
+		src/bultin/builtin_echo.c	\
+		src/bultin/builtin_env.c	\
+		src/bultin/builtin_exit.c	\
+		src/bultin/builtin_unset.c	\
+		src/bultin/builtin_export.c	\
+		src/bultin/builtin_export_no_args.c	\
 		src/executor/envp.c		\
 		src/executor/envp_node.c		\
 		src/executor/envp_rebuilt.c	\
-		src/executor/builtin_cd.c	\
-		src/executor/builtin_check.c	\
-		src/executor/builtin_pwd.c	\
-		src/executor/builtin_echo.c	\
-		src/executor/builtin_env.c	\
-		src/executor/builtin_exit.c	\
-		src/executor/builtin_unset.c	\
-		src/executor/builtin_export.c	\
-		src/executor/builtin_export_no_args.c	\
 		src/executor/execution_base.c	\
 		src/executor/execution_redir.c	\
 		src/executor/execution_utils.c	\
@@ -36,6 +36,7 @@ SRCS	= \
 		src/executor/execution_pid.c	\
 		src/executor/execution_path.c	\
 		src/executor/expander.c	\
+		src/executor/expander_helpers.c	\
 		src/heredoc/heredoc.c	\
 		src/free/tree_free.c		\
 		src/free/token_list_free.c	\
@@ -88,6 +89,9 @@ $(OBJS_DIR)/%.o: src/signals/%.c | $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJS_DIR)/%.o: src/utils/%.c | $(OBJS_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJS_DIR)/%.o: src/builtin/%.c | $(OBJS_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJS_DIR)/%.o: src/executor/%.c | $(OBJS_DIR)
