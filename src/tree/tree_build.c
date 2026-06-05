@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tree_build.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
+/*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/16 21:23:51 by buehara           #+#    #+#             */
-/*   Updated: 2026/05/16 21:23:52 by buehara          ###   ########.fr       */
+/*   Updated: 2026/06/04 23:01:28 by thfernan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ static t_token	*tree_redir_helper(t_token **token,
 		}
 		else if ((*token)->signal == FILE_PATH)
 			*file_node = tree_node_create(NULL, token, NULL);
+		// Adicionar verificação multiplo redirect < >.
 		else if ((*token)->signal >= INPUT && (*token)->signal <= HEREDOC)
 		{
 			token_redir = *token;
