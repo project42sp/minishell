@@ -6,7 +6,7 @@
 /*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/24 02:33:32 by buehara           #+#    #+#             */
-/*   Updated: 2026/05/24 16:31:32 by thfernan         ###   ########.fr       */
+/*   Updated: 2026/06/05 02:28:14 by thfernan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,14 @@ typedef struct s_fd
 	int	oldfd;
 	int	last;
 }	t_fd;
+
+typedef struct s_expand
+{
+	char	*result;
+	int		i;
+	int		in_single;
+	int		in_double;
+}	t_expand;
 
 // Test Functions
 void			tree_print(t_tree *tree, int level);
@@ -173,5 +181,16 @@ int				export_empty(t_envp **envp);
 //Heredoc
 int				find_heredoc(t_tree *tree, int index);
 char			**heredoc(char *eof, int index);
+
+// Expander
+void			expand_tree_args(t_tree *tree, t_envp *envp);
+char			*expand_argument(char *arg, t_envp *envp);
+void			update_exit_status(t_envp *envp, int status);
+char			*envp_get_value(t_envp *envp, char *key);
+char			*safe_strjoin(char *s1, char *s2);
+char			*append_char(char *result, char c);
+char			*handle_backslash(char *result, char *str, int *i,
+					int in_double);
+char			*handle_dollar(char *result, char *str, int *i, t_envp *envp);
 
 #endif

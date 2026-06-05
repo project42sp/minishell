@@ -6,7 +6,7 @@
 /*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/16 21:21:33 by buehara           #+#    #+#             */
-/*   Updated: 2026/05/24 18:27:00 by thfernan         ###   ########.fr       */
+/*   Updated: 2026/06/05 03:54:11 by thfernan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,10 +103,19 @@ int	execution(t_tree *tree, t_envp *envp_table)
 {
 	t_envp_path	*envp_struct;
 	int			status_code;
+	char		**cmd;
 
 	if (!tree || !envp_table)
 		return (1);
-	status_code = 0;
+	if (tree->signal == CMD && tree->node)
+	{
+		cmd = (char **)tree->node;
+		if (cmd && cmd[0] && ft_strcmp(cmd[0], "exit") == 0)
+		{
+			status_code = ft_exit(envp_table, tree, cmd);
+			return (status_code);
+		}
+	}
 	status_code = find_heredoc(tree, 0);
 	status_code = check_builtin(envp_table, tree);
 	if (status_code != -1)

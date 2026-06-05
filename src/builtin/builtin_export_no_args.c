@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_export_no_args.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
+/*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/31 18:06:43 by buehara           #+#    #+#             */
-/*   Updated: 2026/05/31 18:06:46 by buehara          ###   ########.fr       */
+/*   Updated: 2026/06/04 12:14:02 by thfernan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,11 @@ static void	print_export(t_envp **envp)
 	index = 0;
 	while (envp[index])
 	{
+		if (ft_strcmp(envp[index]->key, "?") == 0)
+		{
+			index++;
+			continue ;
+		}
 		ft_printf("declare\t-x ");
 		ft_printf("%s", envp[index]->key);
 		if (envp[index]->flag == ENV)

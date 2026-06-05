@@ -6,7 +6,7 @@
 /*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/24 10:21:44 by buehara           #+#    #+#             */
-/*   Updated: 2026/06/04 03:59:10 by buehara          ###   ########.fr       */
+/*   Updated: 2026/06/04 16:00:48 by thfernan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,10 @@ int	check_builtin(t_envp *envp, t_tree *tree)
 	char	**cmd;
 
 	if (!tree || !tree->node)
-		return (2);
+		return (-1);
 	cmd = ((char **)tree->node);
 	if (!cmd)
-		return (1);
+		return (-1);
 	if (ft_strcmp(cmd[0], "env") == 0)
 		return (ft_env(envp));
 	else if (ft_strcmp(cmd[0], "echo") == 0)

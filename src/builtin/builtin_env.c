@@ -1,33 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtin_exit.c                                     :+:      :+:    :+:   */
+/*   builtin_env.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: buehara <buehara@student.42sp.org.br>      +#+  +:+       +#+        */
+/*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/31 20:53:11 by buehara           #+#    #+#             */
-/*   Updated: 2026/05/31 20:53:13 by buehara          ###   ########.fr       */
+/*   Created: 2026/05/24 10:22:03 by buehara           #+#    #+#             */
+/*   Updated: 2026/06/04 12:12:57 by thfernan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-int	ft_exit(t_envp *envp, t_tree *tree, char **cmd)
+int	ft_env(t_envp *envp)
 {
-	int	err;
+	t_envp	*head;
+	char	*value;
 
-	err = 0;
-	if (!*cmd)
-		return (1);
-	if (cmd[2])
+	head = envp;
+	while (head)
 	{
-		ft_putendl_fd("minishell: exit: too many arguments", 2);
-		return (1);
+		if (ft_strcmp(head->key, "?") == 0)
+		{
+			head = head->next;
+			continue ;
+		}
+		value = head->value;
+		if (!value)
+			value = "";
+		ft_printf("%s=%s\n", head->key, value);
+		head = head->next;
 	}
-	if (cmd[1])
-		err = ft_atoi(cmd[1]);
-	envp_free(&envp);
-	tree_free(&tree);
-	ft_printf("exit\n");
-	exit(err);
+	return (0);
 }
