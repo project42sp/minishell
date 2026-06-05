@@ -6,7 +6,7 @@
 /*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/16 21:21:33 by buehara           #+#    #+#             */
-/*   Updated: 2026/06/05 03:54:11 by thfernan         ###   ########.fr       */
+/*   Updated: 2026/06/05 04:30:59 by thfernan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ int	execution(t_tree *tree, t_envp *envp_table)
 			return (status_code);
 		}
 	}
-	status_code = find_heredoc(tree, 0);
+	status_code = find_heredoc(tree, 0, envp_table);
 	status_code = check_builtin(envp_table, tree);
 	if (status_code != -1)
 		return (status_code);
