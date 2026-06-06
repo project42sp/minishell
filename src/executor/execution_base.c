@@ -33,6 +33,7 @@ static int	child_process(t_tree *tree, t_envp_path *envps)
 		perror("Error");
 		exit(2);
 	}
+	signal(SIGPIPE, SIG_DFL);
 	execve(full_path, node, envps->envp);
 	free(full_path);
 	child_free(envps);
@@ -60,6 +61,7 @@ int	base_exec(t_envp_path *envps, t_tree *tree, t_fd *fd)
 	int		err;
 
 	err = 0;
+	signal(SIGPIPE, SIG_IGN);
 	envps->pid->pid[envps->pid->index] = fork();
 	if (envps->pid->pid[envps->pid->index] == 0)
 	{
@@ -69,7 +71,7 @@ int	base_exec(t_envp_path *envps, t_tree *tree, t_fd *fd)
 			child_free(envps);
 			exit(1);
 		}
-		if (!tree->node || !((char **)tree->node)[0])
+		if (!tree || !tree->node || !((char **)tree->node)[0])
 		{
 			child_free(envps);
 			exit(0);

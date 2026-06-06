@@ -92,8 +92,6 @@ int	redirect(t_tree **tree, t_fd *fd)
 	int	permission;
 	int	err;
 
-	if (!*tree || (*tree)->signal == CMD)
-		return (0);
 	if (check_redir_files(*tree))
 		return (1);
 	err = 0;
@@ -105,8 +103,12 @@ int	redirect(t_tree **tree, t_fd *fd)
 			err = define_stdout((*tree), fd, permission);
 		if (err)
 			return (1);
-		*tree = (*tree)->right;
-		err = redirect(tree, fd);
+		if ((*tree)->right)
+			*tree = (*tree)->right;
+		if (fd)
+			ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
+		if ((*tree)->signal > FILE_PATH)
+			err = redirect(tree, fd);
 	}
 	return (err);
 }
