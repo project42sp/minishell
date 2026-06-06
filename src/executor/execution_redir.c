@@ -105,6 +105,8 @@ int	redirect(t_tree **tree, t_fd *fd)
 			return (1);
 		if ((*tree)->right)
 			*tree = (*tree)->right;
+		if (fd)
+			ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
 		if ((*tree)->signal > FILE_PATH)
 			err = redirect(tree, fd);
 	}

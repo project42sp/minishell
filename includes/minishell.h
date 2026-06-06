@@ -25,7 +25,7 @@
 # include <readline/history.h>
 # include <sys/wait.h>
 
-extern int	g_signal;
+extern volatile sig_atomic_t	g_signal;
 
 typedef enum s_export
 {
