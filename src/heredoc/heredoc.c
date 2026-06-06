@@ -89,16 +89,7 @@ int	find_heredoc(t_tree *tree, int index, t_envp *envp)
 
 	if (!tree)
 		return (1);
-	if (tree->signal != HEREDOC)
-	{
-		err = find_heredoc(tree->right, index + 1, envp);
-		if (err)
-			return (1);
-		err = find_heredoc(tree->left, index + 2, envp);
-		if (err)
-			return (1);
-	}
-	else
+	if (tree->signal == HEREDOC)
 	{
 		file = heredoc(((char **)tree->left->node)[0], index, envp);
 		if (!file)
@@ -106,5 +97,7 @@ int	find_heredoc(t_tree *tree, int index, t_envp *envp)
 		split_free(tree->left->node);
 		tree->left->node = (void *)file;
 	}
-	return (0);
-	}
+	err = find_heredoc(tree->right, index + 1, envp);
+	err = find_heredoc(tree->left, index + 2, envp);
+	return (err);
+}
