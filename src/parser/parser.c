@@ -31,6 +31,8 @@ t_tree	*parser(char *input)
 		return (NULL);
 	}
 	tokens_print(tokens);
+	tokens = token_cmd_reorder(tokens);
+	tokens_print(tokens);
 	tree = tree_create(tokens, &flags);
 	tree_print(tree, 0);
 	tree_print_extense(tree);

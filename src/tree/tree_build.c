@@ -26,42 +26,58 @@ t_tree	*tree_node_create(t_tree *left, t_token **token, t_tree *right)
 	tree->node = (*token)->token;
 	(*token)->token = NULL;
 	tree->right = right;
-	*token = (*token)->next;
+	//*token = (*token)->next;
 	return (tree);
 }
 
-t_tree	*tree_redir_helper(t_token **token, t_tree *cmd_node)
+t_tree	*tree_redir_helper(t_token **token, t_tree	*cmd_node)
 {
-//	t_tree	*file_node;
+	t_tree	*file_node;
+	t_tree	*right;
+	t_token	*redir;
 
-	if (!*token || (*token)->signal > HEREDOC)
+	file_node = NULL;
+	right = NULL;
+	redir = NULL;
+	if (!*token && cmd_node)
 		return (cmd_node);
-	if ((*token)->signal == CMD)
-		return (handle_cmd_token(token, cmd_node));
-	if ((*token)->signal == FILE_PATH)
+	if ((*token)->signal == CMD && !cmd_node)
 	{
-	//	file_node = tree_node_create(NULL, token, NULL);
-		return (tree_redir_helper(token, cmd_node));
+		right = tree_node_create(NULL, token, NULL);
+		*token = get_next_token(*token);
+		if ((*token)->signal == EOFILE)
+			return (right);
 	}
-	return (handle_redir_token(token, cmd_node));
+	if ((*token)->signal >= INPUT && (*token)->signal <= HEREDOC)
+	{
+		file_node = tree_node_create(NULL, &(*token)->next, NULL);
+		redir = *token;
+		*token = get_next_token(*token);
+		if (!*token && cmd_node)
+			return (tree_node_create(file_node, &redir, cmd_node));
+		else
+			right = (tree_redir_helper(&(*token)->next, cmd_node));
+	}
+	return (tree_node_create(file_node, &redir, right));
 }
 
 static t_tree	*tree_redir(t_token **token)
 {
 	t_tree	*cmd_node;
-	char	**empty_argv;
+//	char	**empty_argv;
 
 	if (!*token)
 		return (NULL);
-	empty_argv = ft_calloc(1, sizeof(char *));
-	if (!empty_argv)
-		return (NULL);
-	cmd_node = create_cmd_node(empty_argv);
-	if (!cmd_node)
-	{
-		free(empty_argv);
-		return (NULL);
-	}
+	cmd_node = NULL;
+//	empty_argv = ft_calloc(1, sizeof(char *));
+//	if (!empty_argv)
+//		return (NULL);
+//	cmd_node = create_cmd_node(empty_argv);
+//	if (!cmd_node)
+//	{
+//		free(empty_argv);
+//		return (NULL);
+//	}
 	return (tree_redir_helper(token, cmd_node));
 }
 
