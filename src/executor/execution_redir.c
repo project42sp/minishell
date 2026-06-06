@@ -41,7 +41,7 @@ static int	define_stdin(t_tree *tree, t_fd *fd, int permission)
 		if (dup2(fd->oldfd, STDIN_FILENO) == -1)
 			return (1);
 	}
-	else if (fd->last && tree->signal >= INPUT)
+	else if (fd->last && (tree->signal == INPUT || tree->signal == HEREDOC))
 		if (dup2(fd->fd[0], STDIN_FILENO) == -1)
 			return (1);
 	return (0);
