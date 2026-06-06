@@ -6,7 +6,7 @@
 /*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/06/04 12:20:49 by thfernan          #+#    #+#             */
-/*   Updated: 2026/06/05 02:25:26 by thfernan         ###   ########.fr       */
+/*   Updated: 2026/06/06 11:07:19 by thfernan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,11 @@ static int	process_char(t_expand *state, char *arg, t_envp *envp)
 	else if (!state->in_double && arg[state->i] == '\'')
 		state->in_single = !state->in_single;
 	else if (state->in_single)
+	{
 		state->result = append_char(state->result, arg[state->i]);
+		state->i++;
+		return (1);
+	}
 	else if (arg[state->i] == '\\')
 		state->result = handle_backslash(state->result, arg, &state->i,
 				state->in_double);
