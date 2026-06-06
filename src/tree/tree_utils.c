@@ -6,7 +6,7 @@
 /*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/16 21:24:04 by buehara           #+#    #+#             */
-/*   Updated: 2026/06/05 05:41:33 by thfernan         ###   ########.fr       */
+/*   Updated: 2026/06/06 13:55:24 by thfernan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,14 @@ t_tree	*handle_redir_token(t_token **token, t_tree *cmd_node)
 	t_tree	*file_node;
 	t_tree	*redir_node;
 	t_token	*token_redir;
+	t_tree	*right;
 
 	token_redir = *token;
 	*token = get_next_token(*token);
 	file_node = tree_node_create(NULL, token, NULL);
-	redir_node = tree_node_create(file_node, &token_redir, cmd_node);
-	return (tree_redir_helper(token, redir_node));
+	right = tree_redir_helper(token, cmd_node);
+	redir_node = tree_node_create(file_node, &token_redir, right);
+	return (redir_node);
 }
 
 t_token	*get_next_token(t_token *token)
