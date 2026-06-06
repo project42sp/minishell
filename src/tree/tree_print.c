@@ -11,8 +11,7 @@
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-#include <fcntl.h>
-#include <stdio.h>
+#include <strings.h>
 
 void	tree_print(t_tree *tree, int level)
 {
@@ -40,7 +39,13 @@ void	tree_print_extense(t_tree *tree)
 		return ;
 	tree_print_extense(tree->left);
 	if (tree && tree->node)
+	{
+		switch (tree->signal) {
+			case CMD: printf(" CMD "); break;
+			case FILE_PATH: printf(" FILE "); break;
+		}
 		printf(" %s ", ((char **)tree->node)[0]);
+	}
 	else if (tree)
 		switch (tree->signal) {
 			case INPUT: printf(" < "); break;
@@ -57,6 +62,8 @@ void	tree_print_extense(t_tree *tree)
 void	tokens_print(t_token *token)
 {
 	t_token	*head;
+	char	**temp;
+	int		index;
 
 	head = token;
 	if (!token)
@@ -64,18 +71,31 @@ void	tokens_print(t_token *token)
 	while (head)
 	{
 		if (head->token)
-			ft_printf(" %s ", ((char **)head->token)[0]);
+		{
+			switch (head->signal) {
+				case CMD: ft_printf(" CMD "); break;
+				case FILE_PATH: ft_printf(" FILE "); break;
+				default: ft_printf(" ");
+			}
+			temp = (char **)token->token;
+			index = 0;
+			while (temp && temp[index] != NULL)
+			{
+				ft_printf("%s  ", temp[index]);
+				index++;
+			}
+		}
 		else if (head)
 			switch (head->signal) {
-				case INPUT: printf(" < "); break;
-				case OUTPUT: printf(" > "); break;
-				case APPEND: printf(" >> "); break;
-				case HEREDOC: printf(" << "); break;
-				case PIPE: printf(" | "); break;
+				case INPUT: ft_printf(" < "); break;
+				case OUTPUT: ft_printf(" > "); break;
+				case APPEND: ft_printf(" >> "); break;
+				case HEREDOC: ft_printf(" << "); break;
+				case PIPE: ft_printf(" | "); break;
 				default:
-					printf(" ");
+					ft_printf(" ");
 			}
 		head = head->next;
 	}
-	printf("\n");
+	ft_printf("\n");
 }
