@@ -97,11 +97,6 @@ typedef struct s_heredoc
 	t_envp	*envp;
 }	t_heredoc;
 
-// Test Functions
-void			tree_print(t_tree *tree, int level);
-void			tree_print_extense(t_tree *tree);
-void			tokens_print(t_token *token);
-
 // Token & Tree Create Functions
 t_tree			*tree_create(t_token *list, t_check *flags);
 t_tree			*create_cmd_node(char **argv);
@@ -180,11 +175,14 @@ void			setup_signals_heredoc(void);
 
 // Built-in
 int				check_builtin(t_envp *envp_table, t_tree *tree);
+int				check_builtin_child(t_envp_path *envps,
+					t_envp *envp, t_tree *tree);
 int				ft_strcmp(const char *s1, const char *s2);
 int				ft_env(t_envp *envp);
 int				ft_echo(t_envp *envp, char **cmd);
 int				ft_pwd(void);
 int				ft_exit(t_envp *envp, t_tree *tree, char **cmd);
+int				ft_exit_child(t_envp_path *envps, char **cmd);
 int				ft_cd(t_envp *envp, char **cmd);
 int				ft_unset(t_envp **envp, char **cmd);
 // EXPORT

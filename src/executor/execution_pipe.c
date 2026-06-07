@@ -12,6 +12,21 @@
 
 #include "../../includes/minishell.h"
 
+int	redir_control(t_tree **tree, t_fd *fd)
+{
+	if (redirect(tree, fd))
+	{
+		if (fd)
+			ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
+		return (1);
+	}
+	if (fd)
+	{
+		ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
+	}
+	return (0);
+}
+
 int	tree_cmd_count(t_tree *tree)
 {
 	t_tree	*temp;

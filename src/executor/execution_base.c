@@ -12,6 +12,14 @@
 
 #include "../../includes/minishell.h"
 
+static int	child_err(t_envp_path *envps, int flag)
+{
+	child_free(envps);
+	if (flag)
+		perror("Error");
+	exit(2);
+}
+
 static int	child_process(t_tree *tree, t_envp_path *envps)
 {
 	char	*full_path;
@@ -20,40 +28,18 @@ static int	child_process(t_tree *tree, t_envp_path *envps)
 
 	err = 0;
 	node = (char **)tree->node;
-	err = check_builtin(envps->envp_og, tree);
+	err = check_builtin_child(envps, envps->envp_og, tree);
 	if (err != -1)
-	{
-		child_free(envps);
-		exit(2);
-	}
+		child_err(envps, 0);
 	full_path = find_path(envps->path, node);
 	if (!full_path)
-	{
-		child_free(envps);
-		perror("Error");
-		exit(2);
-	}
+		child_err(envps, 1);
 	signal(SIGPIPE, SIG_DFL);
 	execve(full_path, node, envps->envp);
 	free(full_path);
 	child_free(envps);
 	perror("Error");
 	exit(127);
-}
-
-int	redir_control(t_tree **tree, t_fd *fd)
-{
-	if (redirect(tree, fd))
-	{
-		if (fd)
-			ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
-		return (1);
-	}
-	if (fd)
-	{
-		ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
-	}
-	return (0);
 }
 
 int	base_exec(t_envp_path *envps, t_tree *tree, t_fd *fd)
