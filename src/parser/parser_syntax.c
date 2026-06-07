@@ -6,7 +6,7 @@
 /*   By: thfernan <thfernan@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/09 14:46:52 by thfernan          #+#    #+#             */
-/*   Updated: 2026/06/04 03:59:40 by buehara          ###   ########.fr       */
+/*   Updated: 2026/06/07 02:36:45 by thfernan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,8 @@ int	validate_syntax(t_token *tokens)
 	{
 		next = current->next;
 		if (is_pipe_logical(current->signal))
+			return (syntax_error(current));
+		if ((!previous || previous->signal == PIPE) && current->signal == PIPE)
 			return (syntax_error(current));
 		if (!check_redir(current, next))
 			return (0);

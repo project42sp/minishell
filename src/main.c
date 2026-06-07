@@ -21,7 +21,7 @@ static int	execute_input(char *input, t_envp *envp_list)
 	if (!tree)
 	{
 		free(input);
-		return (1);
+		return (2);
 	}
 	expand_tree_args(tree, envp_list);
 	status_error = execution(tree, envp_list);
