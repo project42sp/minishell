@@ -27,7 +27,7 @@ int	is_pipe_logical(t_tokens_type type)
 	int	result;
 
 	result = 0;
-	if (type == PIPE || type == AND || type == OR)
+	if (type == AND || type == OR)
 		result = 1;
 	return (result);
 }

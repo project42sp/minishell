@@ -41,7 +41,7 @@ static int	process_token(char *input, t_lexer *data)
 	content = extract_token(input, &data->i, &token_type);
 	if (token_type == CMD && content == NULL)
 	{
-		token_free_partial(data->head, NULL);
+		token_list_free(data->head);
 		return (0);
 	}
 	if (token_type == CMD && (data->last_type >= INPUT

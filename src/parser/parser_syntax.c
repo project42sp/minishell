@@ -59,7 +59,7 @@ int	validate_syntax(t_token *tokens)
 	while (current && current->signal != EOFILE)
 	{
 		next = current->next;
-		if (!previous && is_pipe_logical(current->signal))
+		if (is_pipe_logical(current->signal))
 			return (syntax_error(current));
 		if (!check_redir(current, next))
 			return (0);
