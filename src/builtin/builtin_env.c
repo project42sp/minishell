@@ -20,7 +20,7 @@ int	ft_env(t_envp *envp)
 	head = envp;
 	while (head)
 	{
-		if (ft_strcmp(head->key, "?") == 0)
+		if ((ft_strcmp(head->key, "?") == 0) || head->flag == EXPORT)
 		{
 			head = head->next;
 			continue ;

@@ -32,6 +32,17 @@ static int	is_numeric(const char *str)
 	return (1);
 }
 
+static int	error_message_exit(char *cmd)
+{
+	int	err;
+
+	ft_putstr_fd("minishell: exit: ", 2);
+	ft_putstr_fd(cmd, 2);
+	ft_putstr_fd(": numeric argument required\n", 2);
+	err = 2;
+	return (err);
+}
+
 static int	parse_exit_args(char **cmd)
 {
 	int	argc;
@@ -49,14 +60,9 @@ static int	parse_exit_args(char **cmd)
 	if (argc == 2)
 	{
 		if (is_numeric(cmd[1]))
-			err = ft_atoi(cmd[1]);
+			err = ft_atoi(cmd[1]) & 255;
 		else
-		{
-			ft_putstr_fd("minishell: exit: ", 2);
-			ft_putstr_fd(cmd[1], 2);
-			ft_putstr_fd(": numeric argument required\n", 2);
-			err = 2;
-		}
+			err = error_message_exit(cmd[1]);
 	}
 	return (err);
 }
