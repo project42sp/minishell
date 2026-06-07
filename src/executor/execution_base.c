@@ -42,21 +42,6 @@ static int	child_process(t_tree *tree, t_envp_path *envps)
 	exit(127);
 }
 
-int	redir_control(t_tree **tree, t_fd *fd)
-{
-	if (redirect(tree, fd))
-	{
-		if (fd)
-			ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
-		return (1);
-	}
-	if (fd)
-	{
-		ft_close(fd->fd[0], fd->fd[1], fd->oldfd, -1);
-	}
-	return (0);
-}
-
 int	base_exec(t_envp_path *envps, t_tree *tree, t_fd *fd)
 {
 	int		err;
