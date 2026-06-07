@@ -180,7 +180,8 @@ void			setup_signals_heredoc(void);
 
 // Built-in
 int				check_builtin(t_envp *envp_table, t_tree *tree);
-int				check_builtin_child(t_envp_path *envps, t_envp *envp, t_tree *tree);
+int				check_builtin_child(t_envp_path *envps,
+					t_envp *envp, t_tree *tree);
 int				ft_strcmp(const char *s1, const char *s2);
 int				ft_env(t_envp *envp);
 int				ft_echo(t_envp *envp, char **cmd);
