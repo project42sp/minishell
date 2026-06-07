@@ -97,11 +97,6 @@ typedef struct s_heredoc
 	t_envp	*envp;
 }	t_heredoc;
 
-// Test Functions
-void			tree_print(t_tree *tree, int level);
-void			tree_print_extense(t_tree *tree);
-void			tokens_print(t_token *token);
-
 // Token & Tree Create Functions
 t_tree			*tree_create(t_token *list, t_check *flags);
 t_tree			*create_cmd_node(char **argv);
