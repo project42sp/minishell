@@ -22,6 +22,35 @@ int	ft_strcmp(const char *s1, const char *s2)
 	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
 
+int	check_builtin_child(t_envp_path *envps, t_envp *envp, t_tree *tree)
+{
+	char	**cmd;
+
+	if (!tree || !tree->node)
+		return (-1);
+	cmd = ((char **)tree->node);
+	if (!cmd)
+		return (-1);
+	if (ft_strcmp(cmd[0], "env") == 0)
+		return (ft_env(envp));
+	else if (ft_strcmp(cmd[0], "echo") == 0)
+		return (ft_echo(envp, cmd));
+	else if (ft_strcmp(cmd[0], "pwd") == 0)
+		return (ft_pwd());
+	else if (ft_strcmp(cmd[0], "cd") == 0)
+		return (ft_cd(envp, cmd));
+	else if (ft_strcmp(cmd[0], "export") == 0)
+		return (ft_export(&envp, cmd));
+	else if (ft_strcmp(cmd[0], "unset") == 0)
+		return (ft_unset(&envp, cmd));
+	else if (ft_strcmp(cmd[0], "exit") == 0)
+		return (ft_exit_child(envps, cmd));
+	else
+		if (has_invalid_source(tree))
+			return (1);
+	return (-1);
+}
+
 int	check_builtin(t_envp *envp, t_tree *tree)
 {
 	char	**cmd;

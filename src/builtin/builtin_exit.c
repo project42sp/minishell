@@ -67,6 +67,20 @@ static int	parse_exit_args(char **cmd)
 	return (err);
 }
 
+int	ft_exit_child(t_envp_path *envps, char **cmd)
+{
+	int	err;
+
+	if (!cmd || !*cmd)
+		return (1);
+	err = parse_exit_args(cmd);
+	if (err == -1)
+		return (1);
+	child_free(envps);
+	ft_printf("exit\n");
+	exit(err);
+}
+
 int	ft_exit(t_envp *envp, t_tree *tree, char **cmd)
 {
 	int	err;
